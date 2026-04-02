@@ -139,24 +139,24 @@ class LivePriceEngine {
 
     switch (this.regime) {
       case 'sideways':
-        volatility = 0.00008;
-        drift = this.momentum * 0.1;
+        volatility = 0.00004;
+        drift = this.momentum * 0.05;
         break;
       case 'trending_up':
-        volatility = 0.00025;
-        drift = 0.00008 + Math.abs(this.momentum) * 0.5;
+        volatility = 0.00012;
+        drift = 0.00003 + Math.abs(this.momentum) * 0.3;
         break;
       case 'trending_down':
-        volatility = 0.00025;
-        drift = -0.00008 - Math.abs(this.momentum) * 0.5;
+        volatility = 0.00012;
+        drift = -0.00003 - Math.abs(this.momentum) * 0.3;
         break;
       case 'explosion':
-        volatility = 0.001 + Math.random() * 0.002;
-        drift = this.momentum * 2;
+        volatility = 0.0004 + Math.random() * 0.0005;
+        drift = this.momentum * 1.5;
         break;
       default:
-        volatility = 0.0004;
-        drift = this.momentum * 0.3;
+        volatility = 0.00018;
+        drift = this.momentum * 0.2;
         break;
     }
 
