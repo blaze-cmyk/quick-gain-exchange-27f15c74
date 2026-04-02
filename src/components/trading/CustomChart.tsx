@@ -229,6 +229,30 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
 
       ctx.fillStyle = isGreen ? COLORS.candleGreen : COLORS.candleRed;
       ctx.fillRect(Math.round(centerX - candleW / 2), Math.round(bodyTop), Math.round(candleW), Math.round(bodyHeight));
+
+      // Candle countdown timer on the LAST (forming) candle
+      if (i === candles.length - 1) {
+        const nowMs = Date.now();
+        const candleEndMs = (candle.time + 60) * 1000; // 1m candle
+        const secsLeft = Math.max(0, Math.ceil((candleEndMs - nowMs) / 1000));
+        const timerText = `00:${String(secsLeft).padStart(2, '0')}`;
+
+        const badgeW = 40;
+        const badgeH = 16;
+        const badgeX = centerX - badgeW / 2;
+        // Position below the candle body
+        const badgeY = Math.max(bodyTop, lowY) + 6;
+
+        ctx.fillStyle = 'rgba(45, 55, 72, 0.85)';
+        roundRect(ctx, badgeX, badgeY, badgeW, badgeH, 3);
+        ctx.fill();
+
+        ctx.fillStyle = '#cbd5e1';
+        ctx.font = '9px Inter, monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(timerText, centerX, badgeY + badgeH / 2);
+      }
     }
 
     // Current price horizontal dashed line
