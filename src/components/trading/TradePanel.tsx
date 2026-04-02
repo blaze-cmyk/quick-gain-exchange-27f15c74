@@ -252,7 +252,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
           <>
             {/* Active trade in history */}
             {activeTrade && (
-              <div className="px-3 py-2 border-b border-border/50 bg-accent/10">
+              <div className="px-3 py-2.5 border-b border-border/50 bg-accent/10">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     <ChevronDown size={12} className="text-muted-foreground" />
@@ -263,7 +263,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
                     <span className="text-[11px] font-medium text-foreground">{activeTrade.pair.displayName}</span>
                   </div>
                   <span className="text-[10px] text-muted-foreground font-mono">
-                    {formatDuration(activeTrade.duration)}
+                    {String(Math.floor(timeLeft / 60)).padStart(2, '0')}:{String(timeLeft % 60).padStart(2, '0')}
                   </span>
                 </div>
                 <div className="flex items-center justify-between mt-0.5 pl-6">
@@ -285,6 +285,11 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
                     {(activePnL || 0) >= 0 ? '+' : ''}{(activePnL || 0).toFixed(2)} $
                   </span>
                 </div>
+                {/* Sell now button — Quotex style */}
+                <button className="w-full mt-2 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-bold hover:bg-primary/90 transition-colors flex items-center justify-between px-4">
+                  <span>Sell now</span>
+                  <span>{Math.max(0, activePnL ? Math.floor(activePnL * 0.1) : 0)} $</span>
+                </button>
               </div>
             )}
 
