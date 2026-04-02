@@ -140,17 +140,15 @@ export default function TradePage() {
             )}
           </div>
 
-          {/* Trade panel + history */}
-          <div className="flex flex-col">
-            <TradePanel
-              pair={activePair}
-              currentPrice={currentPrice}
-              balance={balance}
-              onTrade={handleTrade}
-              activeTrade={activeTrade}
-            />
-            <TradeHistory trades={trades} />
-          </div>
+          {/* Trade panel with integrated history */}
+          <TradePanel
+            pair={activePair}
+            currentPrice={currentPrice}
+            balance={balance}
+            onTrade={handleTrade}
+            activeTrade={activeTrade}
+            trades={trades}
+          />
         </div>
       </div>
 
