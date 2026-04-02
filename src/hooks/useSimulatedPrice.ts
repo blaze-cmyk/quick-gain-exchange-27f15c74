@@ -161,9 +161,9 @@ class LivePriceEngine {
     }
 
     // Random micro-spikes
-    if (Math.random() < 0.01) {
-      volatility *= 5;
-      this.momentum = (Math.random() - 0.5) * 0.002;
+    if (Math.random() < 0.005) {
+      volatility *= 2.5;
+      this.momentum = (Math.random() - 0.5) * 0.0006;
     }
 
     // Mean reversion toward base
