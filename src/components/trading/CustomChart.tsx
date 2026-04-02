@@ -295,23 +295,48 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       ctx.fill();
     }
 
-    // Countdown badge on the end-of-trade line (Quotex style dark pill)
-    if (isActive && timeLeft > 0 && endX > 0 && endX < chartWidth + 50) {
+    // Countdown badge on the current price line (Quotex style — timer follows live price)
+    if (isActive && timeLeft > 0) {
+      const currentPriceY = priceToY(currentPrice, minPrice, maxPrice, height);
       const mins = Math.floor(timeLeft / 60);
       const secs = timeLeft % 60;
       const countdownText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
       const countBadgeW = 44;
       const countBadgeH = 18;
-      
+
+      // Draw connecting line from entry to current price at endX
+      if (endX > 0 && endX < chartWidth + 50) {
+        ctx.strokeStyle = tradeColor + '44';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 3]);
+        ctx.beginPath();
+        ctx.moveTo(endX, entryY);
+        ctx.lineTo(endX, currentPriceY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      // Position the timer badge at the end-of-trade line, on the current price Y
+      const timerX = endX > 0 && endX < chartWidth + 50 ? endX : chartWidth - 60;
       ctx.fillStyle = 'rgba(45, 55, 72, 0.9)';
-      roundRect(ctx, endX - countBadgeW / 2, entryY - countBadgeH / 2, countBadgeW, countBadgeH, 4);
+      roundRect(ctx, timerX - countBadgeW / 2, currentPriceY - countBadgeH / 2, countBadgeW, countBadgeH, 4);
       ctx.fill();
-      
+
       ctx.fillStyle = '#e2e8f0';
       ctx.font = '10px Inter, monospace';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(countdownText, endX, entryY);
+      ctx.fillText(countdownText, timerX, currentPriceY);
+
+      // Small dot connector on the price line
+      ctx.fillStyle = tradeColor;
+      ctx.beginPath();
+      ctx.arc(timerX - countBadgeW / 2 - 5, currentPriceY, 3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(timerX - countBadgeW / 2 - 5, currentPriceY, 1.5, 0, Math.PI * 2);
+      ctx.fill();
     }
 
     // Result badge for completed trades
