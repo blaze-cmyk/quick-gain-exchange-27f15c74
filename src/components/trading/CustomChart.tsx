@@ -253,29 +253,6 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       ctx.closePath();
       ctx.fill();
     }
-    const smoothP = st.smoothPrice || currentPrice;
-    if (smoothP > 0) {
-      const priceY = priceToY(smoothP, minPrice, maxPrice, height);
-
-      // Dashed line across chart
-      ctx.strokeStyle = COLORS.priceLine;
-      ctx.lineWidth = 1;
-      ctx.setLineDash([6, 4]);
-      ctx.beginPath();
-      ctx.moveTo(0, priceY);
-      ctx.lineTo(chartWidth, priceY);
-      ctx.stroke();
-      ctx.setLineDash([]);
-
-      // Small triangle/arrow at the right edge
-      ctx.fillStyle = COLORS.priceLine;
-      ctx.beginPath();
-      ctx.moveTo(chartWidth - 6, priceY - 4);
-      ctx.lineTo(chartWidth, priceY);
-      ctx.lineTo(chartWidth - 6, priceY + 4);
-      ctx.closePath();
-      ctx.fill();
-    }
 
     // Price scale (right side)
     ctx.fillStyle = COLORS.priceScaleBg;
