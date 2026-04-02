@@ -88,7 +88,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
   return (
     <div className="w-[260px] bg-card border-l border-border flex flex-col h-full overflow-y-auto">
       {/* Pair info */}
-      <div className="px-3 py-2.5 border-b border-border">
+      <div className="px-3 py-2.5 border-b border-[#2b3040]">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-base">{pair.icon}</span>
@@ -106,7 +106,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
       </div>
 
       {/* Time selector */}
-      <div className="px-3 py-2.5 border-b border-border">
+      <div className="px-3 py-2.5 border-b border-[#2b3040]">
         <fieldset className="border border-border rounded-md px-2 pb-2 pt-0">
           <legend className="text-[9px] text-muted-foreground px-1">Time</legend>
           <div className="flex items-center gap-1">
@@ -290,7 +290,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
       </div>
 
       {/* Trade History Content */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto bg-[#2b3040]">
         {activeTab === 'trades' && completedTrades.length === 0 && !activeTrade && (
           <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
             <Package size={28} className="mb-2 opacity-50" />
