@@ -123,7 +123,8 @@ export function useBinanceWebSocket(symbol: string) {
     const connectTradeStream = () => {
       clearReconnect();
 
-      const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${sym}@trade`);
+      // Use aggTrade for faster aggregated updates
+      const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${sym}@aggTrade`);
       wsRef.current = ws;
 
       ws.onopen = () => {
