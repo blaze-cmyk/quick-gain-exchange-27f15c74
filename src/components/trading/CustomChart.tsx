@@ -358,6 +358,112 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     ctx.fillText('−', zoomCenterX - 18, zoomY + 10);
     ctx.fillText('+', zoomCenterX + 18, zoomY + 10);
 
+    // Active trade markers — "Beginning of trade" / "End of trade"
+    if (activeTrade) {
+      const startTimeSec = Math.floor(activeTrade.startTime / 1000);
+      const endTimeSec = Math.floor(activeTrade.endTime / 1000);
+      const now = Date.now();
+      const timeLeft = Math.max(0, Math.ceil((activeTrade.endTime - now) / 1000));
+
+      // Find x positions based on candle times
+      const findXForTime = (timeSec: number) => {
+        const candleTimeSec = timeSec - (timeSec % 60);
+        const fractionalMinute = (timeSec % 60) / 60;
+        for (let i = 0; i < candles.length; i++) {
+          if (candles[i].time === candleTimeSec) {
+            return (i * step + fractionalMinute * step) - effectiveOffset + step / 2;
+          }
+        }
+        // Extrapolate from last candle
+        if (candles.length > 0) {
+          const lastCandle = candles[candles.length - 1];
+          const diffMin = (candleTimeSec - lastCandle.time) / 60 + fractionalMinute;
+          return ((candles.length - 1 + diffMin) * step) - effectiveOffset + step / 2;
+        }
+        return -1;
+      };
+
+      const startX = findXForTime(startTimeSec);
+      const endX = findXForTime(endTimeSec);
+
+      // Draw "Beginning of trade" line
+      if (startX > 0 && startX < chartWidth) {
+        ctx.strokeStyle = '#8892a0';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([5, 4]);
+        ctx.beginPath();
+        ctx.moveTo(startX, PADDING_TOP);
+        ctx.lineTo(startX, height - TIME_SCALE_HEIGHT);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Label
+        ctx.fillStyle = '#8892a0';
+        ctx.font = '10px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        ctx.fillText('Beginning of trade', startX, PADDING_TOP - 4);
+
+        // Small play arrow
+        ctx.fillStyle = '#8892a0';
+        ctx.beginPath();
+        ctx.moveTo(startX - 4, PADDING_TOP - 18);
+        ctx.lineTo(startX + 4, PADDING_TOP - 14);
+        ctx.lineTo(startX - 4, PADDING_TOP - 10);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      // Draw "End of trade" line
+      if (endX > 0 && endX < chartWidth) {
+        ctx.strokeStyle = '#8892a0';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([5, 4]);
+        ctx.beginPath();
+        ctx.moveTo(endX, PADDING_TOP);
+        ctx.lineTo(endX, height - TIME_SCALE_HEIGHT);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = '#8892a0';
+        ctx.font = '10px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        ctx.fillText('End of trade', endX, PADDING_TOP - 4);
+      }
+
+      // Entry price dashed line
+      const entryY = priceToY(activeTrade.entryPrice, minPrice, maxPrice, height);
+      ctx.strokeStyle = '#8892a066';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(Math.max(0, startX), entryY);
+      ctx.lineTo(Math.min(chartWidth, endX), entryY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Countdown timer badge between the lines
+      const midX = (Math.max(0, startX) + Math.min(chartWidth, endX)) / 2;
+      if (timeLeft > 0) {
+        const mins = Math.floor(timeLeft / 60);
+        const secs = timeLeft % 60;
+        const countdownText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        const badgeW = 44;
+        const badgeH = 18;
+
+        ctx.fillStyle = 'rgba(45, 55, 72, 0.9)';
+        roundRect(ctx, midX - badgeW / 2, entryY - badgeH / 2, badgeW, badgeH, 4);
+        ctx.fill();
+
+        ctx.fillStyle = '#e2e8f0';
+        ctx.font = '10px Inter, monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(countdownText, midX, entryY);
+      }
+    }
+
     // Crosshair
     const ch = stateRef.current.crosshair;
     if (ch && ch.x < chartWidth && ch.y < height - TIME_SCALE_HEIGHT && ch.y > PADDING_TOP) {
