@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { CandleData } from '@/lib/types';
 
-const HISTORY_CANDLES = 2880; // 2 days of 1-min candles
-const TICK_INTERVAL = 200; // ms between price ticks
+const HISTORY_CANDLES = 2880;
+const TICK_INTERVAL = 250;
 const BASE_PRICE = 67500; // Starting BTC price
 
 // Seeded pseudo-random for reproducible but chaotic history
