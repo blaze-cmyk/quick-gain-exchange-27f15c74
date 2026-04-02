@@ -1,6 +1,6 @@
 import { Trade } from '@/lib/types';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { X } from 'lucide-react';
 
 interface TradeResultToastProps {
@@ -10,14 +10,16 @@ interface TradeResultToastProps {
 
 export default function TradeResultToast({ trade, onDismiss }: TradeResultToastProps) {
   const [visible, setVisible] = useState(false);
+  const onDismissRef = useRef(onDismiss);
+  onDismissRef.current = onDismiss;
 
   useEffect(() => {
     if (trade?.result) {
       setVisible(true);
       const timer = setTimeout(() => {
         setVisible(false);
-        onDismiss();
-      }, 5000);
+        onDismissRef.current();
+      }, 4000);
       return () => clearTimeout(timer);
     }
   }, [trade?.id]);
@@ -38,9 +40,7 @@ export default function TradeResultToast({ trade, onDismiss }: TradeResultToastP
           className="absolute bottom-[60px] left-1/2 -translate-x-1/2 z-30"
         >
           <div className={`flex items-center gap-3 px-4 py-2.5 rounded-lg shadow-xl backdrop-blur-md border ${
-            isWin
-              ? 'bg-card/95 border-success/30'
-              : 'bg-card/95 border-danger/30'
+            isWin ? 'bg-card/95 border-success/30' : 'bg-card/95 border-danger/30'
           }`}>
             <span className="text-lg">{trade.pair.icon}</span>
             <div>
@@ -56,7 +56,7 @@ export default function TradeResultToast({ trade, onDismiss }: TradeResultToastP
               </span>
             </div>
             <button
-              onClick={() => { setVisible(false); onDismiss(); }}
+              onClick={() => { setVisible(false); onDismissRef.current(); }}
               className="ml-2 text-muted-foreground hover:text-foreground"
             >
               <X size={14} />
