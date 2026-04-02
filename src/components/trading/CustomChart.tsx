@@ -19,6 +19,10 @@ interface ChartState {
   dragStartOffsetX: number;
   crosshair: { x: number; y: number } | null;
   smoothPrice: number;
+  // Momentum / inertia
+  velocityX: number;
+  lastDragX: number;
+  lastDragTime: number;
 }
 
 // Quotex exact colors
