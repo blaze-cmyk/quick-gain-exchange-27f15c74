@@ -19,6 +19,10 @@ interface ChartState {
   dragStartOffsetX: number;
   crosshair: { x: number; y: number } | null;
   smoothPrice: number;
+  // Momentum / inertia
+  velocityX: number;
+  lastDragX: number;
+  lastDragTime: number;
 }
 
 // Quotex exact colors
@@ -67,6 +71,9 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     dragStartOffsetX: 0,
     crosshair: null,
     smoothPrice: 0,
+    velocityX: 0,
+    lastDragX: 0,
+    lastDragTime: 0,
   });
   const animFrameRef = useRef<number>(0);
   const prevCandleCountRef = useRef(0);
@@ -142,7 +149,14 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     // Smooth interpolation
     const st = stateRef.current;
     if (!st.isDragging) {
-      st.offsetX = lerp(st.offsetX, st.targetOffsetX, LERP_SPEED);
+      // Apply momentum deceleration (Lenis-like)
+      if (Math.abs(st.velocityX) > 0.3) {
+        st.targetOffsetX += st.velocityX;
+        st.velocityX *= 0.92; // friction
+      } else {
+        st.velocityX = 0;
+      }
+      st.offsetX = lerp(st.offsetX, st.targetOffsetX, 0.18);
     }
     st.scaleX = lerp(st.scaleX, st.targetScaleX, LERP_SPEED);
     if (currentPrice > 0) {
@@ -529,9 +543,13 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
 
   // Mouse handlers with smooth feel
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    stateRef.current.isDragging = true;
-    stateRef.current.dragStartX = e.clientX;
-    stateRef.current.dragStartOffsetX = stateRef.current.targetOffsetX;
+    const st = stateRef.current;
+    st.isDragging = true;
+    st.dragStartX = e.clientX;
+    st.dragStartOffsetX = st.targetOffsetX;
+    st.velocityX = 0;
+    st.lastDragX = e.clientX;
+    st.lastDragTime = performance.now();
     if (canvasRef.current) canvasRef.current.style.cursor = 'grabbing';
   }, []);
 
@@ -541,14 +559,25 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
 
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
+    const st = stateRef.current;
 
-    if (stateRef.current.isDragging) {
-      const dx = e.clientX - stateRef.current.dragStartX;
-      stateRef.current.targetOffsetX = stateRef.current.dragStartOffsetX + dx;
-      stateRef.current.offsetX = stateRef.current.targetOffsetX;
-      stateRef.current.crosshair = null;
+    if (st.isDragging) {
+      const dx = e.clientX - st.dragStartX;
+      st.targetOffsetX = st.dragStartOffsetX + dx;
+      st.offsetX = st.targetOffsetX;
+      st.crosshair = null;
+
+      // Track velocity for momentum
+      const now = performance.now();
+      const dt = now - st.lastDragTime;
+      if (dt > 0) {
+        const instantV = (e.clientX - st.lastDragX) / Math.max(dt, 1) * 16;
+        st.velocityX = lerp(st.velocityX, instantV, 0.4);
+      }
+      st.lastDragX = e.clientX;
+      st.lastDragTime = now;
     } else {
-      stateRef.current.crosshair = { x, y };
+      st.crosshair = { x, y };
     }
   }, []);
 
