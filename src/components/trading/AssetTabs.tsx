@@ -1,5 +1,6 @@
 import { TradingPair } from '@/lib/types';
 import { Plus, X, ChevronDown } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface AssetTabsProps {
   pairs: TradingPair[];
@@ -11,40 +12,47 @@ interface AssetTabsProps {
 
 export default function AssetTabs({ pairs, activePair, onSelect, onOpenSelector, prices }: AssetTabsProps) {
   return (
-    <div className="absolute top-0 left-0 z-10 flex items-center gap-1 px-2 py-2">
-      <button
+    <div className="absolute top-2 left-2 z-10 flex items-center gap-1.5">
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
         onClick={onOpenSelector}
-        className="flex-shrink-0 w-9 h-9 rounded-full bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/80 transition-colors shadow-lg"
+        className="flex-shrink-0 w-9 h-9 rounded-lg bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20"
       >
         <Plus size={18} />
-      </button>
+      </motion.button>
 
-      {pairs.map((pair) => {
+      {pairs.map((pair, index) => {
         const isActive = pair.symbol === activePair.symbol;
         return (
-          <button
+          <motion.button
             key={pair.symbol}
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: index * 0.05, duration: 0.25 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => onSelect(pair)}
-            className={`flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 min-w-[120px] backdrop-blur-md ${
+            className={`flex-shrink-0 flex items-center gap-2 px-3.5 py-2 rounded-lg transition-all duration-200 min-w-[110px] ${
               isActive
-                ? 'bg-card/95 border border-border shadow-lg'
-                : 'bg-card/60 hover:bg-card/80'
+                ? 'bg-card border border-border shadow-lg'
+                : 'bg-card/50 backdrop-blur-sm hover:bg-card/70 border border-transparent'
             }`}
           >
-            <span className="text-lg">{pair.icon}</span>
+            <span className="text-base">{pair.icon}</span>
             <div className="text-left">
               <div className="flex items-center gap-1">
-                <span className="text-xs font-semibold text-foreground">{pair.displayName}</span>
+                <span className="text-[11px] font-semibold text-foreground">{pair.displayName}</span>
                 {isActive && <ChevronDown size={10} className="text-muted-foreground" />}
               </div>
-              <div className={`text-[10px] font-medium ${pair.payout >= 90 ? 'text-success' : 'text-muted-foreground'}`}>
+              <div className={`text-[10px] font-semibold ${pair.payout >= 90 ? 'text-success' : 'text-muted-foreground'}`}>
                 {pair.payout}%
               </div>
             </div>
             {isActive && (
-              <X size={12} className="ml-1 text-muted-foreground hover:text-foreground" />
+              <X size={11} className="ml-auto text-muted-foreground hover:text-foreground transition-colors" />
             )}
-          </button>
+          </motion.button>
         );
       })}
     </div>

@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { TradingPair, Trade, TRADING_PAIRS } from '@/lib/types';
 import { useBinanceWebSocket } from '@/hooks/useBinanceWebSocket';
+import { motion, AnimatePresence } from 'framer-motion';
 import Sidebar from '@/components/trading/Sidebar';
 import AssetTabs from '@/components/trading/AssetTabs';
 import CustomChart from '@/components/trading/CustomChart';
@@ -8,7 +9,7 @@ import TradePanel from '@/components/trading/TradePanel';
 import AssetSelector from '@/components/trading/AssetSelector';
 import WinLossOverlay from '@/components/trading/WinLossOverlay';
 import BalanceHeader from '@/components/trading/BalanceHeader';
-import { Info } from 'lucide-react';
+import { Info, Pencil } from 'lucide-react';
 
 export default function TradePage() {
   const [activePair, setActivePair] = useState<TradingPair>(TRADING_PAIRS[0]);
@@ -79,23 +80,54 @@ export default function TradePage() {
       <div className="flex-1 flex flex-col min-w-0">
         <BalanceHeader balance={balance} />
 
-        {/* Main content */}
         <div className="flex-1 flex min-h-0">
-          {/* Chart area with overlaid tabs */}
+          {/* Chart area */}
           <div className="flex-1 relative min-w-0">
-            {/* Overlaid info bar */}
-            <div className="absolute top-0 left-0 right-0 z-[5] flex items-center gap-3 px-4 py-1.5">
+            {/* Payout % - left side overlay like Quotex */}
+            <motion.div
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.4, ease: 'easeOut' }}
+              className="absolute top-[52px] left-0 z-10"
+            >
+              <div className="bg-success text-success-foreground text-xs font-bold px-2 py-1 rounded-r-md">
+                {activePair.payout}%
+              </div>
+            </motion.div>
+
+            {/* Connection status + pair info - left overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="absolute top-[80px] left-3 z-10 flex flex-col gap-1"
+            >
               <div className="flex items-center gap-1.5">
-                <div className={`w-2 h-2 rounded-full ${connected ? 'bg-success' : 'bg-danger'}`} />
-                <span className="text-[10px] text-muted-foreground/70 font-mono">
+                <div className={`w-[6px] h-[6px] rounded-full ${connected ? 'bg-success' : 'bg-danger'}`} />
+                <span className="text-[10px] text-muted-foreground font-mono">
                   {new Date().toLocaleTimeString()} UTC
                 </span>
               </div>
-              <button className="flex items-center gap-1 text-primary text-[11px] font-medium hover:underline">
+              <button className="flex items-center gap-1 text-primary text-[11px] font-medium hover:underline w-fit">
                 <Info size={12} />
                 PAIR INFORMATION
               </button>
-            </div>
+            </motion.div>
+
+            {/* Drawing tool + Timeframe - bottom left overlay like Quotex */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="absolute bottom-[60px] left-3 z-10 flex flex-col gap-2"
+            >
+              <button className="w-8 h-8 rounded-md bg-secondary/80 backdrop-blur-sm flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
+                <Pencil size={14} />
+              </button>
+              <div className="bg-secondary/80 backdrop-blur-sm rounded-md px-2.5 py-1 text-xs font-medium text-foreground">
+                1m
+              </div>
+            </motion.div>
 
             {/* Asset tabs overlaid on chart */}
             <AssetTabs
@@ -106,18 +138,33 @@ export default function TradePage() {
               prices={prices}
             />
 
-            {/* Custom chart fills full area */}
-            <CustomChart candles={candles} currentPrice={currentPrice} />
+            {/* Custom canvas chart */}
+            <CustomChart
+              candles={candles}
+              currentPrice={currentPrice}
+              payout={activePair.payout}
+              connected={connected}
+            />
 
             {/* Asset selector overlay */}
-            {showSelector && (
-              <AssetSelector
-                onSelect={setActivePair}
-                onClose={() => setShowSelector(false)}
-                prices={prices}
-                changes={changes}
-              />
-            )}
+            <AnimatePresence>
+              {showSelector && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute inset-0 z-20"
+                >
+                  <AssetSelector
+                    onSelect={(pair) => { setActivePair(pair); setShowSelector(false); }}
+                    onClose={() => setShowSelector(false)}
+                    prices={prices}
+                    changes={changes}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Trade panel */}
