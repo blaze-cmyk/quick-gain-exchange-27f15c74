@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { TradingPair, TIMEFRAMES, Trade } from '@/lib/types';
 import { ArrowUp, ArrowDown, Minus, Plus, Clock, ChevronDown, Package } from 'lucide-react';
+import CryptoIcon from './CryptoIcons';
 
 interface TradePanelProps {
   pair: TradingPair;
@@ -16,6 +17,13 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
   const [selectedTimeframe, setSelectedTimeframe] = useState(TIMEFRAMES[0]);
   const [showTimeframes, setShowTimeframes] = useState(false);
   const [activeTab, setActiveTab] = useState<'trades' | 'orders'>('trades');
+  const [, setTick] = useState(0);
+
+  // Force re-render every 500ms for live P&L updates
+  useEffect(() => {
+    const interval = setInterval(() => setTick(t => t + 1), 500);
+    return () => clearInterval(interval);
+  }, []);
 
   const fee = amount * 0.10;
   const potentialPayout = amount + (amount - fee);
@@ -30,12 +38,41 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
 
   const completedTrades = trades.filter(t => t.result);
 
+  // Calculate live P&L for active trade
+  const getActivePnL = () => {
+    if (!activeTrade || currentPrice <= 0) return null;
+    const isUp = activeTrade.direction === 'up';
+    const priceDiff = currentPrice - activeTrade.entryPrice;
+    const isWinning = isUp ? priceDiff > 0 : priceDiff < 0;
+    const tradeFee = activeTrade.amount * 0.10;
+    const netPool = activeTrade.amount - tradeFee;
+    return isWinning ? netPool : -activeTrade.amount;
+  };
+
   const formatTime = (tf: typeof TIMEFRAMES[0]) => {
     const m = Math.floor(tf.seconds / 60);
     const h = Math.floor(m / 60);
     if (h > 0) return `${String(h).padStart(2, '0')}:00:00`;
     return `00:${String(m).padStart(2, '0')}:00`;
   };
+
+  const formatDuration = (secs: number) => {
+    const h = Math.floor(secs / 3600);
+    const m = Math.floor((secs % 3600) / 60);
+    const s = secs % 60;
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  };
+
+  // Group trades by date
+  const groupedTrades = completedTrades.reduce((acc, trade) => {
+    const date = new Date(trade.startTime);
+    const key = `${date.getDate()} ${date.toLocaleString('en-US', { month: 'long' }).toUpperCase()}`;
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(trade);
+    return acc;
+  }, {} as Record<string, Trade[]>);
+
+  const activePnL = getActivePnL();
 
   return (
     <div className="w-[260px] bg-card border-l border-border flex flex-col h-full overflow-y-auto">
@@ -151,7 +188,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
         <span className="text-[11px] font-bold text-foreground">{potentialPayout.toFixed(0)} $</span>
       </div>
 
-      {/* Active trade countdown */}
+      {/* Active trade with live P&L */}
       {activeTrade && timeLeft > 0 && (
         <div className="px-3 py-3 border-b border-border">
           <div className="flex items-center justify-center">
@@ -164,6 +201,18 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
           <div className="text-center mt-1.5 text-[10px] text-muted-foreground">
             {activeTrade.direction === 'up' ? '↑ UP' : '↓ DOWN'} • {activeTrade.amount} $
           </div>
+          {activePnL !== null && (
+            <div className={`text-center mt-1 text-sm font-bold ${
+              activePnL >= 0 ? 'text-success' : 'text-danger'
+            }`}>
+              {activePnL >= 0 ? '+' : ''}{activePnL.toFixed(2)} $
+            </div>
+          )}
+          {/* Sell now button like Quotex */}
+          <button className="w-full mt-2 py-1.5 rounded-md bg-primary/20 text-primary text-xs font-semibold hover:bg-primary/30 transition-colors flex items-center justify-between px-3">
+            <span>Sell now</span>
+            <span>{Math.max(0, activePnL ? Math.floor(activePnL * 0.1) : 0)} $</span>
+          </button>
         </div>
       )}
 
@@ -187,7 +236,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
         </button>
       </div>
 
-      {/* Divider line - blue accent */}
+      {/* Divider */}
       <div className="h-0.5 bg-primary/60" />
 
       {/* Trade History Tabs */}
@@ -218,7 +267,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
 
       {/* Trade History Content */}
       <div className="flex-1 overflow-y-auto">
-        {activeTab === 'trades' && completedTrades.length === 0 && (
+        {activeTab === 'trades' && completedTrades.length === 0 && !activeTrade && (
           <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
             <Package size={28} className="mb-2 opacity-50" />
             <p className="text-[11px]">No trades yet.</p>
@@ -228,40 +277,91 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
 
         {activeTab === 'trades' && (
           <>
-            {completedTrades.length > 0 && (
-              <div className="px-3 py-1.5 flex items-center justify-center gap-1.5">
-                <span className="text-[10px] text-muted-foreground font-medium">
-                  {new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'long' }).toUpperCase()}
-                </span>
-                <span className="bg-secondary text-[9px] px-1.5 py-0.5 rounded-sm font-medium text-foreground">
-                  {completedTrades.length}
-                </span>
-              </div>
-            )}
-            {completedTrades.map(trade => (
-              <div key={trade.id} className="px-3 py-2 border-b border-border/30 hover:bg-accent/30 transition-colors">
+            {/* Active trade in history */}
+            {activeTrade && (
+              <div className="px-3 py-2 border-b border-border/50 bg-accent/10">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     <ChevronDown size={12} className="text-muted-foreground" />
-                    <span className="text-xs">{trade.pair.icon}</span>
-                    <span className="text-[11px] font-medium text-foreground">{trade.pair.displayName}</span>
+                    <div className="flex items-center -space-x-1">
+                      <CryptoIcon symbol={activeTrade.pair.symbol.replace('USDT', '')} size={16} />
+                      <CryptoIcon symbol="USD" size={10} />
+                    </div>
+                    <span className="text-[11px] font-medium text-foreground">{activeTrade.pair.displayName}</span>
                   </div>
                   <span className="text-[10px] text-muted-foreground font-mono">
-                    00:{String(Math.floor(trade.duration / 60)).padStart(2, '0')}:00
+                    {formatDuration(activeTrade.duration)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between mt-0.5 pl-6">
                   <div className="flex items-center gap-1">
-                    <div className={`w-1.5 h-1.5 rounded-full ${trade.direction === 'up' ? 'bg-success' : 'bg-danger'}`} />
-                    <span className="text-[10px] text-muted-foreground">{trade.amount} $</span>
+                    <div className={`w-3 h-3 rounded-full flex items-center justify-center text-[7px] text-white font-bold ${
+                      activeTrade.direction === 'up' ? 'bg-success' : 'bg-danger'
+                    }`}>
+                      {activeTrade.direction === 'up' ? '↑' : '↓'}
+                    </div>
+                    <span className={`text-[10px] font-medium ${
+                      activeTrade.direction === 'up' ? 'text-success' : 'text-danger'
+                    }`}>
+                      {activeTrade.amount} $
+                    </span>
                   </div>
-                  <span className={`text-[10px] font-semibold ${
-                    trade.result === 'win' ? 'text-success' : 'text-danger'
+                  <span className={`text-[10px] font-bold ${
+                    (activePnL || 0) >= 0 ? 'text-success' : 'text-danger'
                   }`}>
-                    {trade.result === 'win' ? `+${((trade.payout || 0) - trade.amount).toFixed(2)}` : `${(0).toFixed(2)}`} $
+                    {(activePnL || 0) >= 0 ? '+' : ''}{(activePnL || 0).toFixed(2)} $
                   </span>
                 </div>
-                {/* Sell now button for active-like display */}
+              </div>
+            )}
+
+            {/* Grouped completed trades */}
+            {Object.entries(groupedTrades).map(([dateKey, dateTrades]) => (
+              <div key={dateKey}>
+                <div className="px-3 py-1.5 flex items-center justify-center gap-1.5">
+                  <span className="text-[10px] text-muted-foreground font-medium">{dateKey}</span>
+                  <span className="bg-secondary text-[9px] px-1.5 py-0.5 rounded-sm font-medium text-foreground">
+                    {dateTrades.length}
+                  </span>
+                </div>
+                {dateTrades.map(trade => (
+                  <div key={trade.id} className="px-3 py-2 border-b border-border/30 hover:bg-accent/30 transition-colors">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <ChevronDown size={12} className="text-muted-foreground" />
+                        <div className="flex items-center -space-x-1">
+                          <CryptoIcon symbol={trade.pair.symbol.replace('USDT', '')} size={16} />
+                          <CryptoIcon symbol="USD" size={10} />
+                        </div>
+                        <span className="text-[11px] font-medium text-foreground">{trade.pair.displayName}</span>
+                      </div>
+                      <span className="text-[10px] text-muted-foreground font-mono">
+                        {formatDuration(trade.duration)}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between mt-0.5 pl-6">
+                      <div className="flex items-center gap-1">
+                        <div className={`w-3 h-3 rounded-full flex items-center justify-center text-[7px] text-white font-bold ${
+                          trade.direction === 'up' ? 'bg-success' : 'bg-danger'
+                        }`}>
+                          {trade.direction === 'up' ? '↑' : '↓'}
+                        </div>
+                        <span className={`text-[10px] font-medium ${
+                          trade.direction === 'up' ? 'text-success' : 'text-danger'
+                        }`}>
+                          {trade.amount} $
+                        </span>
+                      </div>
+                      <span className={`text-[10px] font-semibold ${
+                        trade.result === 'win' ? 'text-success' : 'text-danger'
+                      }`}>
+                        {trade.result === 'win'
+                          ? `+${((trade.payout || 0) - trade.amount).toFixed(2)}`
+                          : `0.00`} $
+                      </span>
+                    </div>
+                  </div>
+                ))}
               </div>
             ))}
           </>
