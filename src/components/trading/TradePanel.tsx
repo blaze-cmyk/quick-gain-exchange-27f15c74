@@ -290,7 +290,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
       </div>
 
       {/* Trade History Content */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto bg-[#2b3040]">
         {activeTab === 'trades' && completedTrades.length === 0 && !activeTrade && (
           <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
             <Package size={28} className="mb-2 opacity-50" />
