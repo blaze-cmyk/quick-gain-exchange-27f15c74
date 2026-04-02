@@ -474,26 +474,26 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       ctx.fillStyle = isGreen ? COLORS.candleGreen : COLORS.candleRed;
       ctx.fillRect(Math.round(centerX - candleW / 2), Math.round(bodyTop), Math.round(candleW), Math.round(bodyHeight));
 
-      // Timer on last candle
-      if (i === candles.length - 1) {
+      // Live candle timer on the right-side price line (not under the candle)
+      if (i === candles.length - 1 && !activeTrade) {
         const nowMs = Date.now();
         const candleEndMs = (candle.time + 60) * 1000;
         const secsLeft = Math.max(0, Math.ceil((candleEndMs - nowMs) / 1000));
         const timerText = `00:${String(secsLeft).padStart(2, '0')}`;
         const badgeW2 = 40;
         const badgeH2 = 16;
-        const badgeX2 = centerX - badgeW2 / 2;
-        const badgeY2 = Math.max(bodyTop, lowY) + 6;
+        const livePriceY = priceToY(st.smoothPrice || currentPrice || candle.close, minPrice, maxPrice, height);
+        const badgeX2 = chartWidth - badgeW2 - 6;
 
-        ctx.fillStyle = 'rgba(45, 55, 72, 0.85)';
-        roundRect(ctx, badgeX2, badgeY2, badgeW2, badgeH2, 3);
+        ctx.fillStyle = 'rgba(45, 55, 72, 0.9)';
+        roundRect(ctx, badgeX2, livePriceY - badgeH2 / 2, badgeW2, badgeH2, 4);
         ctx.fill();
 
         ctx.fillStyle = '#cbd5e1';
         ctx.font = '9px Inter, monospace';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(timerText, centerX, badgeY2 + badgeH2 / 2);
+        ctx.fillText(timerText, badgeX2 + badgeW2 / 2, livePriceY);
       }
     }
 
