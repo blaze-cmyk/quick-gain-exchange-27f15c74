@@ -27,7 +27,7 @@ interface ChartState {
 
 const COLORS = {
   bg: '#1B1F2D',
-  gridLine: '#242838',
+  gridLine: 'rgba(36, 40, 56, 0.4)',
   priceScaleBg: '#1B1F2D',
   priceScaleBorder: '#2a2e3e',
   timeScaleBg: '#1B1F2D',
