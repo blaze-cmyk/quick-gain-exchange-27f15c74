@@ -14,6 +14,8 @@ interface TradePanelProps {
 
 export default function TradePanel({ pair, currentPrice, balance, onTrade, activeTrade, trades }: TradePanelProps) {
   const [amount, setAmount] = useState(100);
+  const [investMode, setInvestMode] = useState<'dollar' | 'percent'>('dollar');
+  const [percentValue, setPercentValue] = useState(1);
   const [selectedTimeframe, setSelectedTimeframe] = useState(TIMEFRAMES[0]);
   const [showTimeframes, setShowTimeframes] = useState(false);
   const [activeTab, setActiveTab] = useState<'trades' | 'orders'>('trades');
@@ -25,11 +27,20 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
     return () => clearInterval(interval);
   }, []);
 
-  const fee = amount * 0.10;
-  const potentialPayout = amount + (amount - fee);
+  // Compute actual dollar amount based on mode
+  const actualAmount = investMode === 'percent'
+    ? Math.max(1, Math.round((percentValue / 100) * balance * 100) / 100)
+    : amount;
+
+  const fee = actualAmount * 0.10;
+  const potentialPayout = actualAmount + (actualAmount - fee);
 
   const adjustAmount = (delta: number) => {
-    setAmount(prev => Math.max(1, prev + delta));
+    if (investMode === 'percent') {
+      setPercentValue(prev => Math.min(100, Math.max(1, prev + delta)));
+    } else {
+      setAmount(prev => Math.max(1, prev + delta));
+    }
   };
 
   const timeLeft = activeTrade
