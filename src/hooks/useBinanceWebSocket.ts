@@ -18,7 +18,7 @@ export function useBinanceWebSocket(symbol: string) {
   const fetchHistoricalData = useCallback(async (sym: string) => {
     try {
       const res = await fetch(
-        `https://api.binance.com/api/v3/klines?symbol=${sym.toUpperCase()}&interval=1m&limit=200`
+        `https://api.binance.com/api/v3/klines?symbol=${sym.toUpperCase()}&interval=1m&limit=1000`
       );
       const data = await res.json();
       const historical: CandleData[] = data.map((k: any) => ({
