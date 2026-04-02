@@ -149,7 +149,14 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     // Smooth interpolation
     const st = stateRef.current;
     if (!st.isDragging) {
-      st.offsetX = lerp(st.offsetX, st.targetOffsetX, LERP_SPEED);
+      // Apply momentum deceleration (Lenis-like)
+      if (Math.abs(st.velocityX) > 0.3) {
+        st.targetOffsetX += st.velocityX;
+        st.velocityX *= 0.92; // friction
+      } else {
+        st.velocityX = 0;
+      }
+      st.offsetX = lerp(st.offsetX, st.targetOffsetX, 0.18);
     }
     st.scaleX = lerp(st.scaleX, st.targetScaleX, LERP_SPEED);
     if (currentPrice > 0) {
