@@ -1,6 +1,5 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { CandleData, Trade } from '@/lib/types';
-import { TickPoint } from '@/hooks/useBinanceWebSocket';
 
 interface CustomChartProps {
   candles: CandleData[];
@@ -8,7 +7,6 @@ interface CustomChartProps {
   payout?: number;
   connected?: boolean;
   activeTrade?: Trade | null;
-  ticks?: TickPoint[];
 }
 
 interface ChartState {
@@ -57,7 +55,7 @@ function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t;
 }
 
-export default function CustomChart({ candles, currentPrice, payout = 90, connected = true, activeTrade = null, ticks = [] }: CustomChartProps) {
+export default function CustomChart({ candles, currentPrice, payout = 90, connected = true, activeTrade = null }: CustomChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const stateRef = useRef<ChartState>({
     offsetX: 0,
@@ -107,7 +105,11 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       if (currentPrice > maxPrice) maxPrice = currentPrice;
     }
 
-    const padding = (maxPrice - minPrice) * 0.12 || 1;
+    const liveCandle = candles[endIdx] ?? candles[candles.length - 1];
+    const candleRange = liveCandle ? Math.max(liveCandle.high - liveCandle.low, liveCandle.open * 0.00035) : 1;
+    const basePadding = (maxPrice - minPrice) * 0.035;
+    const livePadding = candleRange * 3.2;
+    const padding = Math.max(basePadding, livePadding, currentPrice * 0.00008);
     return { minPrice: minPrice - padding, maxPrice: maxPrice + padding };
   }, [candles, currentPrice]);
 
@@ -144,7 +146,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     }
     st.scaleX = lerp(st.scaleX, st.targetScaleX, LERP_SPEED);
     if (currentPrice > 0) {
-      st.smoothPrice = st.smoothPrice === 0 ? currentPrice : lerp(st.smoothPrice, currentPrice, 0.15);
+      st.smoothPrice = st.smoothPrice === 0 ? currentPrice : lerp(st.smoothPrice, currentPrice, 0.45);
     }
 
     // Background
@@ -229,78 +231,11 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       ctx.fillRect(Math.round(centerX - candleW / 2), Math.round(bodyTop), Math.round(candleW), Math.round(bodyHeight));
     }
 
-    // ===== REAL-TIME TICK LINE (Quotex-style flowing price line) =====
-    if (ticks.length > 1 && candles.length > 0) {
-      const lastCandle = candles[candles.length - 1];
-      const lastCandleX = ((candles.length - 1) * step) - effectiveOffset + step;
-
-      // Time span: spread ticks across ~3 candle widths to the right of last candle
-      const tickAreaWidth = step * 4;
-      const firstTickTime = ticks[0].time;
-      const lastTickTime = ticks[ticks.length - 1].time;
-      const tickTimeSpan = Math.max(lastTickTime - firstTickTime, 1);
-
-      // Draw filled area under tick line
-      ctx.beginPath();
-      let started = false;
-      for (let i = 0; i < ticks.length; i++) {
-        const t = ticks[i];
-        const progress = (t.time - firstTickTime) / tickTimeSpan;
-        const tx = lastCandleX + progress * tickAreaWidth;
-        const ty = priceToY(t.price, minPrice, maxPrice, height);
-
-        if (tx < 0 || tx > chartWidth) continue;
-
-        if (!started) {
-          ctx.moveTo(tx, ty);
-          started = true;
-        } else {
-          ctx.lineTo(tx, ty);
-        }
-      }
-
-      // Stroke the tick line
-      if (started) {
-        ctx.strokeStyle = '#3b82f6';
-        ctx.lineWidth = 1.5;
-        ctx.setLineDash([]);
-        ctx.stroke();
-
-        // Draw a glowing dot at the current price (last tick)
-        const lastTick = ticks[ticks.length - 1];
-        const dotX = lastCandleX + ((lastTick.time - firstTickTime) / tickTimeSpan) * tickAreaWidth;
-        const dotY = priceToY(lastTick.price, minPrice, maxPrice, height);
-
-        if (dotX > 0 && dotX < chartWidth) {
-          // Glow
-          const glow = ctx.createRadialGradient(dotX, dotY, 0, dotX, dotY, 8);
-          glow.addColorStop(0, 'rgba(59, 130, 246, 0.6)');
-          glow.addColorStop(1, 'rgba(59, 130, 246, 0)');
-          ctx.fillStyle = glow;
-          ctx.beginPath();
-          ctx.arc(dotX, dotY, 8, 0, Math.PI * 2);
-          ctx.fill();
-
-          // Solid dot
-          ctx.fillStyle = '#3b82f6';
-          ctx.beginPath();
-          ctx.arc(dotX, dotY, 3, 0, Math.PI * 2);
-          ctx.fill();
-
-          ctx.fillStyle = '#ffffff';
-          ctx.beginPath();
-          ctx.arc(dotX, dotY, 1.5, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      }
-    }
-
     // Current price horizontal dashed line
     const smoothP = st.smoothPrice || currentPrice;
     if (smoothP > 0) {
       const priceY = priceToY(smoothP, minPrice, maxPrice, height);
 
-      // Dashed line across chart
       ctx.strokeStyle = COLORS.priceLine;
       ctx.lineWidth = 1;
       ctx.setLineDash([6, 4]);
@@ -310,7 +245,6 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       ctx.stroke();
       ctx.setLineDash([]);
 
-      // Small triangle/arrow at the right edge
       ctx.fillStyle = COLORS.priceLine;
       ctx.beginPath();
       ctx.moveTo(chartWidth - 6, priceY - 4);
@@ -567,7 +501,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
         drawOHLCTooltip(ctx, candles[hoverIdx], 80, PADDING_TOP + 8);
       }
     }
-  }, [candles, currentPrice, activeTrade, ticks, getVisibleRange, getPriceRange]);
+  }, [candles, currentPrice, activeTrade, getVisibleRange, getPriceRange]);
 
   // Mouse handlers with smooth feel
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
