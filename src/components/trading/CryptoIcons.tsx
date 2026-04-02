@@ -57,15 +57,17 @@ export function BnbIcon({ size = 20 }: { size?: number }) {
 export function UsdIcon({ size = 14 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 32 32" fill="none">
-      <circle cx="16" cy="16" r="16" fill="#2775CA" />
-      <path
-        d="M16 28c6.6 0 12-5.4 12-12S22.6 4 16 4 4 9.4 4 16s5.4 12 12 12z"
-        fill="#2775CA"
-      />
-      <path
-        d="M20.2 18.4c0-2-1.2-2.7-3.6-3-.2 0-.3 0-.5-.1-1.7-.2-2-.7-2-1.5s.6-1.3 1.8-1.3c1 0 1.6.4 1.8 1.2h2c-.3-1.7-1.5-2.7-3.2-2.9V9.2h-1.6v1.6c-2 .3-3.2 1.5-3.2 3.1 0 1.9 1.2 2.6 3.6 2.9.2 0 .3 0 .5.1 1.5.2 2 .6 2 1.6 0 1-.8 1.6-2 1.6-1.4 0-2-.6-2.2-1.6h-2c.2 2 1.5 3 3.3 3.3v1.6h1.6v-1.6c2-.3 3.2-1.5 3.2-3.3z"
-        fill="white"
-      />
+      <clipPath id="usd-circle"><circle cx="16" cy="16" r="16" /></clipPath>
+      <g clipPath="url(#usd-circle)">
+        <rect width="32" height="32" fill="#B22234" />
+        <rect y="2.46" width="32" height="2.46" fill="white" />
+        <rect y="7.38" width="32" height="2.46" fill="white" />
+        <rect y="12.31" width="32" height="2.46" fill="white" />
+        <rect y="17.23" width="32" height="2.46" fill="white" />
+        <rect y="22.15" width="32" height="2.46" fill="white" />
+        <rect y="27.08" width="32" height="2.46" fill="white" />
+        <rect width="14" height="17.23" fill="#3C3B6E" />
+      </g>
     </svg>
   );
 }
