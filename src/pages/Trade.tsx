@@ -55,7 +55,7 @@ export default function TradePage() {
   }, [activeTrade, currentPrice]);
 
   const handleTrade = useCallback((direction: 'up' | 'down', amount: number, duration: number) => {
-    if (amount > balance || activeTrade) return;
+    if (amount > balance) return;
     const now = Date.now();
     const trade: Trade = {
       id: crypto.randomUUID(),
