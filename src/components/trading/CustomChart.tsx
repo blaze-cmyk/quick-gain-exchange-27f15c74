@@ -146,7 +146,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     }
     st.scaleX = lerp(st.scaleX, st.targetScaleX, LERP_SPEED);
     if (currentPrice > 0) {
-      st.smoothPrice = st.smoothPrice === 0 ? currentPrice : lerp(st.smoothPrice, currentPrice, 0.15);
+      st.smoothPrice = st.smoothPrice === 0 ? currentPrice : lerp(st.smoothPrice, currentPrice, 0.45);
     }
 
     // Background
