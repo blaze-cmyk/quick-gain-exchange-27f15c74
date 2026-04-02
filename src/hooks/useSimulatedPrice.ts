@@ -1,11 +1,22 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { CandleData } from '@/lib/types';
 
 const HISTORY_CANDLES = 2880;
-const TICK_INTERVAL = 250;
-const BASE_PRICE = 67500; // Starting BTC price
+const MAX_CANDLES = 5000;
+const TICK_INTERVAL = 350;
+const BASE_PRICE = 67500;
 
-// Seeded pseudo-random for reproducible but chaotic history
+type MarketRegime = 'quiet' | 'range' | 'trend_up' | 'trend_down' | 'volatile';
+
+type RegimeSettings = {
+  volatility: number;
+  drift: number;
+  pull: number;
+  spikeChance: number;
+  spikeScale: number;
+  candleLimit: number;
+};
+
 function mulberry32(seed: number) {
   return function () {
     let t = (seed += 0x6d2b79f5);
@@ -15,166 +26,229 @@ function mulberry32(seed: number) {
   };
 }
 
-// Generate volatile regime-switching price history
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function roundPrice(value: number) {
+  return Math.round(value * 100) / 100;
+}
+
+function pickRegime(rand: () => number): MarketRegime {
+  const r = rand();
+  if (r < 0.24) return 'quiet';
+  if (r < 0.58) return 'range';
+  if (r < 0.75) return 'trend_up';
+  if (r < 0.92) return 'trend_down';
+  return 'volatile';
+}
+
+function getHistorySettings(regime: MarketRegime, rand: () => number): RegimeSettings {
+  switch (regime) {
+    case 'quiet':
+      return {
+        volatility: 0.00035,
+        drift: (rand() - 0.5) * 0.00003,
+        pull: 0.00008,
+        spikeChance: 0.001,
+        spikeScale: 0.00045,
+        candleLimit: 0.0035,
+      };
+    case 'range':
+      return {
+        volatility: 0.00055,
+        drift: (rand() - 0.5) * 0.00005,
+        pull: 0.00012,
+        spikeChance: 0.0015,
+        spikeScale: 0.0007,
+        candleLimit: 0.005,
+      };
+    case 'trend_up':
+      return {
+        volatility: 0.00065,
+        drift: 0.00008 + rand() * 0.00005,
+        pull: 0.00006,
+        spikeChance: 0.0018,
+        spikeScale: 0.00085,
+        candleLimit: 0.006,
+      };
+    case 'trend_down':
+      return {
+        volatility: 0.00065,
+        drift: -0.00008 - rand() * 0.00005,
+        pull: 0.00006,
+        spikeChance: 0.0018,
+        spikeScale: 0.00085,
+        candleLimit: 0.006,
+      };
+    case 'volatile':
+    default:
+      return {
+        volatility: 0.00095,
+        drift: (rand() - 0.5) * 0.00008,
+        pull: 0.00004,
+        spikeChance: 0.0025,
+        spikeScale: 0.0012,
+        candleLimit: 0.008,
+      };
+  }
+}
+
+function getLiveSettings(regime: MarketRegime): RegimeSettings {
+  switch (regime) {
+    case 'quiet':
+      return {
+        volatility: 0.00004,
+        drift: 0,
+        pull: 0.00002,
+        spikeChance: 0.0005,
+        spikeScale: 0.00018,
+        candleLimit: 0.00045,
+      };
+    case 'range':
+      return {
+        volatility: 0.00007,
+        drift: 0,
+        pull: 0.00003,
+        spikeChance: 0.0008,
+        spikeScale: 0.00024,
+        candleLimit: 0.00065,
+      };
+    case 'trend_up':
+      return {
+        volatility: 0.00008,
+        drift: 0.000015,
+        pull: 0.000015,
+        spikeChance: 0.001,
+        spikeScale: 0.0003,
+        candleLimit: 0.00085,
+      };
+    case 'trend_down':
+      return {
+        volatility: 0.00008,
+        drift: -0.000015,
+        pull: 0.000015,
+        spikeChance: 0.001,
+        spikeScale: 0.0003,
+        candleLimit: 0.00085,
+      };
+    case 'volatile':
+    default:
+      return {
+        volatility: 0.00014,
+        drift: 0,
+        pull: 0.00001,
+        spikeChance: 0.0016,
+        spikeScale: 0.00045,
+        candleLimit: 0.0012,
+      };
+  }
+}
+
 function generateHistory(): { candles: CandleData[]; lastPrice: number } {
   const rand = mulberry32(Date.now() % 100000);
   const candles: CandleData[] = [];
-  let price = BASE_PRICE;
   const now = Date.now();
   const startTime = now - HISTORY_CANDLES * 60 * 1000;
-
-  // Market regime state
-  let regime: 'volatile' | 'sideways' | 'trending_up' | 'trending_down' | 'explosion' = 'volatile';
-  let regimeCountdown = 0;
+  let price = BASE_PRICE;
+  let anchorPrice = BASE_PRICE;
+  let regime = pickRegime(rand);
+  let regimeCountdown = Math.floor(rand() * 180) + 60;
+  let trendBias = 0;
 
   for (let i = 0; i < HISTORY_CANDLES; i++) {
-    // Switch regime randomly
     if (regimeCountdown <= 0) {
-      const r = rand();
-      if (r < 0.35) regime = 'volatile';
-      else if (r < 0.60) regime = 'sideways';
-      else if (r < 0.75) regime = 'trending_up';
-      else if (r < 0.88) regime = 'trending_down';
-      else regime = 'explosion';
-      regimeCountdown = Math.floor(rand() * 60) + 15;
+      regime = pickRegime(rand);
+      regimeCountdown = Math.floor(rand() * 180) + 60;
+      anchorPrice = price;
+      trendBias = (rand() - 0.5) * 0.00006;
     }
     regimeCountdown--;
 
-    // Base volatility per regime
-    let volatility: number;
-    let drift: number;
-    switch (regime) {
-      case 'sideways':
-        volatility = 0.00015;
-        drift = (rand() - 0.5) * 0.00002;
-        break;
-      case 'trending_up':
-        volatility = 0.0004;
-        drift = 0.00015 + rand() * 0.0001;
-        break;
-      case 'trending_down':
-        volatility = 0.0004;
-        drift = -0.00015 - rand() * 0.0001;
-        break;
-      case 'explosion':
-        volatility = 0.0012 + rand() * 0.001;
-        drift = (rand() - 0.5) * 0.0008;
-        break;
-      default: // volatile
-        volatility = 0.0006 + rand() * 0.0003;
-        drift = (rand() - 0.5) * 0.00015;
-        break;
-    }
-
-    // Random spikes
-    if (rand() < 0.015) {
-      volatility *= 2 + rand() * 2;
-      drift += (rand() - 0.5) * 0.001;
-    }
-
+    const settings = getHistorySettings(regime, rand);
     const open = price;
-    // Generate 10-20 sub-ticks within the candle for realistic wicks
-    const subTicks = 10 + Math.floor(rand() * 10);
+    let close = open;
     let high = open;
     let low = open;
-    let close = open;
+    const subTicks = 10 + Math.floor(rand() * 6);
 
-    for (let t = 0; t < subTicks; t++) {
-      const move = close * (drift / subTicks + volatility * (rand() - 0.5) * 2);
-      close += move;
-      if (close > high) high = close;
-      if (close < low) low = close;
+    for (let tick = 0; tick < subTicks; tick++) {
+      const meanRevert = ((anchorPrice - close) / anchorPrice) * settings.pull;
+      let movePct = settings.drift + trendBias + meanRevert + settings.volatility * (rand() - 0.5) * 2;
+
+      if (rand() < settings.spikeChance) {
+        movePct += (rand() - 0.5) * settings.spikeScale;
+      }
+
+      close *= 1 + movePct;
+      high = Math.max(high, close);
+      low = Math.min(low, close);
     }
 
-    // Ensure price stays positive and reasonable
-    close = Math.max(close, price * 0.95);
-    close = Math.min(close, price * 1.05);
-    high = Math.max(high, Math.max(open, close));
-    low = Math.min(low, Math.min(open, close));
+    close = clamp(close, open * (1 - settings.candleLimit), open * (1 + settings.candleLimit));
+    price = clamp(close, BASE_PRICE * 0.88, BASE_PRICE * 1.12);
+    high = clamp(Math.max(high, open, price), open * 0.992, open * 1.012);
+    low = clamp(Math.min(low, open, price), open * 0.988, open * 1.008);
 
     const candleTime = Math.floor((startTime + i * 60000) / 1000);
     candles.push({
       time: candleTime,
-      open: Math.round(open * 100) / 100,
-      high: Math.round(high * 100) / 100,
-      low: Math.round(low * 100) / 100,
-      close: Math.round(close * 100) / 100,
+      open: roundPrice(open),
+      high: roundPrice(Math.max(high, open, price)),
+      low: roundPrice(Math.min(low, open, price)),
+      close: roundPrice(price),
     });
-
-    price = close;
   }
 
   return { candles, lastPrice: price };
 }
 
-// Live price engine with regime switching
 class LivePriceEngine {
   price: number;
-  regime: 'volatile' | 'sideways' | 'trending_up' | 'trending_down' | 'explosion' = 'volatile';
+  anchorPrice: number;
+  regime: MarketRegime = 'range';
   regimeCountdown = 0;
   momentum = 0;
+  volatilityState = 0.00005;
 
   constructor(startPrice: number) {
     this.price = startPrice;
+    this.anchorPrice = startPrice;
     this.switchRegime();
   }
 
   switchRegime() {
-    const r = Math.random();
-    if (r < 0.30) this.regime = 'volatile';
-    else if (r < 0.60) this.regime = 'sideways';
-    else if (r < 0.75) this.regime = 'trending_up';
-    else if (r < 0.88) this.regime = 'trending_down';
-    else this.regime = 'explosion';
-    this.regimeCountdown = Math.floor(Math.random() * 400) + 80;
-    this.momentum = (Math.random() - 0.5) * 0.0004;
+    const regime = pickRegime(Math.random);
+    this.regime = regime;
+    this.regimeCountdown = Math.floor(Math.random() * 600) + 220;
+    this.anchorPrice = this.price;
+    this.momentum = (Math.random() - 0.5) * 0.00004;
   }
 
   tick(): number {
-    if (this.regimeCountdown <= 0) this.switchRegime();
+    if (this.regimeCountdown <= 0) {
+      this.switchRegime();
+    }
     this.regimeCountdown--;
 
-    let volatility: number;
-    let drift: number;
+    const settings = getLiveSettings(this.regime);
+    const targetVolatility = settings.volatility * (0.7 + Math.random() * 0.6);
+    this.volatilityState = this.volatilityState * 0.92 + targetVolatility * 0.08;
 
-    switch (this.regime) {
-      case 'sideways':
-        volatility = 0.00004;
-        drift = this.momentum * 0.05;
-        break;
-      case 'trending_up':
-        volatility = 0.00012;
-        drift = 0.00003 + Math.abs(this.momentum) * 0.3;
-        break;
-      case 'trending_down':
-        volatility = 0.00012;
-        drift = -0.00003 - Math.abs(this.momentum) * 0.3;
-        break;
-      case 'explosion':
-        volatility = 0.0004 + Math.random() * 0.0005;
-        drift = this.momentum * 1.5;
-        break;
-      default:
-        volatility = 0.00018;
-        drift = this.momentum * 0.2;
-        break;
+    const noise = this.volatilityState * (Math.random() - 0.5) * 2;
+    const meanRevert = ((this.anchorPrice - this.price) / this.anchorPrice) * settings.pull;
+    let movePct = settings.drift + this.momentum + meanRevert + noise;
+
+    if (Math.random() < settings.spikeChance) {
+      movePct += (Math.random() - 0.5) * settings.spikeScale;
     }
 
-    // Random micro-spikes
-    if (Math.random() < 0.005) {
-      volatility *= 2.5;
-      this.momentum = (Math.random() - 0.5) * 0.0006;
-    }
+    movePct = clamp(movePct, -settings.candleLimit, settings.candleLimit);
+    this.price *= 1 + movePct;
+    this.price = clamp(this.price, BASE_PRICE * 0.9, BASE_PRICE * 1.1);
+    this.momentum = clamp(this.momentum * 0.94 + noise * 0.2 + settings.drift * 0.2, -0.00018, 0.00018);
 
-    // Mean reversion toward base
-    const meanRevert = (BASE_PRICE - this.price) / BASE_PRICE * 0.00001;
-
-    const move = this.price * (drift + meanRevert + volatility * (Math.random() - 0.5) * 2);
-    this.momentum = this.momentum * 0.995 + (move / this.price) * 0.3;
-    this.price += move;
-    this.price = Math.max(this.price * 0.9999, Math.min(this.price * 1.0001, this.price)); // clamp sanity
-
-    return Math.round(this.price * 100) / 100;
+    return roundPrice(this.price);
   }
 }
 
@@ -183,50 +257,50 @@ export function useSimulatedPrice() {
   const [candles, setCandles] = useState<CandleData[]>([]);
   const [connected, setConnected] = useState(false);
   const candlesRef = useRef<CandleData[]>([]);
-  const engineRef = useRef<LivePriceEngine | null>(null);
 
   useEffect(() => {
-    // Generate history
     const { candles: history, lastPrice } = generateHistory();
     candlesRef.current = history;
-    setCandles([...history]);
+    setCandles(history);
     setCurrentPrice(lastPrice);
     setConnected(true);
 
-    // Start live engine
     const engine = new LivePriceEngine(lastPrice);
-    engineRef.current = engine;
 
     const interval = setInterval(() => {
       const price = engine.tick();
       setCurrentPrice(price);
 
-      // Update or create current candle
-      const nowMs = Date.now();
-      const nowSec = Math.floor(nowMs / 1000);
+      const nowSec = Math.floor(Date.now() / 1000);
       const candleTime = nowSec - (nowSec % 60);
-      const arr = candlesRef.current;
+      const nextCandles = [...candlesRef.current];
+      const last = nextCandles[nextCandles.length - 1];
 
-      if (arr.length === 0) return;
+      if (!last) return;
 
-      const last = arr[arr.length - 1];
       if (last.time === candleTime) {
-        last.close = price;
-        if (price > last.high) last.high = price;
-        if (price < last.low) last.low = price;
+        nextCandles[nextCandles.length - 1] = {
+          ...last,
+          close: price,
+          high: Math.max(last.high, price),
+          low: Math.min(last.low, price),
+        };
       } else if (candleTime > last.time) {
-        arr.push({
+        nextCandles.push({
           time: candleTime,
           open: price,
           high: price,
           low: price,
           close: price,
         });
-        // Keep max candles
-        if (arr.length > 5000) arr.splice(0, arr.length - 5000);
       }
 
-      setCandles([...arr]);
+      if (nextCandles.length > MAX_CANDLES) {
+        nextCandles.splice(0, nextCandles.length - MAX_CANDLES);
+      }
+
+      candlesRef.current = nextCandles;
+      setCandles(nextCandles);
     }, TICK_INTERVAL);
 
     return () => {
