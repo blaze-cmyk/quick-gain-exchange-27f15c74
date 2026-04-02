@@ -14,6 +14,8 @@ interface TradePanelProps {
 
 export default function TradePanel({ pair, currentPrice, balance, onTrade, activeTrade, trades }: TradePanelProps) {
   const [amount, setAmount] = useState(100);
+  const [investMode, setInvestMode] = useState<'dollar' | 'percent'>('dollar');
+  const [percentValue, setPercentValue] = useState(1);
   const [selectedTimeframe, setSelectedTimeframe] = useState(TIMEFRAMES[0]);
   const [showTimeframes, setShowTimeframes] = useState(false);
   const [activeTab, setActiveTab] = useState<'trades' | 'orders'>('trades');
@@ -25,11 +27,20 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
     return () => clearInterval(interval);
   }, []);
 
-  const fee = amount * 0.10;
-  const potentialPayout = amount + (amount - fee);
+  // Compute actual dollar amount based on mode
+  const actualAmount = investMode === 'percent'
+    ? Math.max(1, Math.round((percentValue / 100) * balance * 100) / 100)
+    : amount;
+
+  const fee = actualAmount * 0.10;
+  const potentialPayout = actualAmount + (actualAmount - fee);
 
   const adjustAmount = (delta: number) => {
-    setAmount(prev => Math.max(1, prev + delta));
+    if (investMode === 'percent') {
+      setPercentValue(prev => Math.min(100, Math.max(1, prev + delta)));
+    } else {
+      setAmount(prev => Math.max(1, prev + delta));
+    }
   };
 
   const timeLeft = activeTrade
@@ -154,45 +165,85 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
           <legend className="text-[9px] text-muted-foreground px-1">Investment</legend>
           <div className="flex items-center gap-1">
             <button
-              onClick={() => adjustAmount(-10)}
+              onClick={() => adjustAmount(investMode === 'percent' ? -1 : -10)}
               className="w-6 h-6 rounded flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
             >
               <Minus size={12} />
             </button>
             <div className="flex-1 flex items-center justify-center gap-1">
-              <input
-                type="number"
-                value={amount}
-                onChange={e => setAmount(Math.max(1, parseInt(e.target.value) || 1))}
-                className="w-16 text-center bg-transparent font-mono text-sm font-semibold text-foreground outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-              />
-              <span className="text-muted-foreground text-xs">$</span>
+              {investMode === 'dollar' ? (
+                <>
+                  <input
+                    type="number"
+                    value={amount}
+                    onChange={e => setAmount(Math.max(1, parseInt(e.target.value) || 1))}
+                    className="w-16 text-center bg-transparent font-mono text-sm font-semibold text-foreground outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  />
+                  <span className="text-muted-foreground text-xs">$</span>
+                </>
+              ) : (
+                <>
+                  <input
+                    type="number"
+                    value={percentValue}
+                    onChange={e => setPercentValue(Math.min(100, Math.max(1, parseInt(e.target.value) || 1)))}
+                    className="w-16 text-center bg-transparent font-mono text-sm font-semibold text-foreground outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  />
+                  <span className="text-muted-foreground text-xs">%</span>
+                </>
+              )}
             </div>
             <button
-              onClick={() => adjustAmount(10)}
+              onClick={() => adjustAmount(investMode === 'percent' ? 1 : 10)}
               className="w-6 h-6 rounded flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
             >
               <Plus size={12} />
             </button>
           </div>
         </fieldset>
-        <button className="w-full text-center text-[9px] text-primary font-bold mt-1 hover:underline tracking-wide">
+        <button
+          onClick={() => {
+            if (investMode === 'dollar') {
+              // Switch to percent: convert current amount to % of balance
+              const pct = Math.max(1, Math.round((amount / balance) * 100));
+              setPercentValue(pct);
+              setInvestMode('percent');
+            } else {
+              // Switch to dollar: convert current % to dollar amount
+              const dollarVal = Math.max(1, Math.round((percentValue / 100) * balance));
+              setAmount(dollarVal);
+              setInvestMode('dollar');
+            }
+          }}
+          className="w-full text-center text-[9px] text-primary font-bold mt-1 hover:underline tracking-wide"
+        >
           SWITCH
         </button>
       </div>
+
+      {/* Investment + Payout info (shown in % mode) */}
+      {investMode === 'percent' && (
+        <div className="px-3 py-1.5 border-b border-border">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] text-muted-foreground">Investment:</span>
+            <div className="flex-1 mx-2 border-b border-dotted border-muted-foreground/30" />
+            <span className="text-[11px] font-bold text-foreground">{actualAmount.toFixed(2)} $</span>
+          </div>
+        </div>
+      )}
 
       {/* Payout line */}
       <div className="px-3 py-2 border-b border-border flex items-center justify-between">
         <span className="text-[11px] text-muted-foreground">Your payout:</span>
         <div className="flex-1 mx-2 border-b border-dotted border-muted-foreground/30" />
-        <span className="text-[11px] font-bold text-foreground">{potentialPayout.toFixed(0)} $</span>
+        <span className="text-[11px] font-bold text-foreground">{potentialPayout.toFixed(investMode === 'percent' ? 2 : 0)} $</span>
       </div>
 
 
       {/* Trade buttons */}
       <div className="px-3 py-2.5 space-y-2 border-b border-border">
         <button
-          onClick={() => onTrade('up', amount, selectedTimeframe.seconds)}
+          onClick={() => onTrade('up', actualAmount, selectedTimeframe.seconds)}
           disabled={!!activeTrade}
           className="w-full py-3 rounded-lg trade-btn-up flex items-center justify-between px-4 disabled:opacity-50 disabled:cursor-not-allowed"
         >
@@ -200,7 +251,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
           <ArrowUp size={18} />
         </button>
         <button
-          onClick={() => onTrade('down', amount, selectedTimeframe.seconds)}
+          onClick={() => onTrade('down', actualAmount, selectedTimeframe.seconds)}
           disabled={!!activeTrade}
           className="w-full py-3 rounded-lg trade-btn-down flex items-center justify-between px-4 disabled:opacity-50 disabled:cursor-not-allowed"
         >
