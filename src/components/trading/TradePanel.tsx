@@ -188,33 +188,6 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
         <span className="text-[11px] font-bold text-foreground">{potentialPayout.toFixed(0)} $</span>
       </div>
 
-      {/* Active trade with live P&L */}
-      {activeTrade && timeLeft > 0 && (
-        <div className="px-3 py-3 border-b border-border">
-          <div className="flex items-center justify-center">
-            <div className={`w-14 h-14 rounded-full border-[3px] flex items-center justify-center font-mono text-lg font-bold animate-countdown-pulse ${
-              activeTrade.direction === 'up' ? 'border-success text-success' : 'border-danger text-danger'
-            }`}>
-              {timeLeft}s
-            </div>
-          </div>
-          <div className="text-center mt-1.5 text-[10px] text-muted-foreground">
-            {activeTrade.direction === 'up' ? '↑ UP' : '↓ DOWN'} • {activeTrade.amount} $
-          </div>
-          {activePnL !== null && (
-            <div className={`text-center mt-1 text-sm font-bold ${
-              activePnL >= 0 ? 'text-success' : 'text-danger'
-            }`}>
-              {activePnL >= 0 ? '+' : ''}{activePnL.toFixed(2)} $
-            </div>
-          )}
-          {/* Sell now button like Quotex */}
-          <button className="w-full mt-2 py-1.5 rounded-md bg-primary/20 text-primary text-xs font-semibold hover:bg-primary/30 transition-colors flex items-center justify-between px-3">
-            <span>Sell now</span>
-            <span>{Math.max(0, activePnL ? Math.floor(activePnL * 0.1) : 0)} $</span>
-          </button>
-        </div>
-      )}
 
       {/* Trade buttons */}
       <div className="px-3 py-2.5 space-y-2 border-b border-border">
@@ -250,7 +223,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
           }`}
         >
           Trades
-          <span className="bg-secondary px-1.5 py-0.5 rounded-sm text-[9px]">{completedTrades.length}</span>
+          <span className="bg-secondary px-1.5 py-0.5 rounded-sm text-[9px]">{completedTrades.length + (activeTrade ? 1 : 0)}</span>
         </button>
         <button
           onClick={() => setActiveTab('orders')}
@@ -279,7 +252,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
           <>
             {/* Active trade in history */}
             {activeTrade && (
-              <div className="px-3 py-2 border-b border-border/50 bg-accent/10">
+              <div className="px-3 py-2.5 border-b border-border/50 bg-accent/10">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     <ChevronDown size={12} className="text-muted-foreground" />
@@ -290,7 +263,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
                     <span className="text-[11px] font-medium text-foreground">{activeTrade.pair.displayName}</span>
                   </div>
                   <span className="text-[10px] text-muted-foreground font-mono">
-                    {formatDuration(activeTrade.duration)}
+                    {String(Math.floor(timeLeft / 60)).padStart(2, '0')}:{String(timeLeft % 60).padStart(2, '0')}
                   </span>
                 </div>
                 <div className="flex items-center justify-between mt-0.5 pl-6">
@@ -312,6 +285,11 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
                     {(activePnL || 0) >= 0 ? '+' : ''}{(activePnL || 0).toFixed(2)} $
                   </span>
                 </div>
+                {/* Sell now button — Quotex style */}
+                <button className="w-full mt-2 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-bold hover:bg-primary/90 transition-colors flex items-center justify-between px-4">
+                  <span>Sell now</span>
+                  <span>{Math.max(0, activePnL ? Math.floor(activePnL * 0.1) : 0)} $</span>
+                </button>
               </div>
             )}
 
