@@ -245,7 +245,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
         <button
           onClick={() => onTrade('up', actualAmount, selectedTimeframe.seconds)}
           disabled={!!activeTrade}
-          className="w-full py-3 rounded-lg trade-btn-up flex items-center justify-between px-4 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-3 rounded-lg trade-btn-up flex items-center justify-between px-4 disabled:opacity-50 disabled:cursor-not-allowed bg-[#0daf59]"
         >
           <span className="text-sm font-bold">Up</span>
           <ArrowUp size={18} />
