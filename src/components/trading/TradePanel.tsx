@@ -244,16 +244,14 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
       <div className="px-3 py-2.5 space-y-2 border-b border-border">
         <button
           onClick={() => onTrade('up', actualAmount, selectedTimeframe.seconds)}
-          disabled={!!activeTrade}
-          className="w-full py-3 rounded-lg flex items-center justify-between px-4 disabled:opacity-50 disabled:cursor-not-allowed bg-[#0EB85B] hover:bg-[#0EB85B]/90 text-white font-semibold transition-all duration-200"
+          className="w-full py-3 rounded-lg flex items-center justify-between px-4 bg-[#0EB85B] hover:bg-[#0EB85B]/90 text-white font-semibold transition-all duration-200"
         >
           <span className="text-sm font-bold">Up</span>
           <ArrowUp size={18} />
         </button>
         <button
           onClick={() => onTrade('down', actualAmount, selectedTimeframe.seconds)}
-          disabled={!!activeTrade}
-          className="w-full py-3 rounded-lg flex items-center justify-between px-4 disabled:opacity-50 disabled:cursor-not-allowed bg-[#FF3F2C] hover:bg-[#FF3F2C]/90 text-white font-semibold transition-all duration-200"
+          className="w-full py-3 rounded-lg flex items-center justify-between px-4 bg-[#FF3F2C] hover:bg-[#FF3F2C]/90 text-white font-semibold transition-all duration-200"
         >
           <span className="text-sm font-bold">Down</span>
           <ArrowDown size={18} />
