@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { CandleData } from '@/lib/types';
 
-const HISTORY_CANDLES = 2880; // 2 days of 1-min candles
-const TICK_INTERVAL = 200; // ms between price ticks
+const HISTORY_CANDLES = 2880;
+const TICK_INTERVAL = 250;
 const BASE_PRICE = 67500; // Starting BTC price
 
 // Seeded pseudo-random for reproducible but chaotic history
@@ -31,12 +31,12 @@ function generateHistory(): { candles: CandleData[]; lastPrice: number } {
     // Switch regime randomly
     if (regimeCountdown <= 0) {
       const r = rand();
-      if (r < 0.25) regime = 'volatile';
-      else if (r < 0.45) regime = 'sideways';
-      else if (r < 0.6) regime = 'trending_up';
-      else if (r < 0.75) regime = 'trending_down';
+      if (r < 0.35) regime = 'volatile';
+      else if (r < 0.60) regime = 'sideways';
+      else if (r < 0.75) regime = 'trending_up';
+      else if (r < 0.88) regime = 'trending_down';
       else regime = 'explosion';
-      regimeCountdown = Math.floor(rand() * 30) + 5;
+      regimeCountdown = Math.floor(rand() * 60) + 15;
     }
     regimeCountdown--;
 
@@ -45,31 +45,31 @@ function generateHistory(): { candles: CandleData[]; lastPrice: number } {
     let drift: number;
     switch (regime) {
       case 'sideways':
-        volatility = 0.0003;
-        drift = (rand() - 0.5) * 0.00005;
+        volatility = 0.00015;
+        drift = (rand() - 0.5) * 0.00002;
         break;
       case 'trending_up':
-        volatility = 0.001;
-        drift = 0.0004 + rand() * 0.0003;
+        volatility = 0.0004;
+        drift = 0.00015 + rand() * 0.0001;
         break;
       case 'trending_down':
-        volatility = 0.001;
-        drift = -0.0004 - rand() * 0.0003;
+        volatility = 0.0004;
+        drift = -0.00015 - rand() * 0.0001;
         break;
       case 'explosion':
-        volatility = 0.004 + rand() * 0.004;
-        drift = (rand() - 0.5) * 0.003;
+        volatility = 0.0012 + rand() * 0.001;
+        drift = (rand() - 0.5) * 0.0008;
         break;
       default: // volatile
-        volatility = 0.0015 + rand() * 0.001;
-        drift = (rand() - 0.5) * 0.0005;
+        volatility = 0.0006 + rand() * 0.0003;
+        drift = (rand() - 0.5) * 0.00015;
         break;
     }
 
     // Random spikes
-    if (rand() < 0.03) {
-      volatility *= 3 + rand() * 5;
-      drift += (rand() - 0.5) * 0.005;
+    if (rand() < 0.015) {
+      volatility *= 2 + rand() * 2;
+      drift += (rand() - 0.5) * 0.001;
     }
 
     const open = price;
@@ -121,13 +121,13 @@ class LivePriceEngine {
 
   switchRegime() {
     const r = Math.random();
-    if (r < 0.2) this.regime = 'volatile';
-    else if (r < 0.4) this.regime = 'sideways';
-    else if (r < 0.55) this.regime = 'trending_up';
-    else if (r < 0.7) this.regime = 'trending_down';
+    if (r < 0.30) this.regime = 'volatile';
+    else if (r < 0.60) this.regime = 'sideways';
+    else if (r < 0.75) this.regime = 'trending_up';
+    else if (r < 0.88) this.regime = 'trending_down';
     else this.regime = 'explosion';
-    this.regimeCountdown = Math.floor(Math.random() * 200) + 30; // ticks
-    this.momentum = (Math.random() - 0.5) * 0.001;
+    this.regimeCountdown = Math.floor(Math.random() * 400) + 80;
+    this.momentum = (Math.random() - 0.5) * 0.0004;
   }
 
   tick(): number {
@@ -139,31 +139,31 @@ class LivePriceEngine {
 
     switch (this.regime) {
       case 'sideways':
-        volatility = 0.00008;
-        drift = this.momentum * 0.1;
+        volatility = 0.00004;
+        drift = this.momentum * 0.05;
         break;
       case 'trending_up':
-        volatility = 0.00025;
-        drift = 0.00008 + Math.abs(this.momentum) * 0.5;
+        volatility = 0.00012;
+        drift = 0.00003 + Math.abs(this.momentum) * 0.3;
         break;
       case 'trending_down':
-        volatility = 0.00025;
-        drift = -0.00008 - Math.abs(this.momentum) * 0.5;
+        volatility = 0.00012;
+        drift = -0.00003 - Math.abs(this.momentum) * 0.3;
         break;
       case 'explosion':
-        volatility = 0.001 + Math.random() * 0.002;
-        drift = this.momentum * 2;
+        volatility = 0.0004 + Math.random() * 0.0005;
+        drift = this.momentum * 1.5;
         break;
       default:
-        volatility = 0.0004;
-        drift = this.momentum * 0.3;
+        volatility = 0.00018;
+        drift = this.momentum * 0.2;
         break;
     }
 
     // Random micro-spikes
-    if (Math.random() < 0.01) {
-      volatility *= 5;
-      this.momentum = (Math.random() - 0.5) * 0.002;
+    if (Math.random() < 0.005) {
+      volatility *= 2.5;
+      this.momentum = (Math.random() - 0.5) * 0.0006;
     }
 
     // Mean reversion toward base
