@@ -57,6 +57,7 @@ const TIME_SCALE_HEIGHT = 26;
 const PADDING_TOP = 50;
 const PADDING_BOTTOM = 10;
 const LERP_SPEED = 0.12;
+const RESULT_MARKER_LIFETIME_MS = 4000;
 
 function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t;
@@ -524,8 +525,11 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       drawTradeOnChart(ctx, activeTrade, step, effectiveOffset, minPrice, maxPrice, height, chartWidth, true);
     }
 
-    // Draw recent completed trades (last 5 visible)
-    const recentTrades = completedTrades.slice(0, 5);
+    // Draw only freshly settled trades on chart; full history stays in the trades panel
+    const now = Date.now();
+    const recentTrades = completedTrades
+      .filter((trade) => now - trade.endTime <= RESULT_MARKER_LIFETIME_MS)
+      .slice(0, 5);
     for (const trade of recentTrades) {
       drawTradeOnChart(ctx, trade, step, effectiveOffset, minPrice, maxPrice, height, chartWidth, false);
     }
