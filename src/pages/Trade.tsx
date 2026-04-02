@@ -15,6 +15,7 @@ import TradeResultToast from '@/components/trading/TradeResultToast';
 import BalanceHeader from '@/components/trading/BalanceHeader';
 import { Info, Pencil } from 'lucide-react';
 
+
 export default function TradePage() {
   const [activePair, setActivePair] = useState<TradingPair>(TRADING_PAIRS[0]);
   const [activeTab, setActiveTab] = useState('trade');
