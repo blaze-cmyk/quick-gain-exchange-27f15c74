@@ -1,11 +1,12 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
-import { CandleData } from '@/lib/types';
+import { CandleData, Trade } from '@/lib/types';
 
 interface CustomChartProps {
   candles: CandleData[];
   currentPrice: number;
   payout?: number;
   connected?: boolean;
+  activeTrade?: Trade | null;
 }
 
 interface ChartState {
