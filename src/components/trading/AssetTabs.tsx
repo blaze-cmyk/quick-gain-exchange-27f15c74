@@ -26,7 +26,7 @@ export default function AssetTabs({ pairs, activePair, onSelect, onOpenSelector,
   };
 
   return (
-    <div className="absolute top-2 left-2 z-10 flex items-center gap-1.5">
+    <div className="absolute top-2 left-2 right-[10px] z-10 flex items-center gap-1.5 overflow-x-auto scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
       <motion.button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
