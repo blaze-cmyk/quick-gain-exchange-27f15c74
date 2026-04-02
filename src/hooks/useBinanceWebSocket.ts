@@ -6,11 +6,9 @@ export function useBinanceWebSocket(symbol: string) {
   const [priceChange, setPriceChange] = useState<number>(0);
   const [candles, setCandles] = useState<CandleData[]>([]);
   const [connected, setConnected] = useState(false);
-  const wsRef = useRef<WebSocket | null>(null);
   const candlesRef = useRef<CandleData[]>([]);
-
-  // Keep ref in sync for mutation from trade ticks
-  candlesRef.current = candles;
+  const rafRef = useRef<number>(0);
+  const pendingRef = useRef(false);
 
   const fetchHistoricalData = useCallback(async (sym: string) => {
     try {
@@ -50,95 +48,71 @@ export function useBinanceWebSocket(symbol: string) {
     fetchHistoricalData(sym);
     fetch24hChange(sym);
 
-    // Single combined stream: trade ticks + kline
-    const ws = new WebSocket(
-      `wss://stream.binance.com:9443/stream?streams=${sym}@trade/${sym}@kline_1m`
-    );
-
-    ws.onopen = () => setConnected(true);
-    ws.onclose = () => setConnected(false);
-    ws.onerror = () => setConnected(false);
-
-    // Throttle candle state updates to ~60fps to avoid excessive re-renders
-    let pendingUpdate = false;
-    let rafId = 0;
-
-    const flushCandles = () => {
-      pendingUpdate = false;
+    const flush = () => {
+      pendingRef.current = false;
       setCandles([...candlesRef.current]);
     };
 
-    ws.onmessage = (event) => {
-      const msg = JSON.parse(event.data);
-      const stream = msg.stream as string;
-      const data = msg.data;
-
-      if (stream.endsWith('@trade')) {
-        // Every single trade tick — update price + current candle immediately
-        const price = parseFloat(data.p);
-        const tradeTime = Math.floor(data.T / 1000);
-        // Floor to current minute boundary
-        const candleTime = tradeTime - (tradeTime % 60);
-
-        setCurrentPrice(price);
-
-        // Mutate the candles ref directly for speed
-        const arr = candlesRef.current;
-        if (arr.length > 0) {
-          const last = arr[arr.length - 1];
-          if (last.time === candleTime) {
-            // Update existing candle in-place
-            last.close = price;
-            if (price > last.high) last.high = price;
-            if (price < last.low) last.low = price;
-          } else if (candleTime > last.time) {
-            // New candle started
-            arr.push({
-              time: candleTime,
-              open: price,
-              high: price,
-              low: price,
-              close: price,
-            });
-          }
-        }
-
-        // Schedule a batched React state update
-        if (!pendingUpdate) {
-          pendingUpdate = true;
-          rafId = requestAnimationFrame(flushCandles);
-        }
-      } else if (stream.endsWith('@kline_1m')) {
-        // Kline provides authoritative OHLC — use it to correct any drift
-        const k = data.k;
-        const candle: CandleData = {
-          time: Math.floor(k.t / 1000),
-          open: parseFloat(k.o),
-          high: parseFloat(k.h),
-          low: parseFloat(k.l),
-          close: parseFloat(k.c),
-        };
-
-        const arr = candlesRef.current;
-        const idx = arr.findIndex(c => c.time === candle.time);
-        if (idx >= 0) {
-          arr[idx] = candle;
-        } else {
-          arr.push(candle);
-        }
-
-        if (!pendingUpdate) {
-          pendingUpdate = true;
-          rafId = requestAnimationFrame(flushCandles);
-        }
+    const scheduleFlush = () => {
+      if (!pendingRef.current) {
+        pendingRef.current = true;
+        rafRef.current = requestAnimationFrame(flush);
       }
     };
 
-    wsRef.current = ws;
+    // Trade stream — every tick updates price + current candle
+    const tradeWs = new WebSocket(`wss://stream.binance.com:9443/ws/${sym}@trade`);
+    tradeWs.onopen = () => setConnected(true);
+    tradeWs.onclose = () => setConnected(false);
+    tradeWs.onerror = () => setConnected(false);
+    tradeWs.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      const price = parseFloat(data.p);
+      const tradeTimeSec = Math.floor(data.T / 1000);
+      const candleTime = tradeTimeSec - (tradeTimeSec % 60);
+
+      setCurrentPrice(price);
+
+      const arr = candlesRef.current;
+      if (arr.length > 0) {
+        const last = arr[arr.length - 1];
+        if (last.time === candleTime) {
+          last.close = price;
+          if (price > last.high) last.high = price;
+          if (price < last.low) last.low = price;
+        } else if (candleTime > last.time) {
+          arr.push({ time: candleTime, open: price, high: price, low: price, close: price });
+        }
+      }
+      scheduleFlush();
+    };
+
+    // Kline stream — authoritative OHLC correction
+    const klineWs = new WebSocket(`wss://stream.binance.com:9443/ws/${sym}@kline_1m`);
+    klineWs.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      const k = data.k;
+      const candle: CandleData = {
+        time: Math.floor(k.t / 1000),
+        open: parseFloat(k.o),
+        high: parseFloat(k.h),
+        low: parseFloat(k.l),
+        close: parseFloat(k.c),
+      };
+      const arr = candlesRef.current;
+      const idx = arr.findIndex(c => c.time === candle.time);
+      if (idx >= 0) {
+        arr[idx] = candle;
+      } else {
+        arr.push(candle);
+      }
+      scheduleFlush();
+    };
 
     return () => {
-      ws.close();
-      cancelAnimationFrame(rafId);
+      tradeWs.close();
+      klineWs.close();
+      cancelAnimationFrame(rafRef.current);
     };
   }, [symbol, fetchHistoricalData, fetch24hChange]);
 
