@@ -1,6 +1,7 @@
 import { TradingPair } from '@/lib/types';
 import { Plus, X, ChevronDown } from 'lucide-react';
 import { motion } from 'framer-motion';
+import CryptoIcon from './CryptoIcons';
 
 interface AssetTabsProps {
   pairs: TradingPair[];
@@ -24,6 +25,7 @@ export default function AssetTabs({ pairs, activePair, onSelect, onOpenSelector,
 
       {pairs.map((pair, index) => {
         const isActive = pair.symbol === activePair.symbol;
+        const base = pair.symbol.replace('USDT', '');
         return (
           <motion.button
             key={pair.symbol}
@@ -39,7 +41,10 @@ export default function AssetTabs({ pairs, activePair, onSelect, onOpenSelector,
                 : 'bg-card/50 backdrop-blur-sm hover:bg-card/70 border border-transparent'
             }`}
           >
-            <span className="text-base">{pair.icon}</span>
+            <div className="flex items-center -space-x-1.5">
+              <CryptoIcon symbol={base} size={22} />
+              <CryptoIcon symbol="USD" size={14} />
+            </div>
             <div className="text-left">
               <div className="flex items-center gap-1">
                 <span className="text-[11px] font-semibold text-foreground">{pair.displayName}</span>
