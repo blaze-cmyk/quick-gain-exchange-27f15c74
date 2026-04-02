@@ -1,4 +1,4 @@
-import { TradingPair } from '@/lib/types';
+import { TradingPair, Trade } from '@/lib/types';
 import { Plus, X, ChevronDown } from 'lucide-react';
 import { motion } from 'framer-motion';
 import CryptoIcon from './CryptoIcons';
@@ -9,9 +9,22 @@ interface AssetTabsProps {
   onSelect: (pair: TradingPair) => void;
   onOpenSelector: () => void;
   prices: Record<string, number>;
+  activeTrade?: Trade | null;
+  currentPrice?: number;
 }
 
-export default function AssetTabs({ pairs, activePair, onSelect, onOpenSelector, prices }: AssetTabsProps) {
+export default function AssetTabs({ pairs, activePair, onSelect, onOpenSelector, prices, activeTrade, currentPrice = 0 }: AssetTabsProps) {
+  // Calculate live P&L for active trade on this pair
+  const getTabPnL = (pair: TradingPair) => {
+    if (!activeTrade || activeTrade.pair.symbol !== pair.symbol || currentPrice <= 0) return null;
+    const isUp = activeTrade.direction === 'up';
+    const priceDiff = currentPrice - activeTrade.entryPrice;
+    const isWinning = isUp ? priceDiff > 0 : priceDiff < 0;
+    const fee = activeTrade.amount * 0.10;
+    const netPool = activeTrade.amount - fee;
+    return isWinning ? netPool : -activeTrade.amount;
+  };
+
   return (
     <div className="absolute top-2 left-2 z-10 flex items-center gap-1.5">
       <motion.button
@@ -26,6 +39,8 @@ export default function AssetTabs({ pairs, activePair, onSelect, onOpenSelector,
       {pairs.map((pair, index) => {
         const isActive = pair.symbol === activePair.symbol;
         const base = pair.symbol.replace('USDT', '');
+        const pnl = getTabPnL(pair);
+
         return (
           <motion.button
             key={pair.symbol}
@@ -50,8 +65,17 @@ export default function AssetTabs({ pairs, activePair, onSelect, onOpenSelector,
                 <span className="text-[11px] font-semibold text-foreground">{pair.displayName}</span>
                 {isActive && <ChevronDown size={10} className="text-muted-foreground" />}
               </div>
-              <div className={`text-[10px] font-semibold ${pair.payout >= 90 ? 'text-success' : 'text-muted-foreground'}`}>
-                {pair.payout}%
+              <div className="flex items-center gap-1.5">
+                <span className={`text-[10px] font-semibold ${pair.payout >= 90 ? 'text-success' : 'text-muted-foreground'}`}>
+                  {pair.payout}%
+                </span>
+                {pnl !== null && (
+                  <span className={`text-[10px] font-bold px-1 py-0.5 rounded ${
+                    pnl >= 0 ? 'text-success bg-success/10' : 'text-danger bg-danger/10'
+                  }`}>
+                    {pnl >= 0 ? '+' : ''}{pnl.toFixed(0)} $
+                  </span>
+                )}
               </div>
             </div>
             {isActive && (

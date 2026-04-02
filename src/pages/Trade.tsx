@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { TradingPair, Trade, TRADING_PAIRS } from '@/lib/types';
 import { useBinanceWebSocket } from '@/hooks/useBinanceWebSocket';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -8,6 +8,8 @@ import CustomChart from '@/components/trading/CustomChart';
 import TradePanel from '@/components/trading/TradePanel';
 import AssetSelector from '@/components/trading/AssetSelector';
 import WinLossOverlay from '@/components/trading/WinLossOverlay';
+import TradeNotification from '@/components/trading/TradeNotification';
+import TradeResultToast from '@/components/trading/TradeResultToast';
 import BalanceHeader from '@/components/trading/BalanceHeader';
 import { Info, Pencil } from 'lucide-react';
 
@@ -19,6 +21,7 @@ export default function TradePage() {
   const [trades, setTrades] = useState<Trade[]>([]);
   const [activeTrade, setActiveTrade] = useState<Trade | null>(null);
   const [tradeResult, setTradeResult] = useState<{ result: 'win' | 'loss'; amount: number } | null>(null);
+  const [lastSettledTrade, setLastSettledTrade] = useState<Trade | null>(null);
   const [prices, setPrices] = useState<Record<string, number>>({});
   const [changes, setChanges] = useState<Record<string, number>>({});
 
@@ -50,6 +53,7 @@ export default function TradePage() {
         setTrades(prev => [settled, ...prev]);
         setBalance(prev => prev + payout);
         setActiveTrade(null);
+        setLastSettledTrade(settled);
         setTradeResult({ result: won ? 'win' : 'loss', amount: won ? netPool : activeTrade.amount });
       }
     }, 100);
@@ -83,7 +87,7 @@ export default function TradePage() {
         <div className="flex-1 flex min-h-0">
           {/* Chart area */}
           <div className="flex-1 relative min-w-0">
-            {/* Payout % - left side overlay like Quotex */}
+            {/* Payout % */}
             <motion.div
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
@@ -95,7 +99,7 @@ export default function TradePage() {
               </div>
             </motion.div>
 
-            {/* Connection status + pair info - left overlay */}
+            {/* Connection status */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -114,7 +118,10 @@ export default function TradePage() {
               </button>
             </motion.div>
 
-            {/* Drawing tool + Timeframe - bottom left overlay like Quotex */}
+            {/* Trade notification */}
+            <TradeNotification trade={activeTrade} />
+
+            {/* Drawing tool + Timeframe */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -129,22 +136,31 @@ export default function TradePage() {
               </div>
             </motion.div>
 
-            {/* Asset tabs overlaid on chart */}
+            {/* Asset tabs */}
             <AssetTabs
               pairs={TRADING_PAIRS}
               activePair={activePair}
               onSelect={setActivePair}
               onOpenSelector={() => setShowSelector(true)}
               prices={prices}
+              activeTrade={activeTrade}
+              currentPrice={currentPrice}
             />
 
-            {/* Custom canvas chart */}
+            {/* Chart */}
             <CustomChart
               candles={candles}
               currentPrice={currentPrice}
               payout={activePair.payout}
               connected={connected}
               activeTrade={activeTrade}
+              completedTrades={trades}
+            />
+
+            {/* Result toast at bottom of chart */}
+            <TradeResultToast
+              trade={lastSettledTrade}
+              onDismiss={() => setLastSettledTrade(null)}
             />
 
             {/* Asset selector overlay */}
