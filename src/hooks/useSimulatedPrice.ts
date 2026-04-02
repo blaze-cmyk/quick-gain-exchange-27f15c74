@@ -67,9 +67,9 @@ function generateHistory(): { candles: CandleData[]; lastPrice: number } {
     }
 
     // Random spikes
-    if (rand() < 0.03) {
-      volatility *= 3 + rand() * 5;
-      drift += (rand() - 0.5) * 0.005;
+    if (rand() < 0.015) {
+      volatility *= 2 + rand() * 2;
+      drift += (rand() - 0.5) * 0.001;
     }
 
     const open = price;
