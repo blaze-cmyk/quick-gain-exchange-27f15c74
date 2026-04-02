@@ -31,12 +31,12 @@ function generateHistory(): { candles: CandleData[]; lastPrice: number } {
     // Switch regime randomly
     if (regimeCountdown <= 0) {
       const r = rand();
-      if (r < 0.25) regime = 'volatile';
-      else if (r < 0.45) regime = 'sideways';
-      else if (r < 0.6) regime = 'trending_up';
-      else if (r < 0.75) regime = 'trending_down';
+      if (r < 0.35) regime = 'volatile';
+      else if (r < 0.60) regime = 'sideways';
+      else if (r < 0.75) regime = 'trending_up';
+      else if (r < 0.88) regime = 'trending_down';
       else regime = 'explosion';
-      regimeCountdown = Math.floor(rand() * 30) + 5;
+      regimeCountdown = Math.floor(rand() * 60) + 15;
     }
     regimeCountdown--;
 
