@@ -22,7 +22,7 @@ export default function TradePage() {
   const [prices, setPrices] = useState<Record<string, number>>({});
   const [changes, setChanges] = useState<Record<string, number>>({});
 
-  const { currentPrice, priceChange, candles, connected } = useBinanceWebSocket(activePair.binanceSymbol);
+  const { currentPrice, priceChange, candles, connected, ticks } = useBinanceWebSocket(activePair.binanceSymbol);
 
   useEffect(() => {
     if (currentPrice > 0) {
