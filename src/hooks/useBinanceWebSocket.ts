@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { CandleData } from '@/lib/types';
 
+const HISTORY_LIMIT = 1000;
+const RECONNECT_DELAY_MS = 1200;
+
 export function useBinanceWebSocket(symbol: string) {
   const [currentPrice, setCurrentPrice] = useState<number>(0);
   const [priceChange, setPriceChange] = useState<number>(0);
@@ -9,22 +12,32 @@ export function useBinanceWebSocket(symbol: string) {
   const candlesRef = useRef<CandleData[]>([]);
   const rafRef = useRef<number>(0);
   const pendingRef = useRef(false);
+  const wsRef = useRef<WebSocket | null>(null);
+  const reconnectTimeoutRef = useRef<number | null>(null);
 
   const fetchHistoricalData = useCallback(async (sym: string) => {
     try {
       const res = await fetch(
-        `https://api.binance.com/api/v3/klines?symbol=${sym.toUpperCase()}&interval=1m&limit=1000`
+        `https://api.binance.com/api/v3/klines?symbol=${sym.toUpperCase()}&interval=1m&limit=${HISTORY_LIMIT}`
       );
       const data = await res.json();
-      const historical: CandleData[] = data.map((k: any) => ({
-        time: Math.floor(k[0] / 1000),
-        open: parseFloat(k[1]),
-        high: parseFloat(k[2]),
-        low: parseFloat(k[3]),
-        close: parseFloat(k[4]),
-      }));
+      const historical: CandleData[] = Array.isArray(data)
+        ? data.map((k: any) => ({
+            time: Math.floor(k[0] / 1000),
+            open: parseFloat(k[1]),
+            high: parseFloat(k[2]),
+            low: parseFloat(k[3]),
+            close: parseFloat(k[4]),
+          }))
+        : [];
+
       candlesRef.current = historical;
       setCandles(historical);
+
+      const lastClose = historical[historical.length - 1]?.close ?? 0;
+      if (lastClose > 0) {
+        setCurrentPrice(lastClose);
+      }
     } catch (err) {
       console.error('Failed to fetch historical data:', err);
     }
@@ -44,13 +57,13 @@ export function useBinanceWebSocket(symbol: string) {
 
   useEffect(() => {
     const sym = symbol.toLowerCase();
-
-    fetchHistoricalData(sym);
-    fetch24hChange(sym);
+    let destroyed = false;
 
     const flush = () => {
       pendingRef.current = false;
-      setCandles([...candlesRef.current]);
+      if (!destroyed) {
+        setCandles([...candlesRef.current]);
+      }
     };
 
     const scheduleFlush = () => {
@@ -60,65 +73,103 @@ export function useBinanceWebSocket(symbol: string) {
       }
     };
 
-    const tradeWs = new WebSocket(`wss://stream.binance.com:9443/ws/${sym}@trade`);
-    tradeWs.onopen = () => setConnected(true);
-    tradeWs.onclose = () => setConnected(false);
-    tradeWs.onerror = () => setConnected(false);
-    tradeWs.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      const price = parseFloat(data.p);
-      const tradeTimeSec = Math.floor(data.T / 1000);
+    const clearReconnect = () => {
+      if (reconnectTimeoutRef.current !== null) {
+        window.clearTimeout(reconnectTimeoutRef.current);
+        reconnectTimeoutRef.current = null;
+      }
+    };
+
+    const upsertLiveCandle = (price: number, tradeTimeMs: number) => {
+      const tradeTimeSec = Math.floor(tradeTimeMs / 1000);
       const candleTime = tradeTimeSec - (tradeTimeSec % 60);
-
-      setCurrentPrice(price);
-
       const arr = candlesRef.current;
-      if (arr.length > 0) {
-        const last = arr[arr.length - 1];
-        if (last.time === candleTime) {
-          last.close = price;
-          if (price > last.high) last.high = price;
-          if (price < last.low) last.low = price;
-        } else if (candleTime > last.time) {
-          arr.push({
-            time: candleTime,
-            open: price,
-            high: price,
-            low: price,
-            close: price,
-          });
+
+      if (arr.length === 0) {
+        arr.push({
+          time: candleTime,
+          open: price,
+          high: price,
+          low: price,
+          close: price,
+        });
+        scheduleFlush();
+        return;
+      }
+
+      const last = arr[arr.length - 1];
+
+      if (last.time === candleTime) {
+        last.close = price;
+        if (price > last.high) last.high = price;
+        if (price < last.low) last.low = price;
+      } else if (candleTime > last.time) {
+        arr.push({
+          time: candleTime,
+          open: price,
+          high: price,
+          low: price,
+          close: price,
+        });
+
+        if (arr.length > HISTORY_LIMIT) {
+          arr.splice(0, arr.length - HISTORY_LIMIT);
         }
       }
 
       scheduleFlush();
     };
 
-    const klineWs = new WebSocket(`wss://stream.binance.com:9443/ws/${sym}@kline_1m`);
-    klineWs.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      const k = data.k;
-      const candle: CandleData = {
-        time: Math.floor(k.t / 1000),
-        open: parseFloat(k.o),
-        high: parseFloat(k.h),
-        low: parseFloat(k.l),
-        close: parseFloat(k.c),
+    const connectTradeStream = () => {
+      clearReconnect();
+
+      const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${sym}@trade`);
+      wsRef.current = ws;
+
+      ws.onopen = () => {
+        if (!destroyed) {
+          setConnected(true);
+        }
       };
 
-      const arr = candlesRef.current;
-      const idx = arr.findIndex(c => c.time === candle.time);
-      if (idx >= 0) {
-        arr[idx] = candle;
-      } else {
-        arr.push(candle);
-      }
+      ws.onmessage = (event) => {
+        if (destroyed) return;
 
-      scheduleFlush();
+        const data = JSON.parse(event.data);
+        const price = Number.parseFloat(data.p);
+        const tradeTimeMs = Number.parseInt(String(data.T), 10);
+
+        if (!Number.isFinite(price) || !Number.isFinite(tradeTimeMs)) {
+          return;
+        }
+
+        setCurrentPrice(price);
+        upsertLiveCandle(price, tradeTimeMs);
+      };
+
+      ws.onerror = () => {
+        if (destroyed) return;
+        setConnected(false);
+        ws.close();
+      };
+
+      ws.onclose = () => {
+        if (destroyed) return;
+        setConnected(false);
+        clearReconnect();
+        reconnectTimeoutRef.current = window.setTimeout(connectTradeStream, RECONNECT_DELAY_MS);
+      };
     };
 
+    fetchHistoricalData(sym);
+    fetch24hChange(sym);
+    connectTradeStream();
+
     return () => {
-      tradeWs.close();
-      klineWs.close();
+      destroyed = true;
+      setConnected(false);
+      clearReconnect();
+      wsRef.current?.close();
       cancelAnimationFrame(rafRef.current);
     };
   }, [symbol, fetchHistoricalData, fetch24hChange]);
