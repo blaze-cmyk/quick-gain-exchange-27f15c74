@@ -105,7 +105,11 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       if (currentPrice > maxPrice) maxPrice = currentPrice;
     }
 
-    const padding = (maxPrice - minPrice) * 0.12 || 1;
+    const liveCandle = candles[endIdx] ?? candles[candles.length - 1];
+    const candleRange = liveCandle ? Math.max(liveCandle.high - liveCandle.low, liveCandle.open * 0.00035) : 1;
+    const basePadding = (maxPrice - minPrice) * 0.035;
+    const livePadding = candleRange * 3.2;
+    const padding = Math.max(basePadding, livePadding, currentPrice * 0.00008);
     return { minPrice: minPrice - padding, maxPrice: maxPrice + padding };
   }, [candles, currentPrice]);
 
