@@ -23,19 +23,12 @@ export default function TradePage() {
   const [activeTrade, setActiveTrade] = useState<Trade | null>(null);
   const [tradeResult, setTradeResult] = useState<{ result: 'win' | 'loss'; amount: number } | null>(null);
   const [lastSettledTrade, setLastSettledTrade] = useState<Trade | null>(null);
-  const [prices, setPrices] = useState<Record<string, number>>({});
-  const [changes, setChanges] = useState<Record<string, number>>({});
-
   const { currentPrice, priceChange, candles, connected } = useBinanceWebSocket(activePair.binanceSymbol);
+  const { prices: allPrices, changes: allChanges } = useAllPairsPrices();
 
-  useEffect(() => {
-    if (currentPrice > 0) {
-      setPrices(prev => ({ ...prev, [activePair.symbol]: currentPrice }));
-    }
-    if (priceChange !== 0) {
-      setChanges(prev => ({ ...prev, [activePair.symbol]: priceChange }));
-    }
-  }, [currentPrice, priceChange, activePair.symbol]);
+  // Merge active pair's precise price into the all-pairs map
+  const prices = { ...allPrices, ...(currentPrice > 0 ? { [activePair.symbol]: currentPrice } : {}) };
+  const changes = { ...allChanges, ...(priceChange !== 0 ? { [activePair.symbol]: priceChange } : {}) };
 
   useEffect(() => {
     if (!activeTrade) return;
