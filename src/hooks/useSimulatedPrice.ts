@@ -45,24 +45,24 @@ function generateHistory(): { candles: CandleData[]; lastPrice: number } {
     let drift: number;
     switch (regime) {
       case 'sideways':
-        volatility = 0.0003;
-        drift = (rand() - 0.5) * 0.00005;
+        volatility = 0.00015;
+        drift = (rand() - 0.5) * 0.00002;
         break;
       case 'trending_up':
-        volatility = 0.001;
-        drift = 0.0004 + rand() * 0.0003;
+        volatility = 0.0004;
+        drift = 0.00015 + rand() * 0.0001;
         break;
       case 'trending_down':
-        volatility = 0.001;
-        drift = -0.0004 - rand() * 0.0003;
+        volatility = 0.0004;
+        drift = -0.00015 - rand() * 0.0001;
         break;
       case 'explosion':
-        volatility = 0.004 + rand() * 0.004;
-        drift = (rand() - 0.5) * 0.003;
+        volatility = 0.0012 + rand() * 0.001;
+        drift = (rand() - 0.5) * 0.0008;
         break;
       default: // volatile
-        volatility = 0.0015 + rand() * 0.001;
-        drift = (rand() - 0.5) * 0.0005;
+        volatility = 0.0006 + rand() * 0.0003;
+        drift = (rand() - 0.5) * 0.00015;
         break;
     }
 
