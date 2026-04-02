@@ -121,13 +121,13 @@ class LivePriceEngine {
 
   switchRegime() {
     const r = Math.random();
-    if (r < 0.2) this.regime = 'volatile';
-    else if (r < 0.4) this.regime = 'sideways';
-    else if (r < 0.55) this.regime = 'trending_up';
-    else if (r < 0.7) this.regime = 'trending_down';
+    if (r < 0.30) this.regime = 'volatile';
+    else if (r < 0.60) this.regime = 'sideways';
+    else if (r < 0.75) this.regime = 'trending_up';
+    else if (r < 0.88) this.regime = 'trending_down';
     else this.regime = 'explosion';
-    this.regimeCountdown = Math.floor(Math.random() * 200) + 30; // ticks
-    this.momentum = (Math.random() - 0.5) * 0.001;
+    this.regimeCountdown = Math.floor(Math.random() * 400) + 80;
+    this.momentum = (Math.random() - 0.5) * 0.0004;
   }
 
   tick(): number {
