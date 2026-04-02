@@ -1,5 +1,6 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { CandleData, Trade } from '@/lib/types';
+import { TickPoint } from '@/hooks/useBinanceWebSocket';
 
 interface CustomChartProps {
   candles: CandleData[];
@@ -7,6 +8,7 @@ interface CustomChartProps {
   payout?: number;
   connected?: boolean;
   activeTrade?: Trade | null;
+  ticks?: TickPoint[];
 }
 
 interface ChartState {
