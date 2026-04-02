@@ -316,8 +316,9 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
         ctx.setLineDash([]);
       }
 
-      // Position the timer badge at the end-of-trade line, on the current price Y
-      const timerX = endX > 0 && endX < chartWidth + 50 ? endX : chartWidth - 60;
+      // Position the timer badge in the middle of the price line (between badge end and chart right edge)
+      const badgeEndX = (badgeX > -100 && badgeX < chartWidth + 100) ? badgeX + 108 : startX + 20;
+      const timerX = (badgeEndX + chartWidth - PRICE_SCALE_WIDTH) / 2;
       ctx.fillStyle = 'rgba(45, 55, 72, 0.9)';
       roundRect(ctx, timerX - countBadgeW / 2, currentPriceY - countBadgeH / 2, countBadgeW, countBadgeH, 4);
       ctx.fill();
