@@ -145,7 +145,6 @@ export default function TradePage() {
               payout={activePair.payout}
               connected={connected}
               activeTrade={activeTrade}
-              ticks={ticks}
             />
 
             {/* Asset selector overlay */}

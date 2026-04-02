@@ -1,23 +1,14 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { CandleData } from '@/lib/types';
 
-export interface TickPoint {
-  price: number;
-  time: number; // ms timestamp
-}
-
 export function useBinanceWebSocket(symbol: string) {
   const [currentPrice, setCurrentPrice] = useState<number>(0);
   const [priceChange, setPriceChange] = useState<number>(0);
   const [candles, setCandles] = useState<CandleData[]>([]);
   const [connected, setConnected] = useState(false);
-  const [ticks, setTicks] = useState<TickPoint[]>([]);
   const candlesRef = useRef<CandleData[]>([]);
-  const ticksRef = useRef<TickPoint[]>([]);
   const rafRef = useRef<number>(0);
   const pendingRef = useRef(false);
-
-  const MAX_TICKS = 300; // keep last 300 ticks for the real-time line
 
   const fetchHistoricalData = useCallback(async (sym: string) => {
     try {
@@ -53,8 +44,6 @@ export function useBinanceWebSocket(symbol: string) {
 
   useEffect(() => {
     const sym = symbol.toLowerCase();
-    ticksRef.current = [];
-    setTicks([]);
 
     fetchHistoricalData(sym);
     fetch24hChange(sym);
@@ -62,7 +51,6 @@ export function useBinanceWebSocket(symbol: string) {
     const flush = () => {
       pendingRef.current = false;
       setCandles([...candlesRef.current]);
-      setTicks([...ticksRef.current]);
     };
 
     const scheduleFlush = () => {
@@ -72,7 +60,6 @@ export function useBinanceWebSocket(symbol: string) {
       }
     };
 
-    // Trade stream — every tick
     const tradeWs = new WebSocket(`wss://stream.binance.com:9443/ws/${sym}@trade`);
     tradeWs.onopen = () => setConnected(true);
     tradeWs.onclose = () => setConnected(false);
@@ -80,19 +67,11 @@ export function useBinanceWebSocket(symbol: string) {
     tradeWs.onmessage = (event) => {
       const data = JSON.parse(event.data);
       const price = parseFloat(data.p);
-      const tradeTimeMs = data.T;
-      const tradeTimeSec = Math.floor(tradeTimeMs / 1000);
+      const tradeTimeSec = Math.floor(data.T / 1000);
       const candleTime = tradeTimeSec - (tradeTimeSec % 60);
 
       setCurrentPrice(price);
 
-      // Add to tick buffer
-      ticksRef.current.push({ price, time: tradeTimeMs });
-      if (ticksRef.current.length > MAX_TICKS) {
-        ticksRef.current = ticksRef.current.slice(-MAX_TICKS);
-      }
-
-      // Update current candle
       const arr = candlesRef.current;
       if (arr.length > 0) {
         const last = arr[arr.length - 1];
@@ -101,13 +80,19 @@ export function useBinanceWebSocket(symbol: string) {
           if (price > last.high) last.high = price;
           if (price < last.low) last.low = price;
         } else if (candleTime > last.time) {
-          arr.push({ time: candleTime, open: price, high: price, low: price, close: price });
+          arr.push({
+            time: candleTime,
+            open: price,
+            high: price,
+            low: price,
+            close: price,
+          });
         }
       }
+
       scheduleFlush();
     };
 
-    // Kline stream — authoritative OHLC
     const klineWs = new WebSocket(`wss://stream.binance.com:9443/ws/${sym}@kline_1m`);
     klineWs.onmessage = (event) => {
       const data = JSON.parse(event.data);
@@ -119,6 +104,7 @@ export function useBinanceWebSocket(symbol: string) {
         low: parseFloat(k.l),
         close: parseFloat(k.c),
       };
+
       const arr = candlesRef.current;
       const idx = arr.findIndex(c => c.time === candle.time);
       if (idx >= 0) {
@@ -126,6 +112,7 @@ export function useBinanceWebSocket(symbol: string) {
       } else {
         arr.push(candle);
       }
+
       scheduleFlush();
     };
 
@@ -136,5 +123,5 @@ export function useBinanceWebSocket(symbol: string) {
     };
   }, [symbol, fetchHistoricalData, fetch24hChange]);
 
-  return { currentPrice, priceChange, candles, connected, ticks };
+  return { currentPrice, priceChange, candles, connected };
 }
