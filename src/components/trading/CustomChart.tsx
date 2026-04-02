@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback, useState } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { CandleData, Trade } from '@/lib/types';
 
 interface CustomChartProps {
@@ -7,6 +7,7 @@ interface CustomChartProps {
   payout?: number;
   connected?: boolean;
   activeTrade?: Trade | null;
+  completedTrades?: Trade[];
 }
 
 interface ChartState {
@@ -19,13 +20,11 @@ interface ChartState {
   dragStartOffsetX: number;
   crosshair: { x: number; y: number } | null;
   smoothPrice: number;
-  // Momentum / inertia
   velocityX: number;
   lastDragX: number;
   lastDragTime: number;
 }
 
-// Quotex exact colors
 const COLORS = {
   bg: '#0b0e11',
   gridLine: '#151a23',
@@ -45,6 +44,10 @@ const COLORS = {
   crosshairText: '#e2e8f0',
   tooltipGreen: '#00c176',
   tooltipRed: '#ff4757',
+  tradeGreen: '#00c176',
+  tradeRed: '#ff4757',
+  tradeGreenBg: 'rgba(0, 193, 118, 0.15)',
+  tradeRedBg: 'rgba(255, 71, 87, 0.15)',
 };
 
 const CANDLE_WIDTH_BASE = 7;
@@ -59,7 +62,7 @@ function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t;
 }
 
-export default function CustomChart({ candles, currentPrice, payout = 90, connected = true, activeTrade = null }: CustomChartProps) {
+export default function CustomChart({ candles, currentPrice, payout = 90, connected = true, activeTrade = null, completedTrades = [] }: CustomChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const stateRef = useRef<ChartState>({
     offsetX: 0,
@@ -76,7 +79,6 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     lastDragTime: 0,
   });
   const animFrameRef = useRef<number>(0);
-  const prevCandleCountRef = useRef(0);
 
   const getCandleWidth = () => CANDLE_WIDTH_BASE * stateRef.current.scaleX;
   const getCandleStep = () => (CANDLE_WIDTH_BASE + CANDLE_GAP) * stateRef.current.scaleX;
@@ -86,32 +88,25 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     const chartWidth = width - PRICE_SCALE_WIDTH;
     const totalWidth = candles.length * step;
     const offset = stateRef.current.offsetX;
-
     const baseOffset = totalWidth - chartWidth + step * 8;
     const effectiveOffset = baseOffset - offset;
-
     const startIdx = Math.max(0, Math.floor(effectiveOffset / step) - 2);
     const endIdx = Math.min(candles.length - 1, Math.ceil((effectiveOffset + chartWidth) / step) + 2);
-
     return { startIdx, endIdx, effectiveOffset };
   }, [candles.length]);
 
   const getPriceRange = useCallback((startIdx: number, endIdx: number) => {
     if (candles.length === 0) return { minPrice: 0, maxPrice: 1 };
-
     let minPrice = Infinity;
     let maxPrice = -Infinity;
-
     for (let i = startIdx; i <= endIdx && i < candles.length; i++) {
       if (candles[i].low < minPrice) minPrice = candles[i].low;
       if (candles[i].high > maxPrice) maxPrice = candles[i].high;
     }
-
     if (currentPrice > 0) {
       if (currentPrice < minPrice) minPrice = currentPrice;
       if (currentPrice > maxPrice) maxPrice = currentPrice;
     }
-
     const liveCandle = candles[endIdx] ?? candles[candles.length - 1];
     const candleRange = liveCandle ? Math.max(liveCandle.high - liveCandle.low, liveCandle.open * 0.00035) : 1;
     const basePadding = (maxPrice - minPrice) * 0.035;
@@ -130,10 +125,231 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     return minPrice + (1 - (y - PADDING_TOP) / chartHeight) * (maxPrice - minPrice);
   };
 
+  const findXForTime = useCallback((timeSec: number, step: number, effectiveOffset: number) => {
+    const candleTimeSec = timeSec - (timeSec % 60);
+    const fractionalMinute = (timeSec % 60) / 60;
+    for (let i = 0; i < candles.length; i++) {
+      if (candles[i].time === candleTimeSec) {
+        return (i * step + fractionalMinute * step) - effectiveOffset + step / 2;
+      }
+    }
+    if (candles.length > 0) {
+      const lastCandle = candles[candles.length - 1];
+      const diffMin = (candleTimeSec - lastCandle.time) / 60 + fractionalMinute;
+      return ((candles.length - 1 + diffMin) * step) - effectiveOffset + step / 2;
+    }
+    return -1;
+  }, [candles]);
+
+  const drawTradeOnChart = useCallback((
+    ctx: CanvasRenderingContext2D,
+    trade: Trade,
+    step: number,
+    effectiveOffset: number,
+    minPrice: number,
+    maxPrice: number,
+    height: number,
+    chartWidth: number,
+    isActive: boolean
+  ) => {
+    const startTimeSec = Math.floor(trade.startTime / 1000);
+    const endTimeSec = Math.floor(trade.endTime / 1000);
+    const now = Date.now();
+    const timeLeft = Math.max(0, Math.ceil((trade.endTime - now) / 1000));
+
+    const startX = findXForTime(startTimeSec, step, effectiveOffset);
+    const endX = findXForTime(endTimeSec, step, effectiveOffset);
+    const entryY = priceToY(trade.entryPrice, minPrice, maxPrice, height);
+
+    const isUp = trade.direction === 'up';
+    const tradeColor = isUp ? COLORS.tradeGreen : COLORS.tradeRed;
+    const tradeBgColor = isUp ? COLORS.tradeGreenBg : COLORS.tradeRedBg;
+
+    // "Beginning of trade" dashed vertical line
+    if (startX > 0 && startX < chartWidth) {
+      ctx.strokeStyle = '#8892a0';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([5, 4]);
+      ctx.beginPath();
+      ctx.moveTo(startX, PADDING_TOP);
+      ctx.lineTo(startX, height - TIME_SCALE_HEIGHT);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Labels
+      ctx.fillStyle = '#8892a0';
+      ctx.font = '10px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+      ctx.fillText('Beginning of trade', startX, PADDING_TOP - 4);
+
+      // Small play arrow
+      ctx.fillStyle = '#8892a0';
+      ctx.beginPath();
+      ctx.moveTo(startX - 4, PADDING_TOP - 18);
+      ctx.lineTo(startX + 4, PADDING_TOP - 14);
+      ctx.lineTo(startX - 4, PADDING_TOP - 10);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // "End of trade" dashed vertical line
+    if (endX > 0 && endX < chartWidth) {
+      ctx.strokeStyle = '#8892a0';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([5, 4]);
+      ctx.beginPath();
+      ctx.moveTo(endX, PADDING_TOP);
+      ctx.lineTo(endX, height - TIME_SCALE_HEIGHT);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = '#8892a0';
+      ctx.font = '10px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+      ctx.fillText('End of trade', endX, PADDING_TOP - 4);
+    }
+
+    // Entry price horizontal dashed line with color
+    ctx.strokeStyle = tradeColor + '66';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    const lineStartX = Math.max(0, startX);
+    const lineEndX = isActive ? chartWidth : Math.min(chartWidth, endX + 50);
+    ctx.moveTo(lineStartX, entryY);
+    ctx.lineTo(lineEndX, entryY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Calculate current P&L
+    let currentPnL = 0;
+    if (isActive) {
+      const priceDiff = currentPrice - trade.entryPrice;
+      const isWinning = isUp ? priceDiff > 0 : priceDiff < 0;
+      const fee = trade.amount * 0.10;
+      const netPool = trade.amount - fee;
+      currentPnL = isWinning ? netPool : -trade.amount;
+    } else if (trade.result) {
+      currentPnL = trade.result === 'win' ? ((trade.payout || 0) - trade.amount) : -trade.amount;
+    }
+
+    // Trade badge on entry price line — Quotex style pill
+    // Shows: ↑/↓ icon, amount $, countdown
+    const badgeX = isActive 
+      ? Math.min(chartWidth - 120, Math.max(startX + 20, (startX + endX) / 2 - 50))
+      : Math.max(startX + 10, startX);
+    
+    if (badgeX > -100 && badgeX < chartWidth + 100) {
+      const badgeW = 100;
+      const badgeH = 24;
+      const badgeYPos = entryY - badgeH / 2;
+
+      // Badge background
+      ctx.fillStyle = tradeColor;
+      ctx.globalAlpha = 0.85;
+      roundRect(ctx, badgeX, badgeYPos, badgeW, badgeH, 12);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+
+      // Direction arrow circle
+      ctx.fillStyle = 'rgba(0,0,0,0.3)';
+      ctx.beginPath();
+      ctx.arc(badgeX + 12, entryY, 8, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Arrow
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 10px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(isUp ? '↑' : '↓', badgeX + 12, entryY);
+
+      // Amount
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 11px Inter, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(`${trade.amount} $`, badgeX + 24, entryY);
+
+      // Countdown or result time
+      if (isActive && timeLeft > 0) {
+        const mins = Math.floor(timeLeft / 60);
+        const secs = timeLeft % 60;
+        const countdownText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        ctx.fillStyle = 'rgba(255,255,255,0.7)';
+        ctx.font = '10px Inter, monospace';
+        ctx.textAlign = 'right';
+        ctx.fillText(countdownText, badgeX + badgeW - 8, entryY);
+      }
+
+      // Connecting dot from badge to line
+      ctx.fillStyle = tradeColor;
+      ctx.beginPath();
+      ctx.arc(badgeX + badgeW + 4, entryY, 3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(badgeX + badgeW + 4, entryY, 1.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Countdown badge on the end-of-trade line (Quotex style dark pill)
+    if (isActive && timeLeft > 0 && endX > 0 && endX < chartWidth + 50) {
+      const mins = Math.floor(timeLeft / 60);
+      const secs = timeLeft % 60;
+      const countdownText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      const countBadgeW = 44;
+      const countBadgeH = 18;
+      
+      ctx.fillStyle = 'rgba(45, 55, 72, 0.9)';
+      roundRect(ctx, endX - countBadgeW / 2, entryY - countBadgeH / 2, countBadgeW, countBadgeH, 4);
+      ctx.fill();
+      
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = '10px Inter, monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(countdownText, endX, entryY);
+    }
+
+    // Result badge for completed trades
+    if (!isActive && trade.result) {
+      const resultBadgeW = 110;
+      const resultBadgeH = 38;
+      const resultX = Math.min(chartWidth - resultBadgeW - 10, Math.max(10, endX - resultBadgeW / 2));
+      const resultY = entryY - resultBadgeH - 8;
+      
+      if (resultX > -resultBadgeW && resultX < chartWidth + resultBadgeW) {
+        ctx.fillStyle = trade.result === 'win' ? COLORS.tradeGreen + 'dd' : COLORS.tradeRed + 'dd';
+        roundRect(ctx, resultX, resultY, resultBadgeW, resultBadgeH, 8);
+        ctx.fill();
+
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 9px Inter, sans-serif';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        ctx.fillText('RESULT (P/L)', resultX + 10, resultY + 6);
+
+        ctx.font = 'bold 13px Inter, sans-serif';
+        ctx.textBaseline = 'bottom';
+        const pnlText = currentPnL >= 0 ? `+${currentPnL.toFixed(2)} $` : `${currentPnL.toFixed(2)} $`;
+        ctx.fillText(pnlText, resultX + 10, resultY + resultBadgeH - 5);
+
+        // X close icon
+        ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        ctx.font = '12px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('✕', resultX + resultBadgeW - 14, resultY + 12);
+      }
+    }
+  }, [candles, currentPrice, findXForTime]);
+
   const draw = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
@@ -146,13 +362,11 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     canvas.height = height * dpr;
     ctx.scale(dpr, dpr);
 
-    // Smooth interpolation
     const st = stateRef.current;
     if (!st.isDragging) {
-      // Apply momentum deceleration (Lenis-like)
       if (Math.abs(st.velocityX) > 0.3) {
         st.targetOffsetX += st.velocityX;
-        st.velocityX *= 0.92; // friction
+        st.velocityX *= 0.92;
       } else {
         st.velocityX = 0;
       }
@@ -163,12 +377,10 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       st.smoothPrice = st.smoothPrice === 0 ? currentPrice : lerp(st.smoothPrice, currentPrice, 0.45);
     }
 
-    // Background
     ctx.fillStyle = COLORS.bg;
     ctx.fillRect(0, 0, width, height);
 
     if (candles.length === 0) {
-      // Loading state
       ctx.fillStyle = COLORS.textMuted;
       ctx.font = '13px Inter, sans-serif';
       ctx.textAlign = 'center';
@@ -180,11 +392,10 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     const step = getCandleStep();
     const candleW = getCandleWidth();
     const chartWidth = width - PRICE_SCALE_WIDTH;
-
     const { startIdx, endIdx, effectiveOffset } = getVisibleRange(width);
     const { minPrice, maxPrice } = getPriceRange(startIdx, endIdx);
 
-    // Grid lines (horizontal) - very subtle like Quotex
+    // Grid lines
     const priceRange = maxPrice - minPrice;
     const priceStep = calculatePriceStep(priceRange);
     const firstPrice = Math.ceil(minPrice / priceStep) * priceStep;
@@ -202,7 +413,6 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       ctx.stroke();
     }
 
-    // Vertical grid lines
     const timeStep = calculateTimeStep(step);
     for (let i = startIdx; i <= endIdx; i++) {
       if (i % timeStep !== 0) continue;
@@ -214,22 +424,19 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       ctx.stroke();
     }
 
-    // Draw candles with smooth rendering
+    // Draw candles
     for (let i = startIdx; i <= endIdx && i < candles.length; i++) {
       const candle = candles[i];
       const x = (i * step) - effectiveOffset;
       const centerX = x + step / 2;
-
       if (centerX < -candleW * 2 || centerX > chartWidth + candleW * 2) continue;
 
       const isGreen = candle.close >= candle.open;
-
       const openY = priceToY(candle.open, minPrice, maxPrice, height);
       const closeY = priceToY(candle.close, minPrice, maxPrice, height);
       const highY = priceToY(candle.high, minPrice, maxPrice, height);
       const lowY = priceToY(candle.low, minPrice, maxPrice, height);
 
-      // Wick - slightly transparent
       ctx.strokeStyle = isGreen ? COLORS.wickGreen : COLORS.wickRed;
       ctx.lineWidth = 1;
       ctx.beginPath();
@@ -237,43 +444,38 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       ctx.lineTo(centerX, lowY);
       ctx.stroke();
 
-      // Body
       const bodyTop = Math.min(openY, closeY);
       const bodyHeight = Math.max(1, Math.abs(closeY - openY));
-
       ctx.fillStyle = isGreen ? COLORS.candleGreen : COLORS.candleRed;
       ctx.fillRect(Math.round(centerX - candleW / 2), Math.round(bodyTop), Math.round(candleW), Math.round(bodyHeight));
 
-      // Candle countdown timer on the LAST (forming) candle
+      // Timer on last candle
       if (i === candles.length - 1) {
         const nowMs = Date.now();
-        const candleEndMs = (candle.time + 60) * 1000; // 1m candle
+        const candleEndMs = (candle.time + 60) * 1000;
         const secsLeft = Math.max(0, Math.ceil((candleEndMs - nowMs) / 1000));
         const timerText = `00:${String(secsLeft).padStart(2, '0')}`;
-
-        const badgeW = 40;
-        const badgeH = 16;
-        const badgeX = centerX - badgeW / 2;
-        // Position below the candle body
-        const badgeY = Math.max(bodyTop, lowY) + 6;
+        const badgeW2 = 40;
+        const badgeH2 = 16;
+        const badgeX2 = centerX - badgeW2 / 2;
+        const badgeY2 = Math.max(bodyTop, lowY) + 6;
 
         ctx.fillStyle = 'rgba(45, 55, 72, 0.85)';
-        roundRect(ctx, badgeX, badgeY, badgeW, badgeH, 3);
+        roundRect(ctx, badgeX2, badgeY2, badgeW2, badgeH2, 3);
         ctx.fill();
 
         ctx.fillStyle = '#cbd5e1';
         ctx.font = '9px Inter, monospace';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(timerText, centerX, badgeY + badgeH / 2);
+        ctx.fillText(timerText, centerX, badgeY2 + badgeH2 / 2);
       }
     }
 
-    // Current price horizontal dashed line
+    // Current price line
     const smoothP = st.smoothPrice || currentPrice;
     if (smoothP > 0) {
       const priceY = priceToY(smoothP, minPrice, maxPrice, height);
-
       ctx.strokeStyle = COLORS.priceLine;
       ctx.lineWidth = 1;
       ctx.setLineDash([6, 4]);
@@ -292,10 +494,20 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       ctx.fill();
     }
 
-    // Price scale (right side)
+    // Draw active trade markers
+    if (activeTrade) {
+      drawTradeOnChart(ctx, activeTrade, step, effectiveOffset, minPrice, maxPrice, height, chartWidth, true);
+    }
+
+    // Draw recent completed trades (last 5 visible)
+    const recentTrades = completedTrades.slice(0, 5);
+    for (const trade of recentTrades) {
+      drawTradeOnChart(ctx, trade, step, effectiveOffset, minPrice, maxPrice, height, chartWidth, false);
+    }
+
+    // Price scale
     ctx.fillStyle = COLORS.priceScaleBg;
     ctx.fillRect(chartWidth, 0, PRICE_SCALE_WIDTH, height);
-
     ctx.strokeStyle = COLORS.priceScaleBorder;
     ctx.lineWidth = 1;
     ctx.setLineDash([]);
@@ -304,29 +516,24 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     ctx.lineTo(chartWidth, height);
     ctx.stroke();
 
-    // Price labels
     ctx.fillStyle = COLORS.textMuted;
     ctx.font = '10px Inter, sans-serif';
     ctx.textAlign = 'right';
     ctx.textBaseline = 'middle';
-
     for (let p = firstPrice; p <= maxPrice; p += priceStep) {
       const y = priceToY(p, minPrice, maxPrice, height);
       if (y < PADDING_TOP || y > height - TIME_SCALE_HEIGHT) continue;
       ctx.fillText(formatPrice(p), width - 8, y);
     }
 
-    // Current price label on scale - Quotex blue badge
+    // Current price label
     if (smoothP > 0) {
       const priceY = priceToY(smoothP, minPrice, maxPrice, height);
       const labelText = formatPrice(smoothP);
       const labelH = 22;
-
-      // Gradient-like blue label
       ctx.fillStyle = COLORS.priceLabel;
       roundRect(ctx, chartWidth + 1, priceY - labelH / 2, PRICE_SCALE_WIDTH - 2, labelH, 4);
       ctx.fill();
-
       ctx.fillStyle = '#ffffff';
       ctx.font = 'bold 11px Inter, sans-serif';
       ctx.textAlign = 'center';
@@ -334,42 +541,36 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       ctx.fillText(labelText, chartWidth + PRICE_SCALE_WIDTH / 2, priceY);
     }
 
-    // Time scale (bottom)
+    // Time scale
     ctx.fillStyle = COLORS.timeScaleBg;
     ctx.fillRect(0, height - TIME_SCALE_HEIGHT, width, TIME_SCALE_HEIGHT);
-
     ctx.strokeStyle = COLORS.priceScaleBorder;
     ctx.beginPath();
     ctx.moveTo(0, height - TIME_SCALE_HEIGHT);
     ctx.lineTo(width, height - TIME_SCALE_HEIGHT);
     ctx.stroke();
 
-    // Time labels
     ctx.fillStyle = COLORS.textMuted;
     ctx.font = '10px Inter, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-
     for (let i = startIdx; i <= endIdx; i++) {
       if (i % timeStep !== 0 || i >= candles.length) continue;
       const x = (i * step) - effectiveOffset + step / 2;
       if (x < 20 || x > chartWidth - 20) continue;
-
       const date = new Date(candles[i].time * 1000);
       const label = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
       ctx.fillText(label, x, height - TIME_SCALE_HEIGHT / 2);
     }
 
-    // Zoom buttons (bottom center) - subtle like Quotex
+    // Zoom buttons
     const zoomY = height - TIME_SCALE_HEIGHT - 30;
     const zoomCenterX = chartWidth / 2;
-    
     ctx.fillStyle = 'rgba(21, 26, 35, 0.8)';
     roundRect(ctx, zoomCenterX - 30, zoomY, 24, 20, 4);
     ctx.fill();
     roundRect(ctx, zoomCenterX + 6, zoomY, 24, 20, 4);
     ctx.fill();
-
     ctx.fillStyle = COLORS.textMuted;
     ctx.font = '14px Inter, sans-serif';
     ctx.textAlign = 'center';
@@ -377,171 +578,56 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     ctx.fillText('−', zoomCenterX - 18, zoomY + 10);
     ctx.fillText('+', zoomCenterX + 18, zoomY + 10);
 
-    // Active trade markers — "Beginning of trade" / "End of trade"
-    if (activeTrade) {
-      const startTimeSec = Math.floor(activeTrade.startTime / 1000);
-      const endTimeSec = Math.floor(activeTrade.endTime / 1000);
-      const now = Date.now();
-      const timeLeft = Math.max(0, Math.ceil((activeTrade.endTime - now) / 1000));
-
-      // Find x positions based on candle times
-      const findXForTime = (timeSec: number) => {
-        const candleTimeSec = timeSec - (timeSec % 60);
-        const fractionalMinute = (timeSec % 60) / 60;
-        for (let i = 0; i < candles.length; i++) {
-          if (candles[i].time === candleTimeSec) {
-            return (i * step + fractionalMinute * step) - effectiveOffset + step / 2;
-          }
-        }
-        // Extrapolate from last candle
-        if (candles.length > 0) {
-          const lastCandle = candles[candles.length - 1];
-          const diffMin = (candleTimeSec - lastCandle.time) / 60 + fractionalMinute;
-          return ((candles.length - 1 + diffMin) * step) - effectiveOffset + step / 2;
-        }
-        return -1;
-      };
-
-      const startX = findXForTime(startTimeSec);
-      const endX = findXForTime(endTimeSec);
-
-      // Draw "Beginning of trade" line
-      if (startX > 0 && startX < chartWidth) {
-        ctx.strokeStyle = '#8892a0';
-        ctx.lineWidth = 1;
-        ctx.setLineDash([5, 4]);
-        ctx.beginPath();
-        ctx.moveTo(startX, PADDING_TOP);
-        ctx.lineTo(startX, height - TIME_SCALE_HEIGHT);
-        ctx.stroke();
-        ctx.setLineDash([]);
-
-        // Label
-        ctx.fillStyle = '#8892a0';
-        ctx.font = '10px Inter, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'bottom';
-        ctx.fillText('Beginning of trade', startX, PADDING_TOP - 4);
-
-        // Small play arrow
-        ctx.fillStyle = '#8892a0';
-        ctx.beginPath();
-        ctx.moveTo(startX - 4, PADDING_TOP - 18);
-        ctx.lineTo(startX + 4, PADDING_TOP - 14);
-        ctx.lineTo(startX - 4, PADDING_TOP - 10);
-        ctx.closePath();
-        ctx.fill();
-      }
-
-      // Draw "End of trade" line
-      if (endX > 0 && endX < chartWidth) {
-        ctx.strokeStyle = '#8892a0';
-        ctx.lineWidth = 1;
-        ctx.setLineDash([5, 4]);
-        ctx.beginPath();
-        ctx.moveTo(endX, PADDING_TOP);
-        ctx.lineTo(endX, height - TIME_SCALE_HEIGHT);
-        ctx.stroke();
-        ctx.setLineDash([]);
-
-        ctx.fillStyle = '#8892a0';
-        ctx.font = '10px Inter, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'bottom';
-        ctx.fillText('End of trade', endX, PADDING_TOP - 4);
-      }
-
-      // Entry price dashed line
-      const entryY = priceToY(activeTrade.entryPrice, minPrice, maxPrice, height);
-      ctx.strokeStyle = '#8892a066';
-      ctx.lineWidth = 1;
-      ctx.setLineDash([4, 4]);
-      ctx.beginPath();
-      ctx.moveTo(Math.max(0, startX), entryY);
-      ctx.lineTo(Math.min(chartWidth, endX), entryY);
-      ctx.stroke();
-      ctx.setLineDash([]);
-
-      // Countdown timer badge between the lines
-      const midX = (Math.max(0, startX) + Math.min(chartWidth, endX)) / 2;
-      if (timeLeft > 0) {
-        const mins = Math.floor(timeLeft / 60);
-        const secs = timeLeft % 60;
-        const countdownText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-        const badgeW = 44;
-        const badgeH = 18;
-
-        ctx.fillStyle = 'rgba(45, 55, 72, 0.9)';
-        roundRect(ctx, midX - badgeW / 2, entryY - badgeH / 2, badgeW, badgeH, 4);
-        ctx.fill();
-
-        ctx.fillStyle = '#e2e8f0';
-        ctx.font = '10px Inter, monospace';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(countdownText, midX, entryY);
-      }
-    }
-
     // Crosshair
     const ch = stateRef.current.crosshair;
     if (ch && ch.x < chartWidth && ch.y < height - TIME_SCALE_HEIGHT && ch.y > PADDING_TOP) {
       ctx.strokeStyle = COLORS.crosshairLine;
       ctx.lineWidth = 0.5;
       ctx.setLineDash([3, 3]);
-
       ctx.beginPath();
       ctx.moveTo(ch.x, PADDING_TOP);
       ctx.lineTo(ch.x, height - TIME_SCALE_HEIGHT);
       ctx.stroke();
-
       ctx.beginPath();
       ctx.moveTo(0, ch.y);
       ctx.lineTo(chartWidth, ch.y);
       ctx.stroke();
       ctx.setLineDash([]);
 
-      // Price at crosshair
       const crossPrice = yToPrice(ch.y, minPrice, maxPrice, height);
       const crossLabel = formatPrice(crossPrice);
       const crossLabelH = 20;
-
       ctx.fillStyle = COLORS.crosshairLabel;
       roundRect(ctx, chartWidth + 1, ch.y - crossLabelH / 2, PRICE_SCALE_WIDTH - 2, crossLabelH, 3);
       ctx.fill();
-
       ctx.fillStyle = COLORS.crosshairText;
       ctx.font = '10px Inter, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(crossLabel, chartWidth + PRICE_SCALE_WIDTH / 2, ch.y);
 
-      // Time at crosshair
       const candleIdx = Math.round((ch.x + effectiveOffset) / step);
       if (candleIdx >= 0 && candleIdx < candles.length) {
         const date = new Date(candles[candleIdx].time * 1000);
         const timeLabel = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
         const timeLabelW = 48;
         const timeLabelH = 18;
-
         ctx.fillStyle = COLORS.crosshairLabel;
         roundRect(ctx, ch.x - timeLabelW / 2, height - TIME_SCALE_HEIGHT + 1, timeLabelW, timeLabelH, 3);
         ctx.fill();
-
         ctx.fillStyle = COLORS.crosshairText;
         ctx.font = '10px Inter, sans-serif';
         ctx.fillText(timeLabel, ch.x, height - TIME_SCALE_HEIGHT + 1 + timeLabelH / 2);
       }
 
-      // OHLC tooltip top-left
       const hoverIdx = Math.round((ch.x + effectiveOffset) / step);
       if (hoverIdx >= 0 && hoverIdx < candles.length) {
         drawOHLCTooltip(ctx, candles[hoverIdx], 80, PADDING_TOP + 8);
       }
     }
-  }, [candles, currentPrice, activeTrade, getVisibleRange, getPriceRange]);
+  }, [candles, currentPrice, activeTrade, completedTrades, getVisibleRange, getPriceRange, drawTradeOnChart]);
 
-  // Mouse handlers with smooth feel
+  // Mouse handlers
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     const st = stateRef.current;
     st.isDragging = true;
@@ -556,7 +642,6 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     const rect = canvasRef.current?.getBoundingClientRect();
     if (!rect) return;
-
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     const st = stateRef.current;
@@ -566,8 +651,6 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       st.targetOffsetX = st.dragStartOffsetX + dx;
       st.offsetX = st.targetOffsetX;
       st.crosshair = null;
-
-      // Track velocity for momentum
       const now = performance.now();
       const dt = now - st.lastDragTime;
       if (dt > 0) {
@@ -598,7 +681,6 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     stateRef.current.targetScaleX = Math.max(0.3, Math.min(5, stateRef.current.targetScaleX + delta));
   }, []);
 
-  // Touch support
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     if (e.touches.length === 1) {
       stateRef.current.isDragging = true;
@@ -619,7 +701,6 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     stateRef.current.isDragging = false;
   }, []);
 
-  // Animation loop - always running for smooth interpolation
   useEffect(() => {
     const loop = () => {
       draw();
@@ -647,7 +728,6 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
 }
 
 // --- Helpers ---
-
 function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
   ctx.beginPath();
   ctx.moveTo(x + r, y);
@@ -685,7 +765,6 @@ function calculateTimeStep(candleStep: number): number {
 
 function drawOHLCTooltip(ctx: CanvasRenderingContext2D, c: CandleData, x: number, y: number) {
   const isGreen = c.close >= c.open;
-
   ctx.font = '10px Inter, sans-serif';
   const labels = [
     { label: 'O', value: formatPrice(c.open) },
@@ -693,7 +772,6 @@ function drawOHLCTooltip(ctx: CanvasRenderingContext2D, c: CandleData, x: number
     { label: 'L', value: formatPrice(c.low) },
     { label: 'C', value: formatPrice(c.close) },
   ];
-
   let xPos = x;
   labels.forEach(({ label, value }) => {
     ctx.fillStyle = COLORS.textMuted;
@@ -701,7 +779,6 @@ function drawOHLCTooltip(ctx: CanvasRenderingContext2D, c: CandleData, x: number
     ctx.textBaseline = 'top';
     ctx.fillText(label + ' ', xPos, y);
     xPos += ctx.measureText(label + ' ').width;
-
     ctx.fillStyle = isGreen ? COLORS.tooltipGreen : COLORS.tooltipRed;
     ctx.fillText(value, xPos, y);
     xPos += ctx.measureText(value).width + 12;
