@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { TradingPair, TIMEFRAMES, Trade } from '@/lib/types';
-import { ArrowUp, ArrowDown, Minus, Plus, Clock } from 'lucide-react';
+import { ArrowUp, ArrowDown, Minus, Plus, Clock, ChevronDown, Package } from 'lucide-react';
 
 interface TradePanelProps {
   pair: TradingPair;
@@ -8,15 +8,17 @@ interface TradePanelProps {
   balance: number;
   onTrade: (direction: 'up' | 'down', amount: number, duration: number) => void;
   activeTrade: Trade | null;
+  trades: Trade[];
 }
 
-export default function TradePanel({ pair, currentPrice, balance, onTrade, activeTrade }: TradePanelProps) {
+export default function TradePanel({ pair, currentPrice, balance, onTrade, activeTrade, trades }: TradePanelProps) {
   const [amount, setAmount] = useState(100);
   const [selectedTimeframe, setSelectedTimeframe] = useState(TIMEFRAMES[0]);
   const [showTimeframes, setShowTimeframes] = useState(false);
+  const [activeTab, setActiveTab] = useState<'trades' | 'orders'>('trades');
 
   const fee = amount * 0.10;
-  const potentialPayout = amount + (amount - fee) ;
+  const potentialPayout = amount + (amount - fee);
 
   const adjustAmount = (delta: number) => {
     setAmount(prev => Math.max(1, prev + delta));
@@ -26,70 +28,77 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
     ? Math.max(0, Math.ceil((activeTrade.endTime - Date.now()) / 1000))
     : 0;
 
+  const completedTrades = trades.filter(t => t.result);
+
+  const formatTime = (tf: typeof TIMEFRAMES[0]) => {
+    const m = Math.floor(tf.seconds / 60);
+    const h = Math.floor(m / 60);
+    if (h > 0) return `${String(h).padStart(2, '0')}:00:00`;
+    return `00:${String(m).padStart(2, '0')}:00`;
+  };
+
   return (
-    <div className="w-[280px] bg-card border-l border-border flex flex-col">
+    <div className="w-[260px] bg-card border-l border-border flex flex-col h-full overflow-y-auto">
       {/* Pair info */}
-      <div className="px-4 py-3 border-b border-border">
+      <div className="px-3 py-2.5 border-b border-border">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-xl">{pair.icon}</span>
-            <span className="font-semibold text-foreground text-sm">{pair.displayName}</span>
+            <span className="text-base">{pair.icon}</span>
+            <span className="font-semibold text-foreground text-xs">{pair.displayName}</span>
           </div>
-          <span className="text-success text-sm font-semibold">{pair.payout}%</span>
+          <span className="text-foreground text-xs font-semibold">{pair.payout}%</span>
         </div>
-        <div className="flex items-center gap-2 mt-1">
-          <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-          <span className="text-[10px] text-primary font-medium">PENDING TRADE</span>
-          <div className="ml-auto w-8 h-4 bg-primary/30 rounded-full flex items-center">
-            <div className="w-3 h-3 bg-primary rounded-full ml-auto mr-0.5" />
+        <div className="flex items-center gap-2 mt-1.5">
+          <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+          <span className="text-[9px] text-primary font-semibold tracking-wide">PENDING TRADE</span>
+          <div className="ml-auto w-7 h-3.5 bg-primary/30 rounded-full flex items-center cursor-pointer">
+            <div className="w-2.5 h-2.5 bg-primary rounded-full ml-auto mr-0.5" />
           </div>
         </div>
       </div>
 
       {/* Time selector */}
-      <div className="px-4 py-3 border-b border-border">
-        <label className="text-[10px] text-muted-foreground uppercase tracking-wider">Time</label>
-        <div className="flex items-center gap-2 mt-1">
-          <button
-            onClick={() => {
-              const idx = TIMEFRAMES.indexOf(selectedTimeframe);
-              if (idx > 0) setSelectedTimeframe(TIMEFRAMES[idx - 1]);
-            }}
-            className="w-7 h-7 rounded-md bg-secondary flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <Minus size={14} />
-          </button>
-          <button
-            onClick={() => setShowTimeframes(!showTimeframes)}
-            className="flex-1 text-center font-mono text-lg font-semibold text-foreground"
-          >
-            {selectedTimeframe.label === '1m' ? '00:01:00' :
-             selectedTimeframe.label === '3m' ? '00:03:00' :
-             selectedTimeframe.label === '5m' ? '00:05:00' :
-             selectedTimeframe.label === '15m' ? '00:15:00' :
-             selectedTimeframe.label === '30m' ? '00:30:00' : '01:00:00'}
-          </button>
-          <button
-            onClick={() => {
-              const idx = TIMEFRAMES.indexOf(selectedTimeframe);
-              if (idx < TIMEFRAMES.length - 1) setSelectedTimeframe(TIMEFRAMES[idx + 1]);
-            }}
-            className="w-7 h-7 rounded-md bg-secondary flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <Plus size={14} />
-          </button>
-        </div>
-        <button className="w-full text-center text-[10px] text-primary font-semibold mt-1 hover:underline">
+      <div className="px-3 py-2.5 border-b border-border">
+        <fieldset className="border border-border rounded-md px-2 pb-2 pt-0">
+          <legend className="text-[9px] text-muted-foreground px-1">Time</legend>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => {
+                const idx = TIMEFRAMES.indexOf(selectedTimeframe);
+                if (idx > 0) setSelectedTimeframe(TIMEFRAMES[idx - 1]);
+              }}
+              className="w-6 h-6 rounded flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Minus size={12} />
+            </button>
+            <button
+              onClick={() => setShowTimeframes(!showTimeframes)}
+              className="flex-1 text-center font-mono text-sm font-semibold text-foreground"
+            >
+              {formatTime(selectedTimeframe)}
+            </button>
+            <button
+              onClick={() => {
+                const idx = TIMEFRAMES.indexOf(selectedTimeframe);
+                if (idx < TIMEFRAMES.length - 1) setSelectedTimeframe(TIMEFRAMES[idx + 1]);
+              }}
+              className="w-6 h-6 rounded flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Plus size={12} />
+            </button>
+          </div>
+        </fieldset>
+        <button className="w-full text-center text-[9px] text-primary font-bold mt-1 hover:underline tracking-wide">
           SWITCH TIME
         </button>
 
         {showTimeframes && (
-          <div className="mt-2 grid grid-cols-3 gap-1">
+          <div className="mt-1.5 grid grid-cols-3 gap-1">
             {TIMEFRAMES.map(tf => (
               <button
                 key={tf.label}
                 onClick={() => { setSelectedTimeframe(tf); setShowTimeframes(false); }}
-                className={`px-2 py-1.5 rounded text-xs font-medium transition-colors ${
+                className={`px-2 py-1 rounded text-[10px] font-medium transition-colors ${
                   tf.label === selectedTimeframe.label
                     ? 'bg-primary text-primary-foreground'
                     : 'bg-secondary text-muted-foreground hover:text-foreground'
@@ -103,76 +112,168 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
       </div>
 
       {/* Investment amount */}
-      <div className="px-4 py-3 border-b border-border">
-        <label className="text-[10px] text-muted-foreground uppercase tracking-wider">Investment</label>
-        <div className="flex items-center gap-2 mt-1">
-          <button
-            onClick={() => adjustAmount(-10)}
-            className="w-7 h-7 rounded-md bg-secondary flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <Minus size={14} />
-          </button>
-          <div className="flex-1 text-center">
-            <input
-              type="number"
-              value={amount}
-              onChange={e => setAmount(Math.max(1, parseInt(e.target.value) || 1))}
-              className="w-full text-center bg-transparent font-mono text-lg font-semibold text-foreground outline-none"
-            />
+      <div className="px-3 py-2.5 border-b border-border">
+        <fieldset className="border border-border rounded-md px-2 pb-2 pt-0">
+          <legend className="text-[9px] text-muted-foreground px-1">Investment</legend>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => adjustAmount(-10)}
+              className="w-6 h-6 rounded flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Minus size={12} />
+            </button>
+            <div className="flex-1 flex items-center justify-center gap-1">
+              <input
+                type="number"
+                value={amount}
+                onChange={e => setAmount(Math.max(1, parseInt(e.target.value) || 1))}
+                className="w-16 text-center bg-transparent font-mono text-sm font-semibold text-foreground outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
+              <span className="text-muted-foreground text-xs">$</span>
+            </div>
+            <button
+              onClick={() => adjustAmount(10)}
+              className="w-6 h-6 rounded flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Plus size={12} />
+            </button>
           </div>
-          <span className="text-muted-foreground text-sm">$</span>
-          <button
-            onClick={() => adjustAmount(10)}
-            className="w-7 h-7 rounded-md bg-secondary flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <Plus size={14} />
-          </button>
-        </div>
-        <button className="w-full text-center text-[10px] text-primary font-semibold mt-1 hover:underline">
+        </fieldset>
+        <button className="w-full text-center text-[9px] text-primary font-bold mt-1 hover:underline tracking-wide">
           SWITCH
         </button>
       </div>
 
-      {/* Payout */}
-      <div className="px-4 py-2 border-b border-border flex items-center justify-between">
-        <span className="text-xs text-muted-foreground">Your payout:</span>
-        <span className="text-sm font-semibold text-foreground">{potentialPayout.toFixed(0)} $</span>
+      {/* Payout line */}
+      <div className="px-3 py-2 border-b border-border flex items-center justify-between">
+        <span className="text-[11px] text-muted-foreground">Your payout:</span>
+        <div className="flex-1 mx-2 border-b border-dotted border-muted-foreground/30" />
+        <span className="text-[11px] font-bold text-foreground">{potentialPayout.toFixed(0)} $</span>
       </div>
 
       {/* Active trade countdown */}
       {activeTrade && timeLeft > 0 && (
-        <div className="px-4 py-3 border-b border-border">
-          <div className="flex items-center justify-center gap-2">
-            <div className={`w-16 h-16 rounded-full border-4 flex items-center justify-center font-mono text-xl font-bold animate-countdown-pulse ${
+        <div className="px-3 py-3 border-b border-border">
+          <div className="flex items-center justify-center">
+            <div className={`w-14 h-14 rounded-full border-[3px] flex items-center justify-center font-mono text-lg font-bold animate-countdown-pulse ${
               activeTrade.direction === 'up' ? 'border-success text-success' : 'border-danger text-danger'
             }`}>
               {timeLeft}s
             </div>
           </div>
-          <div className="text-center mt-2 text-xs text-muted-foreground">
-            {activeTrade.direction === 'up' ? '↑ UP' : '↓ DOWN'} • ${activeTrade.amount}
+          <div className="text-center mt-1.5 text-[10px] text-muted-foreground">
+            {activeTrade.direction === 'up' ? '↑ UP' : '↓ DOWN'} • {activeTrade.amount} $
           </div>
         </div>
       )}
 
       {/* Trade buttons */}
-      <div className="px-4 py-3 space-y-2">
+      <div className="px-3 py-2.5 space-y-2 border-b border-border">
         <button
           onClick={() => onTrade('up', amount, selectedTimeframe.seconds)}
           disabled={!!activeTrade}
-          className="w-full py-3.5 rounded-lg trade-btn-up flex items-center justify-between px-5 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-3 rounded-lg trade-btn-up flex items-center justify-between px-4 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <span className="text-base font-bold">Up</span>
-          <ArrowUp size={20} />
+          <span className="text-sm font-bold">Up</span>
+          <ArrowUp size={18} />
         </button>
         <button
           onClick={() => onTrade('down', amount, selectedTimeframe.seconds)}
           disabled={!!activeTrade}
-          className="w-full py-3.5 rounded-lg trade-btn-down flex items-center justify-between px-5 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-3 rounded-lg trade-btn-down flex items-center justify-between px-4 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <span className="text-base font-bold">Down</span>
-          <ArrowDown size={20} />
+          <span className="text-sm font-bold">Down</span>
+          <ArrowDown size={18} />
         </button>
+      </div>
+
+      {/* Divider line - blue accent */}
+      <div className="h-0.5 bg-primary/60" />
+
+      {/* Trade History Tabs */}
+      <div className="flex border-b border-border">
+        <button
+          onClick={() => setActiveTab('trades')}
+          className={`flex-1 py-2 text-[11px] font-medium transition-colors flex items-center justify-center gap-1.5 ${
+            activeTab === 'trades'
+              ? 'text-foreground border-b-2 border-primary'
+              : 'text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          Trades
+          <span className="bg-secondary px-1.5 py-0.5 rounded-sm text-[9px]">{completedTrades.length}</span>
+        </button>
+        <button
+          onClick={() => setActiveTab('orders')}
+          className={`flex-1 py-2 text-[11px] font-medium transition-colors flex items-center justify-center gap-1.5 ${
+            activeTab === 'orders'
+              ? 'text-foreground border-b-2 border-primary'
+              : 'text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          <Clock size={11} />
+          <span className="bg-secondary px-1.5 py-0.5 rounded-sm text-[9px]">0</span>
+        </button>
+      </div>
+
+      {/* Trade History Content */}
+      <div className="flex-1 overflow-y-auto">
+        {activeTab === 'trades' && completedTrades.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
+            <Package size={28} className="mb-2 opacity-50" />
+            <p className="text-[11px]">No trades yet.</p>
+            <p className="text-[9px]">Place your first trade above.</p>
+          </div>
+        )}
+
+        {activeTab === 'trades' && (
+          <>
+            {completedTrades.length > 0 && (
+              <div className="px-3 py-1.5 flex items-center justify-center gap-1.5">
+                <span className="text-[10px] text-muted-foreground font-medium">
+                  {new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'long' }).toUpperCase()}
+                </span>
+                <span className="bg-secondary text-[9px] px-1.5 py-0.5 rounded-sm font-medium text-foreground">
+                  {completedTrades.length}
+                </span>
+              </div>
+            )}
+            {completedTrades.map(trade => (
+              <div key={trade.id} className="px-3 py-2 border-b border-border/30 hover:bg-accent/30 transition-colors">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <ChevronDown size={12} className="text-muted-foreground" />
+                    <span className="text-xs">{trade.pair.icon}</span>
+                    <span className="text-[11px] font-medium text-foreground">{trade.pair.displayName}</span>
+                  </div>
+                  <span className="text-[10px] text-muted-foreground font-mono">
+                    00:{String(Math.floor(trade.duration / 60)).padStart(2, '0')}:00
+                  </span>
+                </div>
+                <div className="flex items-center justify-between mt-0.5 pl-6">
+                  <div className="flex items-center gap-1">
+                    <div className={`w-1.5 h-1.5 rounded-full ${trade.direction === 'up' ? 'bg-success' : 'bg-danger'}`} />
+                    <span className="text-[10px] text-muted-foreground">{trade.amount} $</span>
+                  </div>
+                  <span className={`text-[10px] font-semibold ${
+                    trade.result === 'win' ? 'text-success' : 'text-danger'
+                  }`}>
+                    {trade.result === 'win' ? `+${((trade.payout || 0) - trade.amount).toFixed(2)}` : `${(0).toFixed(2)}`} $
+                  </span>
+                </div>
+                {/* Sell now button for active-like display */}
+              </div>
+            ))}
+          </>
+        )}
+
+        {activeTab === 'orders' && (
+          <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
+            <Package size={28} className="mb-2 opacity-50" />
+            <p className="text-[11px]">Order list is empty.</p>
+            <p className="text-[9px]">Create a pending trade using the form above.</p>
+          </div>
+        )}
       </div>
     </div>
   );
