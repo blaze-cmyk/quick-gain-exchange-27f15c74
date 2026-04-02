@@ -71,6 +71,9 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     dragStartOffsetX: 0,
     crosshair: null,
     smoothPrice: 0,
+    velocityX: 0,
+    lastDragX: 0,
+    lastDragTime: 0,
   });
   const animFrameRef = useRef<number>(0);
   const prevCandleCountRef = useRef(0);
