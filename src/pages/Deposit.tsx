@@ -9,10 +9,10 @@ import phonepeLogo from '@/assets/payment/phonepe.png';
 import paytmLogo from '@/assets/payment/paytm.png';
 import gpayLogo from '@/assets/payment/gpay.png';
 import binanceLogo from '@/assets/payment/binance.png';
-import bybitLogo from '@/assets/payment/bybit.png';
-import kucoinLogo from '@/assets/payment/kucoin.png';
+import bybitLogo from '@/assets/payment/bybit-pay.png';
+import kucoinLogo from '@/assets/payment/kucoin-pay.png';
 import usdcLogo from '@/assets/payment/usdc.png';
-import binance2Logo from '@/assets/payment/binance2.png';
+import binanceCryptoLogo from '@/assets/payment/binance-crypto.png';
 import tronLogo from '@/assets/payment/tron.png';
 import bitcoinLogo from '@/assets/payment/bitcoin.png';
 import litecoinLogo from '@/assets/payment/litecoin.png';
@@ -73,7 +73,7 @@ const CRYPTO_NETWORKS = [
     icon: tetherTrc20,
     available: 10,
     methods: [
-      { name: 'Binance Pay', icon: binance2Logo, min: '$5', time: '~1 min.', category: 'crypto' as const },
+      { name: 'Binance Pay', icon: binanceCryptoLogo, min: '$5', time: '~1 min.', category: 'crypto' as const },
       { name: 'ByBit Pay', icon: bybitLogo, min: '$5', time: '~5 min.', category: 'crypto' as const },
       { name: 'KuCoin Pay', icon: kucoinLogo, min: '$5', time: '~5 min.', category: 'crypto' as const },
     ],
@@ -83,7 +83,7 @@ const CRYPTO_NETWORKS = [
     icon: usdcLogo,
     available: 8,
     methods: [
-      { name: 'Binance Pay', icon: binance2Logo, min: '$5', time: '~1 min.', category: 'crypto' as const },
+      { name: 'Binance Pay', icon: binanceCryptoLogo, min: '$5', time: '~1 min.', category: 'crypto' as const },
     ],
   },
 ];
@@ -112,12 +112,13 @@ const CRYPTO_DIRECT: PaymentMethod[] = [
   { name: 'Bitcoin Cash (BCH)', icon: bchLogo, min: '$10', time: '~10 min.', category: 'crypto' },
   { name: 'Toncoin (TON)', icon: toncoinLogo, min: '$5', time: '3-5 min.', category: 'crypto' },
   { name: 'Stellar (XLM)', icon: stellarLogo, min: '$10', time: '~5 min.', category: 'crypto' },
+  { name: 'opBNB BNB', icon: bnbLogo, min: '$5', time: '~5 min.', category: 'crypto' },
   { name: 'Polygon (MATIC)', icon: polygonLogo, min: '$5', time: '~5 min.', category: 'crypto' },
 ];
 
 const EPAYMENT_METHODS: PaymentMethod[] = [
-  { name: 'Volet.com (ex. Advcash)', icon: voletLogo, min: '$5', time: '~5 min.', category: 'epayments' },
-  { name: 'Jetonbank', icon: jetonbankLogo, min: '$5', time: '~5 min.', category: 'epayments' },
+  { name: 'Volet.com (ex. Advcash)', icon: voletLogo, min: '$5', time: '~1 min.', category: 'epayments' },
+  { name: 'Jetonbank', icon: jetonbankLogo, min: '$5', time: '~1 min.', category: 'epayments' },
   { name: 'MoneyGo', icon: moneygoLogo, min: '$5', time: '~5 min.', category: 'epayments' },
 ];
 
@@ -137,7 +138,7 @@ export default function DepositPage() {
   const [activeTab, setActiveTab] = useState('DEPOSIT');
   const [search, setSearch] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [expandedCrypto, setExpandedCrypto] = useState<string | null>(null);
+  const [expandedCrypto, setExpandedCrypto] = useState<string | null>('Tether (USDT)');
 
   const filterMethods = (methods: PaymentMethod[]) =>
     methods.filter(m => m.name.toLowerCase().includes(search.toLowerCase()));
