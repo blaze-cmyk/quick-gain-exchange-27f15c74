@@ -83,7 +83,24 @@ export default function AccountPage() {
   const [aadhaar, setAadhaar] = useState('');
   const [email] = useState('user@arcanine.com');
   const [country, setCountry] = useState('India');
+  const [countryOpen, setCountryOpen] = useState(false);
+  const [countrySearch, setCountrySearch] = useState('');
   const [address, setAddress] = useState('');
+  const countryRef = useRef<HTMLDivElement>(null);
+
+  const selectedCountryObj = COUNTRIES.find(c => c.name === country);
+  const filteredCountries = COUNTRIES.filter(c => c.name.toLowerCase().includes(countrySearch.toLowerCase()));
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (countryRef.current && !countryRef.current.contains(e.target as Node)) {
+        setCountryOpen(false);
+        setCountrySearch('');
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
   const [twoStepEnabled] = useState(true);
   const [enterPlatform, setEnterPlatform] = useState(true);
   const [withdrawFunds, setWithdrawFunds] = useState(true);
