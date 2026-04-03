@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { ArrowLeft, Camera, Globe, Clock, ChevronDown, AlertCircle, CheckCircle2, Shield, Lock, X, Pencil } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { ArrowLeft, Camera, Globe, Clock, ChevronDown, AlertCircle, CheckCircle2, Shield, Lock, X, Pencil, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const TABS = ['Withdrawal', 'Transactions', 'Trades', 'My account', 'Market', 'Tournaments', 'Analytics'];
 
