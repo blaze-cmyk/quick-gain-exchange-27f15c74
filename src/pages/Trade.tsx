@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { TradingPair, Trade, TRADING_PAIRS } from '@/lib/types';
-import { useBinanceWebSocket } from '@/hooks/useBinanceWebSocket';
+import { usePairData } from '@/hooks/usePairData';
 import { useAllPairsPrices } from '@/hooks/useAllPairsPrices';
 import { useForexPrices } from '@/hooks/useForexPrices';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -25,7 +25,7 @@ export default function TradePage() {
   const [activeTrade, setActiveTrade] = useState<Trade | null>(null);
   const [tradeResult, setTradeResult] = useState<{ result: 'win' | 'loss'; amount: number } | null>(null);
   const [lastSettledTrade, setLastSettledTrade] = useState<Trade | null>(null);
-  const { currentPrice, priceChange, candles, connected } = useBinanceWebSocket(activePair.binanceSymbol);
+  const { currentPrice, priceChange, candles, connected } = usePairData(activePair);
   const { prices: allPrices, changes: allChanges } = useAllPairsPrices();
   const { prices: forexPrices, changes: forexChanges } = useForexPrices();
 

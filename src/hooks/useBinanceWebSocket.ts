@@ -56,6 +56,7 @@ export function useBinanceWebSocket(symbol: string) {
   }, []);
 
   useEffect(() => {
+    if (!symbol) return;
     const sym = symbol.toLowerCase();
     let destroyed = false;
 

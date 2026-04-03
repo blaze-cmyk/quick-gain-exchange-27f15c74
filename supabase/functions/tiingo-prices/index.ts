@@ -12,10 +12,19 @@ Deno.serve(async (req) => {
 
   try {
     const url = new URL(req.url)
-    const type = url.searchParams.get('type') || 'forex' // 'forex' or 'crypto'
+    const type = url.searchParams.get('type') || 'forex'
+    const endpoint = url.searchParams.get('endpoint') || 'top' // 'top' or 'candles'
 
     let apiUrl: string
-    if (type === 'crypto') {
+
+    if (endpoint === 'candles') {
+      // Forex intraday candles
+      const ticker = url.searchParams.get('ticker') || 'eurusd'
+      const resampleFreq = url.searchParams.get('resampleFreq') || '1min'
+      const now = new Date()
+      const startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+      apiUrl = `https://api.tiingo.com/tiingo/fx/${ticker}/prices?startDate=${startDate}&resampleFreq=${resampleFreq}&token=${TIINGO_API_KEY}`
+    } else if (type === 'crypto') {
       const tickers = url.searchParams.get('tickers') || ''
       apiUrl = `https://api.tiingo.com/tiingo/crypto/top?tickers=${tickers}&token=${TIINGO_API_KEY}`
     } else {
