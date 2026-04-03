@@ -83,7 +83,7 @@ const CRYPTO_NETWORKS = [
     icon: usdcLogo,
     available: 8,
     methods: [
-      { name: 'Binance Pay', icon: binance2Logo, min: '$5', time: '~1 min.', category: 'crypto' as const },
+      { name: 'Binance Pay', icon: binanceCryptoLogo, min: '$5', time: '~1 min.', category: 'crypto' as const },
     ],
   },
 ];
