@@ -23,6 +23,15 @@ import solanaLogo from '@/assets/payment/solana.png';
 import avalancheLogo from '@/assets/payment/avalanche.png';
 import shibLogo from '@/assets/payment/shib.png';
 import bnbLogo from '@/assets/payment/bnb.png';
+import cardanoLogo from '@/assets/payment/cardano.png';
+import dogecoinLogo from '@/assets/payment/dogecoin.png';
+import algorandLogo from '@/assets/payment/algorand.png';
+import polkadotLogo from '@/assets/payment/polkadot.png';
+import uniswapLogo from '@/assets/payment/uniswap.png';
+import chainlinkLogo from '@/assets/payment/chainlink.png';
+import cosmosLogo from '@/assets/payment/cosmos.png';
+import daiLogo from '@/assets/payment/dai.png';
+import etcLogo from '@/assets/payment/etc.png';
 
 const TABS = ['DEPOSIT', 'WITHDRAWAL', 'HISTORY', 'CASHBACK', 'PROMO CODES', 'MY SAFE'];
 
