@@ -257,9 +257,19 @@ export default function SupportPage() {
   const allItems = sections.flatMap(s => s.items);
 
   return (
-    <div className="min-h-screen bg-[#1A1D29] text-[#E0E2E7]">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+      className="min-h-screen bg-[#1A1D29] text-[#E0E2E7]"
+    >
       {/* Header */}
-      <div className="flex items-center px-6 py-4 bg-[#1B1F2D] border-b border-[#2B3040]">
+      <motion.div
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.3 }}
+        className="flex items-center px-6 py-4 bg-[#1B1F2D] border-b border-[#2B3040]"
+      >
         <button
           onClick={() => navigate('/trade')}
           className="mr-4 text-[#6B7280] hover:text-[#E0E2E7] transition-colors"
@@ -267,14 +277,24 @@ export default function SupportPage() {
           <ArrowLeft size={20} />
         </button>
         <h1 className="text-lg font-bold">FAQ</h1>
-      </div>
+      </motion.div>
 
       {/* Section filter tabs */}
       <div className="max-w-[900px] mx-auto px-6 pt-8 pb-4">
-        <div className="flex flex-wrap gap-2 mb-8">
-          {['ALL', ...FAQ_SECTIONS.map(s => s.title)].map(tab => (
-            <button
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="flex flex-wrap gap-2 mb-8"
+        >
+          {['ALL', ...FAQ_SECTIONS.map(s => s.title)].map((tab, i) => (
+            <motion.button
               key={tab}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.2, delay: 0.05 * i }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => setActiveSection(tab)}
               className={`px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition-colors ${
                 activeSection === tab
@@ -283,44 +303,69 @@ export default function SupportPage() {
               }`}
             >
               {tab}
-            </button>
+            </motion.button>
           ))}
-        </div>
+        </motion.div>
 
         {/* FAQ Items */}
         <div className="space-y-3">
-          {allItems.map((item) => {
-            const isOpen = openItem === item.question;
-            return (
-              <div
-                key={item.question}
-                className="bg-[#242833] rounded-xl border border-[#2B3040] overflow-hidden"
-              >
-                <button
-                  onClick={() => toggleItem(item.question)}
-                  className="flex items-center justify-between w-full px-6 py-5 text-left"
-                >
-                  <span className="font-semibold text-sm text-[#E0E2E7] pr-4">
-                    {item.question}
-                  </span>
-                  {isOpen ? (
-                    <ChevronUp size={18} className="text-[#6B7280] shrink-0" />
-                  ) : (
-                    <ChevronDown size={18} className="text-[#6B7280] shrink-0" />
-                  )}
-                </button>
-                {isOpen && (
-                  <div className="px-6 pb-5 pt-0">
-                    <p className="text-sm text-[#9CA3AF] leading-relaxed">
-                      {item.answer}
-                    </p>
-                  </div>
-                )}
-              </div>
-            );
-          })}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeSection}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-3"
+            >
+              {allItems.map((item, index) => {
+                const isOpen = openItem === item.question;
+                return (
+                  <motion.div
+                    key={item.question}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.25, delay: index * 0.03 }}
+                    className="bg-[#242833] rounded-xl border border-[#2B3040] overflow-hidden"
+                  >
+                    <button
+                      onClick={() => toggleItem(item.question)}
+                      className="flex items-center justify-between w-full px-6 py-5 text-left"
+                    >
+                      <span className="font-semibold text-sm text-[#E0E2E7] pr-4">
+                        {item.question}
+                      </span>
+                      <motion.div
+                        animate={{ rotate: isOpen ? 180 : 0 }}
+                        transition={{ duration: 0.25 }}
+                      >
+                        <ChevronDown size={18} className="text-[#6B7280] shrink-0" />
+                      </motion.div>
+                    </button>
+                    <AnimatePresence>
+                      {isOpen && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.25, ease: 'easeInOut' }}
+                          className="overflow-hidden"
+                        >
+                          <div className="px-6 pb-5 pt-0">
+                            <p className="text-sm text-[#9CA3AF] leading-relaxed">
+                              {item.answer}
+                            </p>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
