@@ -1,13 +1,15 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { TradingPair, Trade, TRADING_PAIRS } from '@/lib/types';
 import { usePairData } from '@/hooks/usePairData';
 import { useAllPairsPrices } from '@/hooks/useAllPairsPrices';
 import { useForexPrices } from '@/hooks/useForexPrices';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { motion, AnimatePresence } from 'framer-motion';
 import Sidebar from '@/components/trading/Sidebar';
 import AssetTabs from '@/components/trading/AssetTabs';
 import CustomChart from '@/components/trading/CustomChart';
 import TradePanel from '@/components/trading/TradePanel';
+import MobileTradePanel from '@/components/trading/MobileTradePanel';
 import AssetSelector from '@/components/trading/AssetSelector';
 import WinLossOverlay from '@/components/trading/WinLossOverlay';
 import TradeNotification from '@/components/trading/TradeNotification';
@@ -28,8 +30,8 @@ export default function TradePage() {
   const { currentPrice, priceChange, candles, connected } = usePairData(activePair);
   const { prices: allPrices, changes: allChanges } = useAllPairsPrices();
   const { prices: forexPrices, changes: forexChanges } = useForexPrices();
+  const isMobile = useIsMobile();
 
-  // Merge all price sources
   const prices = { ...allPrices, ...forexPrices, ...(currentPrice > 0 ? { [activePair.symbol]: currentPrice } : {}) };
   const changes = { ...allChanges, ...forexChanges, ...(priceChange !== 0 ? { [activePair.symbol]: priceChange } : {}) };
 
@@ -74,16 +76,24 @@ export default function TradePage() {
     setActiveTrade(trade);
   }, [balance, activeTrade, activePair, currentPrice]);
 
+  const selectPair = (pair: TradingPair) => {
+    setActivePair(pair);
+    if (!pinnedPairs.find(p => p.symbol === pair.symbol)) {
+      setPinnedPairs(prev => [...prev, pair]);
+    }
+  };
+
   return (
     <div className="h-screen flex overflow-hidden bg-background">
-      <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
+      {/* Desktop sidebar */}
+      {!isMobile && <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />}
 
       <div className="flex-1 flex flex-col min-w-0">
         <BalanceHeader balance={balance} />
 
-        <div className="flex-1 flex min-h-0">
+        <div className={`flex-1 flex ${isMobile ? 'flex-col' : ''} min-h-0`}>
           {/* Chart area */}
-          <div className="flex-1 relative min-w-0">
+          <div className="flex-1 relative min-w-0 min-h-0">
             {/* Payout % */}
             <motion.div
               initial={{ opacity: 0, x: -10 }}
@@ -97,52 +107,51 @@ export default function TradePage() {
             </motion.div>
 
             {/* Connection status */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="absolute top-[80px] left-3 z-10 flex flex-col gap-1"
-            >
-              <div className="flex items-center gap-1.5">
-                <div className={`w-[6px] h-[6px] rounded-full ${connected ? 'bg-success' : 'bg-danger'}`} />
-                <span className="text-[10px] text-muted-foreground font-mono">
-                  {new Date().toLocaleTimeString()} UTC
-                </span>
-              </div>
-              <button className="flex items-center gap-1 text-primary text-[11px] font-medium hover:underline w-fit">
-                <Info size={12} />
-                PAIR INFORMATION
-              </button>
-            </motion.div>
+            {!isMobile && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className="absolute top-[80px] left-3 z-10 flex flex-col gap-1"
+              >
+                <div className="flex items-center gap-1.5">
+                  <div className={`w-[6px] h-[6px] rounded-full ${connected ? 'bg-success' : 'bg-danger'}`} />
+                  <span className="text-[10px] text-muted-foreground font-mono">
+                    {new Date().toLocaleTimeString()} UTC
+                  </span>
+                </div>
+                <button className="flex items-center gap-1 text-primary text-[11px] font-medium hover:underline w-fit">
+                  <Info size={12} />
+                  PAIR INFORMATION
+                </button>
+              </motion.div>
+            )}
 
             {/* Trade notification */}
             <TradeNotification trade={activeTrade} />
 
             {/* Drawing tool + Timeframe */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="absolute bottom-[60px] left-3 z-10 flex flex-col gap-2"
-            >
-              <button className="w-8 h-8 rounded-md bg-secondary/80 backdrop-blur-sm flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
-                <Pencil size={14} />
-              </button>
-              <div className="bg-secondary/80 backdrop-blur-sm rounded-md px-2.5 py-1 text-xs font-medium text-foreground">
-                1m
-              </div>
-            </motion.div>
+            {!isMobile && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="absolute bottom-[60px] left-3 z-10 flex flex-col gap-2"
+              >
+                <button className="w-8 h-8 rounded-md bg-secondary/80 backdrop-blur-sm flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
+                  <Pencil size={14} />
+                </button>
+                <div className="bg-secondary/80 backdrop-blur-sm rounded-md px-2.5 py-1 text-xs font-medium text-foreground">
+                  1m
+                </div>
+              </motion.div>
+            )}
 
             {/* Asset tabs */}
             <AssetTabs
               pairs={pinnedPairs}
               activePair={activePair}
-              onSelect={(pair) => {
-                setActivePair(pair);
-                if (!pinnedPairs.find(p => p.symbol === pair.symbol)) {
-                  setPinnedPairs(prev => [...prev, pair]);
-                }
-              }}
+              onSelect={selectPair}
               onRemove={(pair) => {
                 setPinnedPairs(prev => prev.filter(p => p.symbol !== pair.symbol));
                 if (activePair.symbol === pair.symbol && pinnedPairs.length > 1) {
@@ -166,7 +175,7 @@ export default function TradePage() {
               completedTrades={trades}
             />
 
-            {/* Result toast at bottom of chart */}
+            {/* Result toast */}
             <TradeResultToast
               trade={lastSettledTrade}
               onDismiss={() => setLastSettledTrade(null)}
@@ -184,10 +193,7 @@ export default function TradePage() {
                 >
                   <AssetSelector
                     onSelect={(pair) => {
-                      setActivePair(pair);
-                      if (!pinnedPairs.find(p => p.symbol === pair.symbol)) {
-                        setPinnedPairs(prev => [...prev, pair]);
-                      }
+                      selectPair(pair);
                       setShowSelector(false);
                     }}
                     onClose={() => setShowSelector(false)}
@@ -199,17 +205,30 @@ export default function TradePage() {
             </AnimatePresence>
           </div>
 
-          {/* Trade panel */}
-          <TradePanel
-            pair={activePair}
-            currentPrice={currentPrice}
-            balance={balance}
-            onTrade={handleTrade}
-            activeTrade={activeTrade}
-            trades={trades}
-          />
+          {/* Trade panel: mobile = below chart, desktop = right sidebar */}
+          {isMobile ? (
+            <MobileTradePanel
+              pair={activePair}
+              currentPrice={currentPrice}
+              balance={balance}
+              onTrade={handleTrade}
+              disabled={!!activeTrade}
+            />
+          ) : (
+            <TradePanel
+              pair={activePair}
+              currentPrice={currentPrice}
+              balance={balance}
+              onTrade={handleTrade}
+              activeTrade={activeTrade}
+              trades={trades}
+            />
+          )}
         </div>
       </div>
+
+      {/* Mobile bottom nav */}
+      {isMobile && <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />}
 
       <WinLossOverlay
         result={tradeResult?.result || null}
