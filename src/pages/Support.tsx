@@ -330,7 +330,7 @@ export default function SupportPage() {
                   >
                     <button
                       onClick={() => toggleItem(item.question)}
-                      className="flex items-center justify-between w-full px-6 py-5 text-left"
+                      className="flex items-center justify-between w-full px-4 md:px-6 py-4 md:py-5 text-left"
                     >
                       <span className="font-semibold text-sm text-[#E0E2E7] pr-4">
                         {item.question}
