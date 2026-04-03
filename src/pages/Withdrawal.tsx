@@ -78,11 +78,11 @@ export default function WithdrawalPage({ balance: propBalance }: WithdrawalPageP
   return (
     <div className="min-h-screen bg-[#1A1D29] text-[#E0E2E7]">
       {/* Top tabs bar */}
-      <div className="flex items-center justify-between px-6 py-3 bg-[#1B1F2D] border-b border-[#2B3040]">
-        <div className="flex items-center gap-1">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between px-3 md:px-6 py-3 bg-[#1B1F2D] border-b border-[#2B3040]">
+        <div className="flex items-center gap-1 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
           <button
             onClick={() => navigate('/trade')}
-            className="mr-4 text-[#6B7280] hover:text-[#E0E2E7] transition-colors"
+            className="mr-2 md:mr-4 text-[#6B7280] hover:text-[#E0E2E7] transition-colors flex-shrink-0"
           >
             <ArrowLeft size={20} />
           </button>
@@ -90,7 +90,7 @@ export default function WithdrawalPage({ balance: propBalance }: WithdrawalPageP
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 rounded-md text-xs font-semibold tracking-wide transition-colors ${
+              className={`px-3 md:px-4 py-2 rounded-md text-xs font-semibold tracking-wide transition-colors whitespace-nowrap flex-shrink-0 ${
                 activeTab === tab
                   ? 'bg-[#2B3040] text-[#E0E2E7]'
                   : 'text-[#6B7280] hover:text-[#E0E2E7]'
@@ -100,7 +100,7 @@ export default function WithdrawalPage({ balance: propBalance }: WithdrawalPageP
             </button>
           ))}
         </div>
-        <div className="flex items-center gap-6 text-xs">
+        <div className="flex items-center gap-4 md:gap-6 text-xs mt-2 md:mt-0 px-2 md:px-0">
           <div className="text-right">
             <div className="text-[#6B7280]">Available for withdrawal</div>
             <div className="font-bold text-base">{balance.toFixed(2)} $</div>
