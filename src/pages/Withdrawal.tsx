@@ -113,7 +113,7 @@ export default function WithdrawalPage({ balance: propBalance }: WithdrawalPageP
       </div>
 
       {/* Main content */}
-      <div className="max-w-[1400px] mx-auto px-6 py-8">
+      <div className="max-w-[1400px] mx-auto px-3 md:px-6 py-6 md:py-8">
         {hasBalance ? (
           /* === HAS BALANCE: Show withdrawal methods === */
           <div>
