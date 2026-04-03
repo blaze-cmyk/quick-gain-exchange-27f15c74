@@ -1,5 +1,6 @@
 import { BarChart3, HelpCircle, User, Trophy, Store, MoreHorizontal } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 interface SidebarProps {
   activeTab: string;
