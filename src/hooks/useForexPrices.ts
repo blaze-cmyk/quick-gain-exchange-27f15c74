@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { TRADING_PAIRS } from '@/lib/types';
-import { supabase } from '@/integrations/supabase/client';
 
 /**
  * Fetches forex prices from Tiingo via edge function.
@@ -17,17 +16,11 @@ export function useForexPrices() {
     if (forexPairs.length === 0) return;
 
     const tickers = forexPairs.map(p => p.tiingoSymbol).join(',');
+    const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+    const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
     const fetchPrices = async () => {
       try {
-        const { data, error } = await supabase.functions.invoke('tiingo-prices', {
-          body: null,
-          method: 'GET',
-        });
-
-        // Use fetch directly since supabase.functions.invoke doesn't support query params well for GET
-        const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-        const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
         const res = await fetch(
           `https://${projectId}.supabase.co/functions/v1/tiingo-prices?type=forex&tickers=${tickers}`,
           {
@@ -48,8 +41,6 @@ export function useForexPrices() {
             const midPrice = item.midPrice || ((item.bidPrice || 0) + (item.askPrice || 0)) / 2;
             if (midPrice > 0) {
               newPrices[ticker] = midPrice;
-
-              // Calculate change from previous price
               const prev = prevPricesRef.current[ticker];
               if (prev && prev > 0) {
                 newChanges[ticker] = ((midPrice - prev) / prev) * 100;
@@ -59,7 +50,6 @@ export function useForexPrices() {
             }
           }
 
-          // Store first fetch as baseline
           if (Object.keys(prevPricesRef.current).length === 0) {
             prevPricesRef.current = { ...newPrices };
           }
