@@ -2,6 +2,8 @@ import { Bell, ChevronDown, GraduationCap, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
+import arcanineLogo from '@/assets/arcanine-logo.png';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface BalanceHeaderProps {
   balance: number;
