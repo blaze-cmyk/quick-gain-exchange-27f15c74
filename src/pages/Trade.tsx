@@ -16,6 +16,7 @@ import { Info, Pencil } from 'lucide-react';
 
 export default function TradePage() {
   const [activePair, setActivePair] = useState<TradingPair>(TRADING_PAIRS[0]);
+  const [pinnedPairs, setPinnedPairs] = useState<TradingPair[]>(TRADING_PAIRS.slice(0, 3));
   const [activeTab, setActiveTab] = useState('trade');
   const [showSelector, setShowSelector] = useState(false);
   const [balance, setBalance] = useState(10000);
@@ -132,9 +133,21 @@ export default function TradePage() {
 
             {/* Asset tabs */}
             <AssetTabs
-              pairs={TRADING_PAIRS}
+              pairs={pinnedPairs}
               activePair={activePair}
-              onSelect={setActivePair}
+              onSelect={(pair) => {
+                setActivePair(pair);
+                if (!pinnedPairs.find(p => p.symbol === pair.symbol)) {
+                  setPinnedPairs(prev => [...prev, pair]);
+                }
+              }}
+              onRemove={(pair) => {
+                setPinnedPairs(prev => prev.filter(p => p.symbol !== pair.symbol));
+                if (activePair.symbol === pair.symbol && pinnedPairs.length > 1) {
+                  const remaining = pinnedPairs.filter(p => p.symbol !== pair.symbol);
+                  setActivePair(remaining[0]);
+                }
+              }}
               onOpenSelector={() => setShowSelector(true)}
               prices={prices}
               activeTrade={activeTrade}
@@ -168,7 +181,13 @@ export default function TradePage() {
                   className="absolute inset-0 z-20"
                 >
                   <AssetSelector
-                    onSelect={(pair) => { setActivePair(pair); setShowSelector(false); }}
+                    onSelect={(pair) => {
+                      setActivePair(pair);
+                      if (!pinnedPairs.find(p => p.symbol === pair.symbol)) {
+                        setPinnedPairs(prev => [...prev, pair]);
+                      }
+                      setShowSelector(false);
+                    }}
                     onClose={() => setShowSelector(false)}
                     prices={prices}
                     changes={changes}
