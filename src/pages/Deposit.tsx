@@ -73,7 +73,7 @@ const CRYPTO_NETWORKS = [
     icon: tetherTrc20,
     available: 10,
     methods: [
-      { name: 'Binance Pay', icon: binance2Logo, min: '$5', time: '~1 min.', category: 'crypto' as const },
+      { name: 'Binance Pay', icon: binanceCryptoLogo, min: '$5', time: '~1 min.', category: 'crypto' as const },
       { name: 'ByBit Pay', icon: bybitLogo, min: '$5', time: '~5 min.', category: 'crypto' as const },
       { name: 'KuCoin Pay', icon: kucoinLogo, min: '$5', time: '~5 min.', category: 'crypto' as const },
     ],
