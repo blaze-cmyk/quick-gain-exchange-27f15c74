@@ -177,7 +177,7 @@ export default function WithdrawalPage({ balance: propBalance }: WithdrawalPageP
               </div>
             ) : (
               /* Method selection */
-              <div className="flex gap-8">
+              <div className="flex flex-col md:flex-row gap-6 md:gap-8">
                 <div className="flex-1">
                   <div className="flex items-center gap-4 mb-6">
                     <AlertCircle size={18} className="text-[#3B82F6]" />
