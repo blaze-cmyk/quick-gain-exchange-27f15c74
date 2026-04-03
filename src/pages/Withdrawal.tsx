@@ -300,7 +300,7 @@ export default function WithdrawalPage({ balance: propBalance }: WithdrawalPageP
             </button>
           </div>
 
-          <div className="grid grid-cols-2 gap-x-12 gap-y-1">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-1">
             {[...FAQ_LEFT, ...FAQ_RIGHT].map(q => (
               <div key={q} className="border-b border-[#2B3040]">
                 <button
