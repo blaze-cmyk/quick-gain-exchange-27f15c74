@@ -268,11 +268,11 @@ export default function SupportPage() {
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.3 }}
-        className="flex items-center px-6 py-4 bg-[#1B1F2D] border-b border-[#2B3040]"
+        className="flex items-center px-3 md:px-6 py-4 bg-[#1B1F2D] border-b border-[#2B3040]"
       >
         <button
           onClick={() => navigate('/trade')}
-          className="mr-4 text-[#6B7280] hover:text-[#E0E2E7] transition-colors"
+          className="mr-3 md:mr-4 text-[#6B7280] hover:text-[#E0E2E7] transition-colors"
         >
           <ArrowLeft size={20} />
         </button>
