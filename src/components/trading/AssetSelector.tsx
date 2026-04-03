@@ -15,9 +15,10 @@ export default function AssetSelector({ onSelect, onClose, prices, changes }: As
 
   const categories = ['CRYPTO'];
 
-  const filtered = TRADING_PAIRS.filter(p =>
-    p.displayName.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = TRADING_PAIRS.filter(p => {
+    const q = search.toLowerCase();
+    return p.displayName.toLowerCase().includes(q) || p.symbol.toLowerCase().includes(q) || p.binanceSymbol.toLowerCase().includes(q);
+  });
 
   return (
     <div className="absolute top-0 left-0 z-50 w-[480px] h-full bg-card border-r border-border shadow-2xl flex flex-col">
