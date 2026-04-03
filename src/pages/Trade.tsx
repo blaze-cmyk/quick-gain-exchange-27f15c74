@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { TradingPair, Trade, TRADING_PAIRS } from '@/lib/types';
 import { useBinanceWebSocket } from '@/hooks/useBinanceWebSocket';
 import { useAllPairsPrices } from '@/hooks/useAllPairsPrices';
+import { useForexPrices } from '@/hooks/useForexPrices';
 import { motion, AnimatePresence } from 'framer-motion';
 import Sidebar from '@/components/trading/Sidebar';
 import AssetTabs from '@/components/trading/AssetTabs';
