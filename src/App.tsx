@@ -8,6 +8,7 @@ import Trade from "./pages/Trade.tsx";
 import Deposit from "./pages/Deposit.tsx";
 import Withdrawal from "./pages/Withdrawal.tsx";
 import Support from "./pages/Support.tsx";
+import Account from "./pages/Account.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
