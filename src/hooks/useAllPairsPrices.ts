@@ -69,7 +69,8 @@ export function useAllPairsPrices() {
         reconnectRef.current = null;
       }
 
-      const streams = TRADING_PAIRS.map(p => `${p.binanceSymbol}@miniTicker`).join('/');
+      const cryptoPairs = TRADING_PAIRS.filter(p => p.category === 'crypto');
+      const streams = cryptoPairs.map(p => `${p.binanceSymbol}@miniTicker`).join('/');
       const ws = new WebSocket(`wss://stream.binance.com:9443/stream?streams=${streams}`);
       wsRef.current = ws;
 
