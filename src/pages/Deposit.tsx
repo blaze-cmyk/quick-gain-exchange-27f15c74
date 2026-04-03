@@ -112,12 +112,13 @@ const CRYPTO_DIRECT: PaymentMethod[] = [
   { name: 'Bitcoin Cash (BCH)', icon: bchLogo, min: '$10', time: '~10 min.', category: 'crypto' },
   { name: 'Toncoin (TON)', icon: toncoinLogo, min: '$5', time: '3-5 min.', category: 'crypto' },
   { name: 'Stellar (XLM)', icon: stellarLogo, min: '$10', time: '~5 min.', category: 'crypto' },
+  { name: 'opBNB BNB', icon: bnbLogo, min: '$5', time: '~5 min.', category: 'crypto' },
   { name: 'Polygon (MATIC)', icon: polygonLogo, min: '$5', time: '~5 min.', category: 'crypto' },
 ];
 
 const EPAYMENT_METHODS: PaymentMethod[] = [
-  { name: 'Volet.com (ex. Advcash)', icon: voletLogo, min: '$5', time: '~5 min.', category: 'epayments' },
-  { name: 'Jetonbank', icon: jetonbankLogo, min: '$5', time: '~5 min.', category: 'epayments' },
+  { name: 'Volet.com (ex. Advcash)', icon: voletLogo, min: '$5', time: '~1 min.', category: 'epayments' },
+  { name: 'Jetonbank', icon: jetonbankLogo, min: '$5', time: '~1 min.', category: 'epayments' },
   { name: 'MoneyGo', icon: moneygoLogo, min: '$5', time: '~5 min.', category: 'epayments' },
 ];
 
