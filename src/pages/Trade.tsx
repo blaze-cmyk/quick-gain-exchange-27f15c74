@@ -181,7 +181,13 @@ export default function TradePage() {
                   className="absolute inset-0 z-20"
                 >
                   <AssetSelector
-                    onSelect={(pair) => { setActivePair(pair); setShowSelector(false); }}
+                    onSelect={(pair) => {
+                      setActivePair(pair);
+                      if (!pinnedPairs.find(p => p.symbol === pair.symbol)) {
+                        setPinnedPairs(prev => [...prev, pair]);
+                      }
+                      setShowSelector(false);
+                    }}
                     onClose={() => setShowSelector(false)}
                     prices={prices}
                     changes={changes}
