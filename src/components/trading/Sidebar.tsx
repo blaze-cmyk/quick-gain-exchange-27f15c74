@@ -34,6 +34,8 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
             onClick={() => {
               if (item.id === 'support') {
                 navigate('/support');
+              } else if (item.id === 'account') {
+                navigate('/account');
               } else {
                 onTabChange(item.id);
               }

@@ -27,6 +27,7 @@ const App = () => {
           <Route path="/deposit" element={<Deposit />} />
           <Route path="/withdrawal" element={<Withdrawal />} />
           <Route path="/support" element={<Support />} />
+          <Route path="/account" element={<Account />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
