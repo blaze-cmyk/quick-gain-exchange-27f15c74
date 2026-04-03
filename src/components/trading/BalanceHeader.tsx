@@ -59,9 +59,9 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
       className="flex items-center gap-3 px-4 py-2 border-b border-[#2B3040] bg-[#1B1F2D]"
     >
       {/* Logo + Brand */}
-      <div className="flex items-center gap-2 mr-auto">
-        <img src={arcanineLogo} alt="Arcanine" className="w-8 h-8 rounded-lg" />
-        <span className="text-[#E0E2E7] font-bold text-base tracking-wide">ARCANINE</span>
+      <div className="flex items-center gap-2.5 mr-auto">
+        <img src={arcanineLogo} alt="Arcanine" className="w-10 h-10 rounded-lg" />
+        <span className="text-[#E0E2E7] font-bold text-lg tracking-wide" style={{ fontFamily: "'Stack Sans Headline', sans-serif" }}>ARCANINE</span>
       </div>
 
       <button className="relative text-[#6B7280] hover:text-[#E0E2E7] transition-colors">
