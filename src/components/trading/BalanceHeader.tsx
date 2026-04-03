@@ -2,6 +2,7 @@ import { Bell, ChevronDown, GraduationCap, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
+import arcanineLogo from '@/assets/arcanine-logo.png';
 
 interface BalanceHeaderProps {
   balance: number;
@@ -55,8 +56,14 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="flex items-center gap-3 px-4 py-2 border-b border-[#2B3040] justify-end bg-[#1B1F2D]"
+      className="flex items-center gap-3 px-4 py-2 border-b border-[#2B3040] bg-[#1B1F2D]"
     >
+      {/* Logo + Brand */}
+      <div className="flex items-center gap-2 mr-auto">
+        <img src={arcanineLogo} alt="Arcanine" className="w-8 h-8 rounded-lg" />
+        <span className="text-[#E0E2E7] font-bold text-base tracking-wide">ARCANINE</span>
+      </div>
+
       <button className="relative text-[#6B7280] hover:text-[#E0E2E7] transition-colors">
         <Bell size={20} />
         <span className="absolute -top-1.5 -right-1.5 w-4.5 h-4.5 bg-[#FF3F2C] rounded-full text-[9px] font-bold flex items-center justify-center text-white min-w-[18px] min-h-[18px]">5</span>
