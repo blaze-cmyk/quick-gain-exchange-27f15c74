@@ -22,6 +22,7 @@ const App = () => (
           <Route path="/trade" element={<Trade />} />
           <Route path="/deposit" element={<Deposit />} />
           <Route path="/withdrawal" element={<Withdrawal />} />
+          <Route path="/support" element={<Support />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
