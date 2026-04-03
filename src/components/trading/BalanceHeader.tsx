@@ -60,7 +60,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
     >
       {/* Logo + Brand */}
       <div className="flex items-center gap-2.5 mr-auto">
-        <img src={arcanineLogo} alt="Arcanine" className="w-10 h-10 rounded-lg" />
+        <img src={arcanineLogo} alt="Arcanine" className="w-12 h-12 rounded-lg" />
         <span className="text-[#E0E2E7] font-bold text-lg tracking-wide" style={{ fontFamily: "'Stack Sans Headline', sans-serif" }}>ARCANINE</span>
       </div>
 
