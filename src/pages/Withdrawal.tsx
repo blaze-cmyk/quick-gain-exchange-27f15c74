@@ -221,7 +221,7 @@ export default function WithdrawalPage({ balance: propBalance }: WithdrawalPageP
                 </div>
 
                 {/* Right side - selected method panel */}
-                <div className="w-[280px] shrink-0">
+                <div className="w-full md:w-[280px] shrink-0">
                   <div className="space-y-3 text-sm text-[#6B7280]">
                     <div className="flex items-center justify-between">
                       <span>Available for withdrawal:</span>
