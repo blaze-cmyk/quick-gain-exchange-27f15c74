@@ -242,9 +242,8 @@ export default function WithdrawalPage({ balance: propBalance }: WithdrawalPageP
           </div>
         ) : (
           /* === NO BALANCE: Show empty state === */
-          <div className="flex gap-8">
-            {/* Account info */}
-            <div className="w-[200px]">
+          <div className="flex flex-col md:flex-row gap-6 md:gap-8">
+            <div className="w-full md:w-[200px]">
               <h3 className="font-bold text-sm mb-4">Account:</h3>
               <div className="mb-6">
                 <div className="text-xs text-[#6B7280] mb-1">In the account:</div>
