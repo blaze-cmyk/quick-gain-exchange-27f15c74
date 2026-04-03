@@ -1,7 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { TradingPair, Trade, TRADING_PAIRS } from '@/lib/types';
 import { useBinanceWebSocket } from '@/hooks/useBinanceWebSocket';
-import { useSimulatedPrice } from '@/hooks/useSimulatedPrice';
 import { useAllPairsPrices } from '@/hooks/useAllPairsPrices';
 import { motion, AnimatePresence } from 'framer-motion';
 import Sidebar from '@/components/trading/Sidebar';
@@ -15,7 +14,6 @@ import TradeResultToast from '@/components/trading/TradeResultToast';
 import BalanceHeader from '@/components/trading/BalanceHeader';
 import { Info, Pencil } from 'lucide-react';
 
-
 export default function TradePage() {
   const [activePair, setActivePair] = useState<TradingPair>(TRADING_PAIRS[0]);
   const [activeTab, setActiveTab] = useState('trade');
@@ -25,15 +23,7 @@ export default function TradePage() {
   const [activeTrade, setActiveTrade] = useState<Trade | null>(null);
   const [tradeResult, setTradeResult] = useState<{ result: 'win' | 'loss'; amount: number } | null>(null);
   const [lastSettledTrade, setLastSettledTrade] = useState<Trade | null>(null);
-
-  // Use simulated data for BTC/USDT, real Binance for others
-  const isSimulated = activePair.symbol === 'BTCUSDT';
-  const binanceData = useBinanceWebSocket(isSimulated ? '' : activePair.binanceSymbol);
-  const simulatedData = useSimulatedPrice();
-
-  const { currentPrice, candles, connected } = isSimulated ? simulatedData : binanceData;
-  const priceChange = isSimulated ? 0 : binanceData.priceChange;
-
+  const { currentPrice, priceChange, candles, connected } = useBinanceWebSocket(activePair.binanceSymbol);
   const { prices: allPrices, changes: allChanges } = useAllPairsPrices();
 
   // Merge active pair's precise price into the all-pairs map

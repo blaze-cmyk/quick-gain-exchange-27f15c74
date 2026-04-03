@@ -26,11 +26,11 @@ interface ChartState {
 }
 
 const COLORS = {
-  bg: '#2B3040',
+  bg: '#1B1F2D',
   gridLine: 'rgba(255, 255, 255, 0.06)',
-  priceScaleBg: '#2B3040',
+  priceScaleBg: '#1B1F2D',
   priceScaleBorder: '#2a2e3e',
-  timeScaleBg: '#2B3040',
+  timeScaleBg: '#1B1F2D',
   candleGreen: '#00c176',
   candleRed: '#ff4757',
   wickGreen: '#00c17688',

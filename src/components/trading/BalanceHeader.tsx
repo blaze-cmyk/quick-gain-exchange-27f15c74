@@ -11,7 +11,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="flex items-center gap-3 px-4 py-2 border-b border-border justify-end bg-[#2B3040]"
+      className="flex items-center gap-3 px-4 py-2 border-b border-border justify-end bg-[#1b1f2d]"
     >
       <button className="relative text-muted-foreground hover:text-foreground transition-colors">
         <Bell size={18} />
