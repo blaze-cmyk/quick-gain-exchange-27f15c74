@@ -7,6 +7,7 @@ interface BalanceHeaderProps {
 }
 
 export default function BalanceHeader({ balance }: BalanceHeaderProps) {
+  const navigate = useNavigate();
   return (
     <motion.div
       initial={{ opacity: 0, y: -8 }}
