@@ -47,7 +47,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
       </button>
 
       {/* Withdrawal button */}
-      <button className="text-[#E0E2E7] font-medium text-sm px-4 py-2.5 rounded-lg border border-[#3A4255] bg-transparent hover:bg-[#2B3040] transition-colors">
+      <button onClick={() => navigate('/withdrawal')} className="text-[#E0E2E7] font-medium text-sm px-4 py-2.5 rounded-lg border border-[#3A4255] bg-transparent hover:bg-[#2B3040] transition-colors">
         Withdrawal
       </button>
     </motion.div>
