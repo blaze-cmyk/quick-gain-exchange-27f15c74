@@ -36,7 +36,8 @@ export function useAllPairsPrices() {
     // Fetch initial 24h ticker for all pairs in one call
     const fetchAll24h = async () => {
       try {
-        const symbols = TRADING_PAIRS.map(p => p.binanceSymbol.toUpperCase());
+        const cryptoPairs = TRADING_PAIRS.filter(p => p.category === 'crypto');
+        const symbols = cryptoPairs.map(p => p.binanceSymbol.toUpperCase());
         const res = await fetch(
           `https://api.binance.com/api/v3/ticker/24hr?symbols=${encodeURIComponent(JSON.stringify(symbols))}`
         );
