@@ -11,14 +11,20 @@ interface AssetSelectorProps {
 
 export default function AssetSelector({ onSelect, onClose, prices, changes }: AssetSelectorProps) {
   const [search, setSearch] = useState('');
-  const [activeCategory, setActiveCategory] = useState('CRYPTO');
+  const [activeCategory, setActiveCategory] = useState<'crypto' | 'forex'>('crypto');
 
-  const categories = ['CRYPTO'];
+  const categories: { key: 'crypto' | 'forex'; label: string }[] = [
+    { key: 'crypto', label: 'CRYPTO' },
+    { key: 'forex', label: 'FOREX' },
+  ];
 
   const filtered = TRADING_PAIRS.filter(p => {
+    if (p.category !== activeCategory) return false;
     const q = search.toLowerCase();
-    return p.displayName.toLowerCase().includes(q) || p.symbol.toLowerCase().includes(q) || p.binanceSymbol.toLowerCase().includes(q);
+    return p.displayName.toLowerCase().includes(q) || p.symbol.toLowerCase().includes(q) || (p.tiingoSymbol || '').toLowerCase().includes(q) || p.binanceSymbol.toLowerCase().includes(q);
   });
+
+  const priceLabel = activeCategory === 'crypto' ? 'Price (USDT)' : 'Price';
 
   return (
     <div className="absolute top-0 left-0 z-50 w-[480px] h-full bg-card border-r border-border shadow-2xl flex flex-col">
@@ -33,15 +39,15 @@ export default function AssetSelector({ onSelect, onClose, prices, changes }: As
       <div className="flex gap-1 px-4 py-2 border-b border-border">
         {categories.map(cat => (
           <button
-            key={cat}
-            onClick={() => setActiveCategory(cat)}
+            key={cat.key}
+            onClick={() => setActiveCategory(cat.key)}
             className={`px-3 py-1 rounded text-[11px] font-semibold transition-colors ${
-              activeCategory === cat
+              activeCategory === cat.key
                 ? 'bg-primary text-primary-foreground'
                 : 'text-muted-foreground hover:text-foreground'
             }`}
           >
-            {cat}
+            {cat.label}
           </button>
         ))}
       </div>
@@ -63,7 +69,7 @@ export default function AssetSelector({ onSelect, onClose, prices, changes }: As
       {/* Header */}
       <div className="flex items-center px-4 py-2 text-[10px] text-muted-foreground uppercase tracking-wider border-b border-border">
         <span className="flex-1">Name</span>
-        <span className="w-24 text-right">Price (USDT)</span>
+        <span className="w-24 text-right">{priceLabel}</span>
         <span className="w-20 text-right">24h</span>
         <span className="w-12 text-right">Payout</span>
       </div>
@@ -73,6 +79,7 @@ export default function AssetSelector({ onSelect, onClose, prices, changes }: As
         className="flex-1 overflow-y-auto"
         data-lenis-prevent
         style={{ scrollbarWidth: 'thin', scrollbarColor: '#3A4255 #242833', overscrollBehavior: 'contain' }}
+        onWheel={(e) => e.stopPropagation()}
       >
         {filtered.map(pair => {
           const change = changes[pair.symbol] || 0;
@@ -87,7 +94,7 @@ export default function AssetSelector({ onSelect, onClose, prices, changes }: As
               <span className="text-lg mr-2">{pair.icon}</span>
               <span className="text-sm font-medium text-foreground flex-1 text-left">{pair.displayName}</span>
               <span className="w-24 text-right text-xs font-mono text-foreground">
-                {price ? (price < 1 ? price.toPrecision(4) : price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })) : '—'}
+                {price ? (price < 1 ? price.toPrecision(4) : price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: price < 100 ? 4 : 2 })) : '—'}
               </span>
               <span className={`w-20 text-right text-xs font-medium ${change >= 0 ? 'text-success' : 'text-danger'}`}>
                 {change >= 0 ? '+' : ''}{change.toFixed(2)}%

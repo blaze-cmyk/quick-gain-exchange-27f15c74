@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { TradingPair, Trade, TRADING_PAIRS } from '@/lib/types';
 import { useBinanceWebSocket } from '@/hooks/useBinanceWebSocket';
 import { useAllPairsPrices } from '@/hooks/useAllPairsPrices';
+import { useForexPrices } from '@/hooks/useForexPrices';
 import { motion, AnimatePresence } from 'framer-motion';
 import Sidebar from '@/components/trading/Sidebar';
 import AssetTabs from '@/components/trading/AssetTabs';
@@ -26,10 +27,11 @@ export default function TradePage() {
   const [lastSettledTrade, setLastSettledTrade] = useState<Trade | null>(null);
   const { currentPrice, priceChange, candles, connected } = useBinanceWebSocket(activePair.binanceSymbol);
   const { prices: allPrices, changes: allChanges } = useAllPairsPrices();
+  const { prices: forexPrices, changes: forexChanges } = useForexPrices();
 
-  // Merge active pair's precise price into the all-pairs map
-  const prices = { ...allPrices, ...(currentPrice > 0 ? { [activePair.symbol]: currentPrice } : {}) };
-  const changes = { ...allChanges, ...(priceChange !== 0 ? { [activePair.symbol]: priceChange } : {}) };
+  // Merge all price sources
+  const prices = { ...allPrices, ...forexPrices, ...(currentPrice > 0 ? { [activePair.symbol]: currentPrice } : {}) };
+  const changes = { ...allChanges, ...forexChanges, ...(priceChange !== 0 ? { [activePair.symbol]: priceChange } : {}) };
 
   useEffect(() => {
     if (!activeTrade) return;
