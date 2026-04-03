@@ -18,6 +18,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Navigate to="/trade" replace />} />
           <Route path="/trade" element={<Trade />} />
+          <Route path="/deposit" element={<Deposit />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
