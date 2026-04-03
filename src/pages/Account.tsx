@@ -252,7 +252,7 @@ export default function AccountPage() {
                             />
                           </div>
                         </div>
-                        <div className="max-h-[280px] overflow-y-auto scrollbar-thin" style={{ scrollbarWidth: 'thin', scrollbarColor: '#3A4255 #242833' }}>
+                        <div data-lenis-prevent className="max-h-[280px] overflow-y-auto" style={{ scrollbarWidth: 'thin', scrollbarColor: '#3A4255 #242833', overscrollBehavior: 'contain' }}>
                           {filteredCountries.length === 0 && (
                             <div className="px-3 py-4 text-center text-sm text-[#6B7280]">No countries found</div>
                           )}
