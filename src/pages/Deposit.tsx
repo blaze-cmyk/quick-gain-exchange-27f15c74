@@ -1,7 +1,18 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Grid3X3, List, Info, ChevronDown, ArrowLeft, Gift, Shield, CircleDollarSign, Ban } from 'lucide-react';
+import { Search, Grid3X3, List, ChevronDown, ArrowLeft, Gift, Shield, CircleDollarSign, Ban } from 'lucide-react';
 import { motion } from 'framer-motion';
+
+import tetherTrc20 from '@/assets/payment/tether-trc20.png';
+import upiLogo from '@/assets/payment/upi.png';
+import phonepeLogo from '@/assets/payment/phonepe.png';
+import paytmLogo from '@/assets/payment/paytm.png';
+import gpayLogo from '@/assets/payment/gpay.png';
+import binanceLogo from '@/assets/payment/binance.png';
+import bybitLogo from '@/assets/payment/bybit.png';
+import kucoinLogo from '@/assets/payment/kucoin.png';
+import usdcLogo from '@/assets/payment/usdc.png';
+import binance2Logo from '@/assets/payment/binance2.png';
 
 const TABS = ['DEPOSIT', 'WITHDRAWAL', 'HISTORY', 'CASHBACK', 'PROMO CODES', 'MY SAFE'];
 
@@ -11,44 +22,41 @@ interface PaymentMethod {
   min: string;
   time: string;
   category: 'popular' | 'bank' | 'crypto' | 'epayments';
-  network?: string;
-  available?: number;
-  subMethods?: PaymentMethod[];
 }
 
 const POPULAR_METHODS: PaymentMethod[] = [
-  { name: 'Tether (USDT) TRC-20', icon: '🟢', min: '$30', time: 'instantly', category: 'popular' },
-  { name: 'UPI', icon: '💳', min: '$5.40', time: '~5 min.', category: 'popular' },
-  { name: 'PhonePe', icon: '📱', min: '$7.60', time: '~5 min.', category: 'popular' },
-  { name: 'GPay', icon: '💰', min: '$7.60', time: '~5 min.', category: 'popular' },
-  { name: 'Binance Pay', icon: '🔶', min: '$5', time: '~1 min.', category: 'popular' },
-  { name: 'Paytm', icon: '💵', min: '$7.60', time: '~5 min.', category: 'popular' },
+  { name: 'Tether (USDT) TRC-20', icon: tetherTrc20, min: '$30', time: 'instantly', category: 'popular' },
+  { name: 'UPI', icon: upiLogo, min: '$5.40', time: '~5 min.', category: 'popular' },
+  { name: 'PhonePe', icon: phonepeLogo, min: '$7.60', time: '~5 min.', category: 'popular' },
+  { name: 'GPay', icon: gpayLogo, min: '$7.60', time: '~5 min.', category: 'popular' },
+  { name: 'Binance Pay', icon: binanceLogo, min: '$5', time: '~1 min.', category: 'popular' },
+  { name: 'Paytm', icon: paytmLogo, min: '$7.60', time: '~5 min.', category: 'popular' },
 ];
 
 const BANK_METHODS: PaymentMethod[] = [
-  { name: 'UPI', icon: '💳', min: '$5.40', time: '~5 min.', category: 'bank' },
-  { name: 'PhonePe', icon: '📱', min: '$7.60', time: '~5 min.', category: 'bank' },
-  { name: 'GPay', icon: '💰', min: '$7.60', time: '~5 min.', category: 'bank' },
-  { name: 'Paytm', icon: '💵', min: '$7.60', time: '~5 min.', category: 'bank' },
+  { name: 'UPI', icon: upiLogo, min: '$5.40', time: '~5 min.', category: 'bank' },
+  { name: 'PhonePe', icon: phonepeLogo, min: '$7.60', time: '~5 min.', category: 'bank' },
+  { name: 'GPay', icon: gpayLogo, min: '$7.60', time: '~5 min.', category: 'bank' },
+  { name: 'Paytm', icon: paytmLogo, min: '$7.60', time: '~5 min.', category: 'bank' },
 ];
 
 const CRYPTO_NETWORKS = [
   {
     name: 'Tether (USDT)',
-    icon: '🟢',
+    icon: tetherTrc20,
     available: 10,
     methods: [
-      { name: 'Binance Pay', icon: '🔶', min: '$5', time: '~1 min.', category: 'crypto' as const },
-      { name: 'ByBit Pay', icon: '🟡', min: '$5', time: '~5 min.', category: 'crypto' as const },
-      { name: 'KuCoin Pay', icon: '🟢', min: '$5', time: '~5 min.', category: 'crypto' as const },
+      { name: 'Binance Pay', icon: binance2Logo, min: '$5', time: '~1 min.', category: 'crypto' as const },
+      { name: 'ByBit Pay', icon: bybitLogo, min: '$5', time: '~5 min.', category: 'crypto' as const },
+      { name: 'KuCoin Pay', icon: kucoinLogo, min: '$5', time: '~5 min.', category: 'crypto' as const },
     ],
   },
   {
     name: 'USD Coin (USDC)',
-    icon: '🔵',
+    icon: usdcLogo,
     available: 8,
     methods: [
-      { name: 'Binance Pay', icon: '🔶', min: '$5', time: '~1 min.', category: 'crypto' as const },
+      { name: 'Binance Pay', icon: binance2Logo, min: '$5', time: '~1 min.', category: 'crypto' as const },
     ],
   },
 ];
@@ -85,6 +93,17 @@ const EPAYMENT_METHODS: PaymentMethod[] = [
   { name: 'Jetonbank', icon: '💳', min: '$5', time: '~5 min.', category: 'epayments' },
   { name: 'MoneyGo', icon: '💳', min: '$5', time: '~5 min.', category: 'epayments' },
 ];
+
+function isImageUrl(icon: string): boolean {
+  return icon.startsWith('/') || icon.startsWith('data:') || icon.includes('/assets/');
+}
+
+function IconDisplay({ icon, size = 32 }: { icon: string; size?: number }) {
+  if (isImageUrl(icon)) {
+    return <img src={icon} alt="" className="object-contain" style={{ width: size, height: size }} />;
+  }
+  return <span style={{ fontSize: size * 0.75 }}>{icon}</span>;
+}
 
 export default function DepositPage() {
   const navigate = useNavigate();
@@ -195,7 +214,7 @@ export default function DepositPage() {
                 className="w-full flex items-center justify-between px-5 py-4 bg-[#2B3040] rounded-lg border border-[#3A4255] hover:border-[#4A5268] transition-colors"
               >
                 <div className="flex items-center gap-3">
-                  <span className="text-2xl">{network.icon}</span>
+                  <IconDisplay icon={network.icon} size={36} />
                   <span className="font-semibold text-sm">{network.name}</span>
                 </div>
                 <div className="flex items-center gap-4 text-[#6B7280] text-xs">
@@ -265,7 +284,7 @@ function MethodGrid({ methods, viewMode }: { methods: PaymentMethod[]; viewMode:
             key={i}
             className="w-full flex items-center gap-4 px-5 py-3.5 bg-[#2B3040] rounded-lg border border-[#3A4255] hover:border-[#4A5268] hover:bg-[#323848] transition-colors"
           >
-            <span className="text-2xl">{method.icon}</span>
+            <IconDisplay icon={method.icon} size={32} />
             <span className="font-semibold text-sm flex-1 text-left">{method.name}</span>
             <span className="text-xs text-[#6B7280]">Min: {method.min}</span>
             <span className="text-xs text-[#6B7280]">{method.time}</span>
@@ -283,7 +302,7 @@ function MethodGrid({ methods, viewMode }: { methods: PaymentMethod[]; viewMode:
           className="flex flex-col items-center bg-[#2B3040] rounded-lg border border-[#3A4255] hover:border-[#4A5268] hover:bg-[#323848] transition-colors overflow-hidden"
         >
           <div className="flex items-center gap-3 px-4 py-4 w-full">
-            <span className="text-2xl">{method.icon}</span>
+            <IconDisplay icon={method.icon} size={32} />
             <span className="font-semibold text-xs text-left leading-tight">{method.name}</span>
           </div>
           <div className="flex w-full border-t border-[#3A4255]">
