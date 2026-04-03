@@ -214,14 +214,64 @@ export default function AccountPage() {
                   </div>
                 </div>
 
-                <div className="relative">
-                  <div className="border border-[#3A4255] rounded-lg bg-[#242833] px-3 pt-4 pb-2">
+                <div className="relative" ref={countryRef}>
+                  <button
+                    type="button"
+                    onClick={() => { setCountryOpen(!countryOpen); setCountrySearch(''); }}
+                    className="w-full border border-[#3A4255] rounded-lg bg-[#242833] px-3 pt-4 pb-2 text-left"
+                  >
                     <label className="absolute top-1.5 left-3 text-[10px] text-[#6B7280]">Country</label>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm">{country}</span>
-                      <ChevronDown size={14} className="text-[#6B7280]" />
+                      <span className="text-sm flex items-center gap-2">
+                        {selectedCountryObj && <span className="text-base">{selectedCountryObj.flag}</span>}
+                        {country}
+                      </span>
+                      <ChevronDown size={14} className={`text-[#6B7280] transition-transform ${countryOpen ? 'rotate-180' : ''}`} />
                     </div>
-                  </div>
+                  </button>
+
+                  <AnimatePresence>
+                    {countryOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -4 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute z-50 top-full left-0 right-0 mt-1 bg-[#242833] border border-[#3A4255] rounded-lg shadow-xl overflow-hidden"
+                      >
+                        <div className="p-2 border-b border-[#3A4255]">
+                          <div className="flex items-center gap-2 bg-[#1A1D29] rounded-md px-3 py-2">
+                            <Search size={14} className="text-[#6B7280]" />
+                            <input
+                              type="text"
+                              value={countrySearch}
+                              onChange={e => setCountrySearch(e.target.value)}
+                              placeholder="Search country..."
+                              autoFocus
+                              className="w-full bg-transparent text-sm text-[#E0E2E7] outline-none placeholder:text-[#4A5265]"
+                            />
+                          </div>
+                        </div>
+                        <div className="max-h-[240px] overflow-y-auto">
+                          {filteredCountries.length === 0 && (
+                            <div className="px-3 py-4 text-center text-sm text-[#6B7280]">No countries found</div>
+                          )}
+                          {filteredCountries.map(c => (
+                            <button
+                              key={c.code}
+                              onClick={() => { setCountry(c.name); setCountryOpen(false); setCountrySearch(''); }}
+                              className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm hover:bg-[#2B3040] transition-colors text-left ${
+                                country === c.name ? 'bg-[#2B3040] text-[#0EB85B]' : 'text-[#E0E2E7]'
+                              }`}
+                            >
+                              <span className="text-base">{c.flag}</span>
+                              <span>{c.name}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
 
                 <FloatingInput label="Address" value={address} onChange={setAddress} placeholder="Empty" />
