@@ -13,6 +13,16 @@ import bybitLogo from '@/assets/payment/bybit.png';
 import kucoinLogo from '@/assets/payment/kucoin.png';
 import usdcLogo from '@/assets/payment/usdc.png';
 import binance2Logo from '@/assets/payment/binance2.png';
+import tronLogo from '@/assets/payment/tron.png';
+import bitcoinLogo from '@/assets/payment/bitcoin.png';
+import litecoinLogo from '@/assets/payment/litecoin.png';
+import ethereumLogo from '@/assets/payment/ethereum.png';
+import rippleLogo from '@/assets/payment/ripple.png';
+import dashLogo from '@/assets/payment/dash.png';
+import solanaLogo from '@/assets/payment/solana.png';
+import avalancheLogo from '@/assets/payment/avalanche.png';
+import shibLogo from '@/assets/payment/shib.png';
+import bnbLogo from '@/assets/payment/bnb.png';
 
 const TABS = ['DEPOSIT', 'WITHDRAWAL', 'HISTORY', 'CASHBACK', 'PROMO CODES', 'MY SAFE'];
 
@@ -62,15 +72,15 @@ const CRYPTO_NETWORKS = [
 ];
 
 const CRYPTO_DIRECT: PaymentMethod[] = [
-  { name: 'Tron (TRX)', icon: '🔴', min: '$10', time: 'instantly', category: 'crypto' },
-  { name: 'Bitcoin (BTC)', icon: '🟠', min: '$5', time: '~10 min.', category: 'crypto' },
-  { name: 'Litecoin (LTC)', icon: '⚪', min: '$5', time: '~5 min.', category: 'crypto' },
-  { name: 'Ethereum (ETH) ERC-20', icon: '🔷', min: '$10', time: '~10 min.', category: 'crypto' },
-  { name: 'Ripple (XRP)', icon: '🔵', min: '$30', time: '~56 min.', category: 'crypto' },
-  { name: 'Dash (DASH)', icon: '🔵', min: '$25', time: '~15 min.', category: 'crypto' },
-  { name: 'Solana (SOL)', icon: '🟣', min: '$20', time: '~15 min.', category: 'crypto' },
-  { name: 'Avalanche (AVAX)', icon: '🔺', min: '$15', time: '~22 min.', category: 'crypto' },
-  { name: 'Shiba Inu (SHIB)', icon: '🐕', min: '$40', time: '~23 min.', category: 'crypto' },
+  { name: 'Tron (TRX)', icon: tronLogo, min: '$10', time: 'instantly', category: 'crypto' },
+  { name: 'Bitcoin (BTC)', icon: bitcoinLogo, min: '$5', time: '~10 min.', category: 'crypto' },
+  { name: 'Litecoin (LTC)', icon: litecoinLogo, min: '$5', time: '~5 min.', category: 'crypto' },
+  { name: 'Ethereum (ETH) ERC-20', icon: ethereumLogo, min: '$10', time: '~10 min.', category: 'crypto' },
+  { name: 'Ripple (XRP)', icon: rippleLogo, min: '$30', time: '~56 min.', category: 'crypto' },
+  { name: 'Dash (DASH)', icon: dashLogo, min: '$25', time: '~15 min.', category: 'crypto' },
+  { name: 'Solana (SOL)', icon: solanaLogo, min: '$20', time: '~15 min.', category: 'crypto' },
+  { name: 'Avalanche (AVAX)', icon: avalancheLogo, min: '$15', time: '~22 min.', category: 'crypto' },
+  { name: 'Shiba Inu (SHIB)', icon: shibLogo, min: '$40', time: '~23 min.', category: 'crypto' },
   { name: 'Cardano (ADA)', icon: '🔵', min: '$50', time: '~29 min.', category: 'crypto' },
   { name: 'Dogecoin (DOGE)', icon: '🐕', min: '$50', time: '~19 min.', category: 'crypto' },
   { name: 'Algorand (ALGO)', icon: '⚫', min: '$50', time: '~22 min.', category: 'crypto' },
@@ -79,10 +89,10 @@ const CRYPTO_DIRECT: PaymentMethod[] = [
   { name: 'Chainlink (LINK)', icon: '🔵', min: '$50', time: '3-5 min.', category: 'crypto' },
   { name: 'Cosmos (ATOM)', icon: '⚛️', min: '$50', time: '3-5 min.', category: 'crypto' },
   { name: 'Dai (DAI)', icon: '🟡', min: '$50', time: '~2 hours', category: 'crypto' },
-  { name: 'Ethereum Classic (ETC)', icon: '🟢', min: '$10', time: '~20 min.', category: 'crypto' },
-  { name: 'Binance Coin (BNBBSC)', icon: '🟡', min: '$10', time: '3-5 min.', category: 'crypto' },
-  { name: 'Base Network Ethereum (ETH)', icon: '🔵', min: '$10', time: '~10 min.', category: 'crypto' },
-  { name: 'Bitcoin Cash (BCH)', icon: '🟢', min: '$10', time: '~10 min.', category: 'crypto' },
+  { name: 'Ethereum Classic (ETC)', icon: ethereumLogo, min: '$10', time: '~20 min.', category: 'crypto' },
+  { name: 'Binance Coin (BNBBSC)', icon: bnbLogo, min: '$10', time: '3-5 min.', category: 'crypto' },
+  { name: 'Base Network Ethereum (ETH)', icon: ethereumLogo, min: '$10', time: '~10 min.', category: 'crypto' },
+  { name: 'Bitcoin Cash (BCH)', icon: bitcoinLogo, min: '$10', time: '~10 min.', category: 'crypto' },
   { name: 'Toncoin (TON)', icon: '🔵', min: '$5', time: '3-5 min.', category: 'crypto' },
   { name: 'Stellar (XLM)', icon: '⚫', min: '$10', time: '~5 min.', category: 'crypto' },
   { name: 'Polygon (MATIC)', icon: '🟣', min: '$5', time: '~5 min.', category: 'crypto' },
