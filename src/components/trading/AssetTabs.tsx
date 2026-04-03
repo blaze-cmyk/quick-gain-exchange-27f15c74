@@ -7,14 +7,14 @@ interface AssetTabsProps {
   pairs: TradingPair[];
   activePair: TradingPair;
   onSelect: (pair: TradingPair) => void;
+  onRemove: (pair: TradingPair) => void;
   onOpenSelector: () => void;
   prices: Record<string, number>;
   activeTrade?: Trade | null;
   currentPrice?: number;
 }
 
-export default function AssetTabs({ pairs, activePair, onSelect, onOpenSelector, prices, activeTrade, currentPrice = 0 }: AssetTabsProps) {
-  // Calculate live P&L for active trade on this pair
+export default function AssetTabs({ pairs, activePair, onSelect, onRemove, onOpenSelector, prices, activeTrade, currentPrice = 0 }: AssetTabsProps) {
   const getTabPnL = (pair: TradingPair) => {
     if (!activeTrade || activeTrade.pair.symbol !== pair.symbol || currentPrice <= 0) return null;
     const isUp = activeTrade.direction === 'up';
@@ -42,46 +42,58 @@ export default function AssetTabs({ pairs, activePair, onSelect, onOpenSelector,
         const pnl = getTabPnL(pair);
 
         return (
-          <motion.button
+          <motion.div
             key={pair.symbol}
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, scale: 0.8 }}
             transition={{ delay: index * 0.05, duration: 0.25 }}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => onSelect(pair)}
-            className={`flex-shrink-0 flex items-center gap-2 px-3.5 py-2 rounded-lg transition-all duration-200 min-w-[110px] ${
-              isActive
-                ? 'bg-card border border-border shadow-lg'
-                : 'bg-card/50 backdrop-blur-sm hover:bg-card/70 border border-transparent'
-            }`}
+            className="relative flex-shrink-0"
           >
-            <div className="flex items-center -space-x-1.5">
-              <CryptoIcon symbol={base} size={22} />
-              <CryptoIcon symbol="USD" size={14} />
-            </div>
-            <div className="text-left">
-              <div className="flex items-center gap-1">
-                <span className="text-[11px] font-semibold text-foreground">{pair.displayName}</span>
-                {isActive && <ChevronDown size={10} className="text-muted-foreground" />}
+            <button
+              onClick={() => onSelect(pair)}
+              className={`flex items-center gap-2 pl-3.5 pr-7 py-2 rounded-lg transition-all duration-200 min-w-[110px] ${
+                isActive
+                  ? 'bg-[#1E2230] border border-[#3A4255] shadow-lg'
+                  : 'bg-[#2B3040]/80 backdrop-blur-sm hover:bg-[#2B3040] border border-transparent'
+              }`}
+            >
+              <div className="flex items-center -space-x-1.5">
+                <CryptoIcon symbol={base} size={22} />
+                <CryptoIcon symbol="USD" size={14} />
               </div>
-              <div className="flex items-center gap-1.5">
-                <span className={`text-[10px] font-semibold ${pair.payout >= 90 ? 'text-success' : 'text-muted-foreground'}`}>
-                  {pair.payout}%
-                </span>
-                {pnl !== null && (
-                  <span className={`text-[10px] font-bold px-1 py-0.5 rounded ${
-                    pnl >= 0 ? 'text-success bg-success/10' : 'text-danger bg-danger/10'
-                  }`}>
-                    {pnl >= 0 ? '+' : ''}{pnl.toFixed(0)} $
+              <div className="text-left">
+                <div className="flex items-center gap-1">
+                  <span className="text-[11px] font-semibold text-[#E0E2E7]">{pair.displayName}</span>
+                  {isActive && <ChevronDown size={10} className="text-[#6B7280]" />}
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className={`text-[10px] font-semibold ${pair.payout >= 90 ? 'text-[#0EB85B]' : 'text-[#6B7280]'}`}>
+                    {pair.payout}%
                   </span>
-                )}
+                  {pnl !== null && (
+                    <span className={`text-[10px] font-bold px-1 py-0.5 rounded ${
+                      pnl >= 0 ? 'text-[#0EB85B] bg-[#0EB85B]/10' : 'text-[#FF3F2C] bg-[#FF3F2C]/10'
+                    }`}>
+                      {pnl >= 0 ? '+' : ''}{pnl.toFixed(0)} $
+                    </span>
+                  )}
+                </div>
               </div>
-            </div>
-            {isActive && (
-              <X size={11} className="ml-auto text-muted-foreground hover:text-foreground transition-colors" />
+            </button>
+            {/* Close/remove button */}
+            {pairs.length > 1 && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRemove(pair);
+                }}
+                className="absolute top-1 right-1 w-4 h-4 rounded-full bg-[#3A4255] hover:bg-[#FF3F2C] flex items-center justify-center transition-colors"
+              >
+                <X size={9} className="text-[#9CA3AF] hover:text-white" />
+              </button>
             )}
-          </motion.button>
+          </motion.div>
         );
       })}
     </div>
