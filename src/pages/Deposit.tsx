@@ -175,9 +175,9 @@ export default function DepositPage() {
           <h1 className="text-2xl font-bold mb-6">Account top-up</h1>
 
           {/* Steps */}
-          <div className="flex items-center gap-0 mb-8">
+          <div className="flex items-center gap-0 mb-6 md:mb-8 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
             {['Deposit method', 'Payment details', 'Payment process', 'Payment execution'].map((step, i) => (
-              <div key={step} className="flex items-center flex-1">
+              <div key={step} className="flex items-center flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <span className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
                     i === 0 ? 'bg-[#0EB85B] text-white' : 'bg-[#2B3040] text-[#6B7280]'
