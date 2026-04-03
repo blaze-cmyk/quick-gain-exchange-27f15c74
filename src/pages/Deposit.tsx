@@ -138,7 +138,7 @@ export default function DepositPage() {
   const [activeTab, setActiveTab] = useState('DEPOSIT');
   const [search, setSearch] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [expandedCrypto, setExpandedCrypto] = useState<string | null>(null);
+  const [expandedCrypto, setExpandedCrypto] = useState<string | null>('Tether (USDT)');
 
   const filterMethods = (methods: PaymentMethod[]) =>
     methods.filter(m => m.name.toLowerCase().includes(search.toLowerCase()));
