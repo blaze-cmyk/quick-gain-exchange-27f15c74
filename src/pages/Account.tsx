@@ -117,16 +117,16 @@ export default function AccountPage() {
   return (
     <div className="min-h-screen bg-[#1A1D29] text-[#E0E2E7] font-['Montserrat',sans-serif]">
       {/* Top tabs bar */}
-      <div className="flex items-center justify-between border-b border-[#2B3040] bg-[#1C1E2D] px-6">
-        <div className="flex items-center gap-1">
-          <button onClick={() => navigate('/trade')} className="p-2 text-[#6B7280] hover:text-[#E0E2E7] mr-2">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between border-b border-[#2B3040] bg-[#1C1E2D] px-3 md:px-6">
+        <div className="flex items-center gap-1 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
+          <button onClick={() => navigate('/trade')} className="p-2 text-[#6B7280] hover:text-[#E0E2E7] mr-1 md:mr-2 flex-shrink-0">
             <ArrowLeft size={18} />
           </button>
           {TABS.map(tab => (
             <button
               key={tab}
               onClick={() => handleTabClick(tab)}
-              className={`px-4 py-3 text-sm font-medium transition-colors relative ${
+              className={`px-3 md:px-4 py-3 text-xs md:text-sm font-medium transition-colors relative whitespace-nowrap flex-shrink-0 ${
                 activeTab === tab
                   ? 'text-white'
                   : 'text-[#6B7280] hover:text-[#A0A5B5]'
@@ -140,7 +140,7 @@ export default function AccountPage() {
           ))}
         </div>
 
-        <div className="flex items-center gap-6 text-sm">
+        <div className="hidden md:flex items-center gap-6 text-sm">
           <div className="flex items-center gap-2">
             <span className="text-[#6B7280]">My current currency</span>
             <span className="font-bold text-white flex items-center gap-1">
