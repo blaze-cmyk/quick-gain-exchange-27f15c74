@@ -32,6 +32,14 @@ import chainlinkLogo from '@/assets/payment/chainlink.png';
 import cosmosLogo from '@/assets/payment/cosmos.png';
 import daiLogo from '@/assets/payment/dai.png';
 import etcLogo from '@/assets/payment/etc.png';
+import baseEthLogo from '@/assets/payment/base-eth.png';
+import bchLogo from '@/assets/payment/bch.png';
+import toncoinLogo from '@/assets/payment/toncoin.png';
+import stellarLogo from '@/assets/payment/stellar.png';
+import polygonLogo from '@/assets/payment/polygon.png';
+import voletLogo from '@/assets/payment/volet.png';
+import jetonbankLogo from '@/assets/payment/jetonbank.png';
+import moneygoLogo from '@/assets/payment/moneygo.png';
 
 const TABS = ['DEPOSIT', 'WITHDRAWAL', 'HISTORY', 'CASHBACK', 'PROMO CODES', 'MY SAFE'];
 
