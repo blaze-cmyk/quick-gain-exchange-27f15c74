@@ -25,7 +25,7 @@ export default function TradePage() {
   const [activeTrade, setActiveTrade] = useState<Trade | null>(null);
   const [tradeResult, setTradeResult] = useState<{ result: 'win' | 'loss'; amount: number } | null>(null);
   const [lastSettledTrade, setLastSettledTrade] = useState<Trade | null>(null);
-  const { currentPrice, priceChange, candles, connected } = useBinanceWebSocket(activePair.binanceSymbol);
+  const { currentPrice, priceChange, candles, connected } = usePairData(activePair);
   const { prices: allPrices, changes: allChanges } = useAllPairsPrices();
   const { prices: forexPrices, changes: forexChanges } = useForexPrices();
 
