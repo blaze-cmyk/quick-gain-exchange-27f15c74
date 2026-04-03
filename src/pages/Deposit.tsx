@@ -323,7 +323,7 @@ function MethodGrid({ methods, viewMode }: { methods: PaymentMethod[]; viewMode:
   }
 
   return (
-    <div className="grid grid-cols-3 gap-3 mb-4">
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3 mb-4">
       {methods.map((method, i) => (
         <button
           key={i}
