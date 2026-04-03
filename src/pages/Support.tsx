@@ -268,11 +268,11 @@ export default function SupportPage() {
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.3 }}
-        className="flex items-center px-6 py-4 bg-[#1B1F2D] border-b border-[#2B3040]"
+        className="flex items-center px-3 md:px-6 py-4 bg-[#1B1F2D] border-b border-[#2B3040]"
       >
         <button
           onClick={() => navigate('/trade')}
-          className="mr-4 text-[#6B7280] hover:text-[#E0E2E7] transition-colors"
+          className="mr-3 md:mr-4 text-[#6B7280] hover:text-[#E0E2E7] transition-colors"
         >
           <ArrowLeft size={20} />
         </button>
@@ -280,7 +280,7 @@ export default function SupportPage() {
       </motion.div>
 
       {/* Section filter tabs */}
-      <div className="max-w-[900px] mx-auto px-6 pt-8 pb-4">
+      <div className="max-w-[900px] mx-auto px-3 md:px-6 pt-6 md:pt-8 pb-4">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -330,7 +330,7 @@ export default function SupportPage() {
                   >
                     <button
                       onClick={() => toggleItem(item.question)}
-                      className="flex items-center justify-between w-full px-6 py-5 text-left"
+                      className="flex items-center justify-between w-full px-4 md:px-6 py-4 md:py-5 text-left"
                     >
                       <span className="font-semibold text-sm text-[#E0E2E7] pr-4">
                         {item.question}

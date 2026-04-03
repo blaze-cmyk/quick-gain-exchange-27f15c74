@@ -146,10 +146,10 @@ export default function DepositPage() {
   return (
     <div className="min-h-screen bg-[#1A1D29] text-[#E0E2E7]">
       {/* Top tabs bar */}
-      <div className="flex items-center gap-1 px-6 py-3 bg-[#1B1F2D] border-b border-[#2B3040]">
+      <div className="flex items-center gap-1 px-3 md:px-6 py-3 bg-[#1B1F2D] border-b border-[#2B3040] overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
         <button
           onClick={() => navigate('/trade')}
-          className="mr-4 text-[#6B7280] hover:text-[#E0E2E7] transition-colors"
+          className="mr-2 md:mr-4 text-[#6B7280] hover:text-[#E0E2E7] transition-colors flex-shrink-0"
         >
           <ArrowLeft size={20} />
         </button>
@@ -157,7 +157,7 @@ export default function DepositPage() {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 rounded-md text-xs font-semibold tracking-wide transition-colors ${
+            className={`px-3 md:px-4 py-2 rounded-md text-xs font-semibold tracking-wide transition-colors whitespace-nowrap flex-shrink-0 ${
               activeTab === tab
                 ? 'bg-[#2B3040] text-[#E0E2E7]'
                 : 'text-[#6B7280] hover:text-[#E0E2E7]'
@@ -169,15 +169,15 @@ export default function DepositPage() {
       </div>
 
       {/* Main content */}
-      <div className="max-w-[1200px] mx-auto px-6 py-8 flex gap-8">
+      <div className="max-w-[1200px] mx-auto px-3 md:px-6 py-6 md:py-8 flex flex-col md:flex-row gap-6 md:gap-8">
         {/* Left content */}
         <div className="flex-1">
           <h1 className="text-2xl font-bold mb-6">Account top-up</h1>
 
           {/* Steps */}
-          <div className="flex items-center gap-0 mb-8">
+          <div className="flex items-center gap-0 mb-6 md:mb-8 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
             {['Deposit method', 'Payment details', 'Payment process', 'Payment execution'].map((step, i) => (
-              <div key={step} className="flex items-center flex-1">
+              <div key={step} className="flex items-center flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <span className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
                     i === 0 ? 'bg-[#0EB85B] text-white' : 'bg-[#2B3040] text-[#6B7280]'
@@ -273,7 +273,7 @@ export default function DepositPage() {
         </div>
 
         {/* Right sidebar info */}
-        <div className="w-[280px] shrink-0 mt-24">
+        <div className="w-full md:w-[280px] shrink-0 md:mt-24">
           <div className="space-y-4">
             <InfoItem icon={<CircleDollarSign size={18} className="text-[#0EB85B]" />} text="Minimum deposit amount: $5" />
             <InfoItem icon={<Gift size={18} className="text-[#3B82F6]" />} text="Gifts for deposit" />
@@ -323,7 +323,7 @@ function MethodGrid({ methods, viewMode }: { methods: PaymentMethod[]; viewMode:
   }
 
   return (
-    <div className="grid grid-cols-3 gap-3 mb-4">
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3 mb-4">
       {methods.map((method, i) => (
         <button
           key={i}

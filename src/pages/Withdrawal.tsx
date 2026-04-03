@@ -78,11 +78,11 @@ export default function WithdrawalPage({ balance: propBalance }: WithdrawalPageP
   return (
     <div className="min-h-screen bg-[#1A1D29] text-[#E0E2E7]">
       {/* Top tabs bar */}
-      <div className="flex items-center justify-between px-6 py-3 bg-[#1B1F2D] border-b border-[#2B3040]">
-        <div className="flex items-center gap-1">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between px-3 md:px-6 py-3 bg-[#1B1F2D] border-b border-[#2B3040]">
+        <div className="flex items-center gap-1 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
           <button
             onClick={() => navigate('/trade')}
-            className="mr-4 text-[#6B7280] hover:text-[#E0E2E7] transition-colors"
+            className="mr-2 md:mr-4 text-[#6B7280] hover:text-[#E0E2E7] transition-colors flex-shrink-0"
           >
             <ArrowLeft size={20} />
           </button>
@@ -90,7 +90,7 @@ export default function WithdrawalPage({ balance: propBalance }: WithdrawalPageP
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 rounded-md text-xs font-semibold tracking-wide transition-colors ${
+              className={`px-3 md:px-4 py-2 rounded-md text-xs font-semibold tracking-wide transition-colors whitespace-nowrap flex-shrink-0 ${
                 activeTab === tab
                   ? 'bg-[#2B3040] text-[#E0E2E7]'
                   : 'text-[#6B7280] hover:text-[#E0E2E7]'
@@ -100,7 +100,7 @@ export default function WithdrawalPage({ balance: propBalance }: WithdrawalPageP
             </button>
           ))}
         </div>
-        <div className="flex items-center gap-6 text-xs">
+        <div className="flex items-center gap-4 md:gap-6 text-xs mt-2 md:mt-0 px-2 md:px-0">
           <div className="text-right">
             <div className="text-[#6B7280]">Available for withdrawal</div>
             <div className="font-bold text-base">{balance.toFixed(2)} $</div>
@@ -113,7 +113,7 @@ export default function WithdrawalPage({ balance: propBalance }: WithdrawalPageP
       </div>
 
       {/* Main content */}
-      <div className="max-w-[1400px] mx-auto px-6 py-8">
+      <div className="max-w-[1400px] mx-auto px-3 md:px-6 py-6 md:py-8">
         {hasBalance ? (
           /* === HAS BALANCE: Show withdrawal methods === */
           <div>
@@ -177,7 +177,7 @@ export default function WithdrawalPage({ balance: propBalance }: WithdrawalPageP
               </div>
             ) : (
               /* Method selection */
-              <div className="flex gap-8">
+              <div className="flex flex-col md:flex-row gap-6 md:gap-8">
                 <div className="flex-1">
                   <div className="flex items-center gap-4 mb-6">
                     <AlertCircle size={18} className="text-[#3B82F6]" />
@@ -191,7 +191,7 @@ export default function WithdrawalPage({ balance: propBalance }: WithdrawalPageP
                   <h3 className="text-sm font-bold mb-3 flex items-center gap-2">
                     <span>💳</span> E-payments
                   </h3>
-                  <div className="grid grid-cols-2 gap-3 mb-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
                     {epaymentMethods.map(m => (
                       <button
                         key={m.name}
@@ -207,7 +207,7 @@ export default function WithdrawalPage({ balance: propBalance }: WithdrawalPageP
                   <h3 className="text-sm font-bold mb-3 flex items-center gap-2">
                     <span>⚙️</span> Cryptocurrencies
                   </h3>
-                  <div className="grid grid-cols-2 gap-3 mb-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
                     {cryptoMethods.map(m => (
                       <button
                         key={m.name}
@@ -221,7 +221,7 @@ export default function WithdrawalPage({ balance: propBalance }: WithdrawalPageP
                 </div>
 
                 {/* Right side - selected method panel */}
-                <div className="w-[280px] shrink-0">
+                <div className="w-full md:w-[280px] shrink-0">
                   <div className="space-y-3 text-sm text-[#6B7280]">
                     <div className="flex items-center justify-between">
                       <span>Available for withdrawal:</span>
@@ -242,9 +242,8 @@ export default function WithdrawalPage({ balance: propBalance }: WithdrawalPageP
           </div>
         ) : (
           /* === NO BALANCE: Show empty state === */
-          <div className="flex gap-8">
-            {/* Account info */}
-            <div className="w-[200px]">
+          <div className="flex flex-col md:flex-row gap-6 md:gap-8">
+            <div className="w-full md:w-[200px]">
               <h3 className="font-bold text-sm mb-4">Account:</h3>
               <div className="mb-6">
                 <div className="text-xs text-[#6B7280] mb-1">In the account:</div>
@@ -301,7 +300,7 @@ export default function WithdrawalPage({ balance: propBalance }: WithdrawalPageP
             </button>
           </div>
 
-          <div className="grid grid-cols-2 gap-x-12 gap-y-1">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-1">
             {[...FAQ_LEFT, ...FAQ_RIGHT].map(q => (
               <div key={q} className="border-b border-[#2B3040]">
                 <button
