@@ -133,9 +133,21 @@ export default function TradePage() {
 
             {/* Asset tabs */}
             <AssetTabs
-              pairs={TRADING_PAIRS}
+              pairs={pinnedPairs}
               activePair={activePair}
-              onSelect={setActivePair}
+              onSelect={(pair) => {
+                setActivePair(pair);
+                if (!pinnedPairs.find(p => p.symbol === pair.symbol)) {
+                  setPinnedPairs(prev => [...prev, pair]);
+                }
+              }}
+              onRemove={(pair) => {
+                setPinnedPairs(prev => prev.filter(p => p.symbol !== pair.symbol));
+                if (activePair.symbol === pair.symbol && pinnedPairs.length > 1) {
+                  const remaining = pinnedPairs.filter(p => p.symbol !== pair.symbol);
+                  setActivePair(remaining[0]);
+                }
+              }}
               onOpenSelector={() => setShowSelector(true)}
               prices={prices}
               activeTrade={activeTrade}
