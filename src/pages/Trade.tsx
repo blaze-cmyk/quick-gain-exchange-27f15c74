@@ -16,6 +16,7 @@ import { Info, Pencil } from 'lucide-react';
 
 export default function TradePage() {
   const [activePair, setActivePair] = useState<TradingPair>(TRADING_PAIRS[0]);
+  const [pinnedPairs, setPinnedPairs] = useState<TradingPair[]>(TRADING_PAIRS.slice(0, 3));
   const [activeTab, setActiveTab] = useState('trade');
   const [showSelector, setShowSelector] = useState(false);
   const [balance, setBalance] = useState(10000);
