@@ -62,14 +62,20 @@ export default function AssetSelector({ onSelect, onClose, prices, changes }: As
       {/* Header */}
       <div className="flex items-center px-4 py-2 text-[10px] text-muted-foreground uppercase tracking-wider border-b border-border">
         <span className="flex-1">Name</span>
+        <span className="w-24 text-right">Price (USDT)</span>
         <span className="w-20 text-right">24h</span>
         <span className="w-12 text-right">Payout</span>
       </div>
 
       {/* List */}
-      <div className="flex-1 overflow-y-auto">
+      <div
+        className="flex-1 overflow-y-auto"
+        data-lenis-prevent
+        style={{ scrollbarWidth: 'thin', scrollbarColor: '#3A4255 #242833', overscrollBehavior: 'contain' }}
+      >
         {filtered.map(pair => {
           const change = changes[pair.symbol] || 0;
+          const price = prices[pair.symbol];
           return (
             <button
               key={pair.symbol}
@@ -79,6 +85,9 @@ export default function AssetSelector({ onSelect, onClose, prices, changes }: As
               <Star size={14} className="text-muted-foreground mr-3 flex-shrink-0" />
               <span className="text-lg mr-2">{pair.icon}</span>
               <span className="text-sm font-medium text-foreground flex-1 text-left">{pair.displayName}</span>
+              <span className="w-24 text-right text-xs font-mono text-foreground">
+                {price ? (price < 1 ? price.toPrecision(4) : price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })) : '—'}
+              </span>
               <span className={`w-20 text-right text-xs font-medium ${change >= 0 ? 'text-success' : 'text-danger'}`}>
                 {change >= 0 ? '+' : ''}{change.toFixed(2)}%
               </span>
