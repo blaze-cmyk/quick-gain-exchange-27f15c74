@@ -20,6 +20,7 @@ const App = () => (
           <Route path="/" element={<Navigate to="/trade" replace />} />
           <Route path="/trade" element={<Trade />} />
           <Route path="/deposit" element={<Deposit />} />
+          <Route path="/withdrawal" element={<Withdrawal />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
