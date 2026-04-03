@@ -31,7 +31,13 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
             transition={{ delay: index * 0.04, duration: 0.25 }}
             whileHover={{ scale: 1.08 }}
             whileTap={{ scale: 0.92 }}
-            onClick={() => onTabChange(item.id)}
+            onClick={() => {
+              if (item.id === 'support') {
+                navigate('/support');
+              } else {
+                onTabChange(item.id);
+              }
+            }}
             className={`flex flex-col items-center justify-center w-11 h-11 rounded-lg mb-0.5 transition-all duration-200 ${
               isActive
                 ? 'bg-primary/15 text-primary'
