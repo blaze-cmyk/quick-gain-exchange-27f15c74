@@ -161,8 +161,8 @@ export default function AccountPage() {
 
       {/* Main content - scrollable */}
       <div className="overflow-y-auto" style={{ height: 'calc(100vh - 49px)' }}>
-        <div className="max-w-[1400px] mx-auto p-6">
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_1fr_280px] gap-8">
+        <div className="max-w-[1400px] mx-auto p-3 md:p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_280px] gap-6 md:gap-8">
 
             {/* Column 1: Personal data */}
             <motion.div
