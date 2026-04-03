@@ -13,6 +13,16 @@ import bybitLogo from '@/assets/payment/bybit.png';
 import kucoinLogo from '@/assets/payment/kucoin.png';
 import usdcLogo from '@/assets/payment/usdc.png';
 import binance2Logo from '@/assets/payment/binance2.png';
+import tronLogo from '@/assets/payment/tron.png';
+import bitcoinLogo from '@/assets/payment/bitcoin.png';
+import litecoinLogo from '@/assets/payment/litecoin.png';
+import ethereumLogo from '@/assets/payment/ethereum.png';
+import rippleLogo from '@/assets/payment/ripple.png';
+import dashLogo from '@/assets/payment/dash.png';
+import solanaLogo from '@/assets/payment/solana.png';
+import avalancheLogo from '@/assets/payment/avalanche.png';
+import shibLogo from '@/assets/payment/shib.png';
+import bnbLogo from '@/assets/payment/bnb.png';
 
 const TABS = ['DEPOSIT', 'WITHDRAWAL', 'HISTORY', 'CASHBACK', 'PROMO CODES', 'MY SAFE'];
 
