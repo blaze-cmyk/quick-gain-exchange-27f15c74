@@ -126,7 +126,7 @@ function isImageUrl(icon: string): boolean {
   return icon.startsWith('/') || icon.startsWith('data:') || icon.includes('/assets/');
 }
 
-function IconDisplay({ icon, size = 38 }: { icon: string; size?: number }) {
+function IconDisplay({ icon, size = 50 }: { icon: string; size?: number }) {
   if (isImageUrl(icon)) {
     return <img src={icon} alt="" className="object-contain" style={{ width: size, height: size }} />;
   }
