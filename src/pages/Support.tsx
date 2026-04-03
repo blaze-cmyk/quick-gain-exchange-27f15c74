@@ -280,7 +280,7 @@ export default function SupportPage() {
       </motion.div>
 
       {/* Section filter tabs */}
-      <div className="max-w-[900px] mx-auto px-6 pt-8 pb-4">
+      <div className="max-w-[900px] mx-auto px-3 md:px-6 pt-6 md:pt-8 pb-4">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
