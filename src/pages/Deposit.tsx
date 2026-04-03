@@ -273,7 +273,7 @@ export default function DepositPage() {
         </div>
 
         {/* Right sidebar info */}
-        <div className="w-[280px] shrink-0 mt-24">
+        <div className="w-full md:w-[280px] shrink-0 md:mt-24">
           <div className="space-y-4">
             <InfoItem icon={<CircleDollarSign size={18} className="text-[#0EB85B]" />} text="Minimum deposit amount: $5" />
             <InfoItem icon={<Gift size={18} className="text-[#3B82F6]" />} text="Gifts for deposit" />
