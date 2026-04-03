@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { TradingPair, Trade, TRADING_PAIRS } from '@/lib/types';
-import { useBinanceWebSocket } from '@/hooks/useBinanceWebSocket';
+import { usePairData } from '@/hooks/usePairData';
 import { useAllPairsPrices } from '@/hooks/useAllPairsPrices';
 import { useForexPrices } from '@/hooks/useForexPrices';
 import { motion, AnimatePresence } from 'framer-motion';
