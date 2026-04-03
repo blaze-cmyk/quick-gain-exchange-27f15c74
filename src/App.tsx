@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Trade from "./pages/Trade.tsx";
 import Deposit from "./pages/Deposit.tsx";
 import Withdrawal from "./pages/Withdrawal.tsx";
+import Support from "./pages/Support.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -21,6 +22,7 @@ const App = () => (
           <Route path="/trade" element={<Trade />} />
           <Route path="/deposit" element={<Deposit />} />
           <Route path="/withdrawal" element={<Withdrawal />} />
+          <Route path="/support" element={<Support />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

@@ -1,5 +1,6 @@
 import { BarChart3, HelpCircle, User, Trophy, Store, MoreHorizontal } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 interface SidebarProps {
   activeTab: string;
@@ -16,6 +17,7 @@ const navItems = [
 ];
 
 export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
+  const navigate = useNavigate();
   return (
     <div className="w-[52px] bg-[#1C1E2D] flex flex-col items-center py-3 border-r border-[#2B3040]">
       {navItems.map((item, index) => {
@@ -29,7 +31,13 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
             transition={{ delay: index * 0.04, duration: 0.25 }}
             whileHover={{ scale: 1.08 }}
             whileTap={{ scale: 0.92 }}
-            onClick={() => onTabChange(item.id)}
+            onClick={() => {
+              if (item.id === 'support') {
+                navigate('/support');
+              } else {
+                onTabChange(item.id);
+              }
+            }}
             className={`flex flex-col items-center justify-center w-11 h-11 rounded-lg mb-0.5 transition-all duration-200 ${
               isActive
                 ? 'bg-primary/15 text-primary'
