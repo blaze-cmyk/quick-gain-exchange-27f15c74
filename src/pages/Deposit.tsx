@@ -32,6 +32,14 @@ import chainlinkLogo from '@/assets/payment/chainlink.png';
 import cosmosLogo from '@/assets/payment/cosmos.png';
 import daiLogo from '@/assets/payment/dai.png';
 import etcLogo from '@/assets/payment/etc.png';
+import baseEthLogo from '@/assets/payment/base-eth.png';
+import bchLogo from '@/assets/payment/bch.png';
+import toncoinLogo from '@/assets/payment/toncoin.png';
+import stellarLogo from '@/assets/payment/stellar.png';
+import polygonLogo from '@/assets/payment/polygon.png';
+import voletLogo from '@/assets/payment/volet.png';
+import jetonbankLogo from '@/assets/payment/jetonbank.png';
+import moneygoLogo from '@/assets/payment/moneygo.png';
 
 const TABS = ['DEPOSIT', 'WITHDRAWAL', 'HISTORY', 'CASHBACK', 'PROMO CODES', 'MY SAFE'];
 
@@ -100,17 +108,17 @@ const CRYPTO_DIRECT: PaymentMethod[] = [
   { name: 'Dai (DAI)', icon: daiLogo, min: '$50', time: '~2 hours', category: 'crypto' },
   { name: 'Ethereum Classic (ETC)', icon: etcLogo, min: '$10', time: '~20 min.', category: 'crypto' },
   { name: 'Binance Coin (BNBBSC)', icon: bnbLogo, min: '$10', time: '3-5 min.', category: 'crypto' },
-  { name: 'Base Network Ethereum (ETH)', icon: ethereumLogo, min: '$10', time: '~10 min.', category: 'crypto' },
-  { name: 'Bitcoin Cash (BCH)', icon: bitcoinLogo, min: '$10', time: '~10 min.', category: 'crypto' },
-  { name: 'Toncoin (TON)', icon: '🔵', min: '$5', time: '3-5 min.', category: 'crypto' },
-  { name: 'Stellar (XLM)', icon: '⚫', min: '$10', time: '~5 min.', category: 'crypto' },
-  { name: 'Polygon (MATIC)', icon: '🟣', min: '$5', time: '~5 min.', category: 'crypto' },
+  { name: 'Base Network Ethereum (ETH)', icon: baseEthLogo, min: '$10', time: '~10 min.', category: 'crypto' },
+  { name: 'Bitcoin Cash (BCH)', icon: bchLogo, min: '$10', time: '~10 min.', category: 'crypto' },
+  { name: 'Toncoin (TON)', icon: toncoinLogo, min: '$5', time: '3-5 min.', category: 'crypto' },
+  { name: 'Stellar (XLM)', icon: stellarLogo, min: '$10', time: '~5 min.', category: 'crypto' },
+  { name: 'Polygon (MATIC)', icon: polygonLogo, min: '$5', time: '~5 min.', category: 'crypto' },
 ];
 
 const EPAYMENT_METHODS: PaymentMethod[] = [
-  { name: 'Volet.com (ex. Advcash)', icon: '💳', min: '$5', time: '~5 min.', category: 'epayments' },
-  { name: 'Jetonbank', icon: '💳', min: '$5', time: '~5 min.', category: 'epayments' },
-  { name: 'MoneyGo', icon: '💳', min: '$5', time: '~5 min.', category: 'epayments' },
+  { name: 'Volet.com (ex. Advcash)', icon: voletLogo, min: '$5', time: '~5 min.', category: 'epayments' },
+  { name: 'Jetonbank', icon: jetonbankLogo, min: '$5', time: '~5 min.', category: 'epayments' },
+  { name: 'MoneyGo', icon: moneygoLogo, min: '$5', time: '~5 min.', category: 'epayments' },
 ];
 
 function isImageUrl(icon: string): boolean {
