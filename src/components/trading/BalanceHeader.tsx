@@ -38,7 +38,10 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
       </div>
 
       {/* Deposit button */}
-      <button className="flex items-center gap-1.5 bg-[#0EB85B] hover:bg-[#0EB85B]/90 text-white font-bold text-sm px-5 py-2.5 rounded-lg transition-colors">
+      <button
+        onClick={() => navigate('/deposit')}
+        className="flex items-center gap-1.5 bg-[#0EB85B] hover:bg-[#0EB85B]/90 text-white font-bold text-sm px-5 py-2.5 rounded-lg transition-colors"
+      >
         <Plus size={15} strokeWidth={3} />
         <span>Deposit</span>
       </button>
