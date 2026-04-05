@@ -368,6 +368,13 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
         </button>
       </motion.div>
       {switchModal}
+      <CurrencyExchangeModal
+        open={showExchangeModal}
+        onClose={() => setShowExchangeModal(false)}
+        currentCurrency={currency}
+        balance={currentBalance}
+        onExchange={(newCurrency) => setCurrency(newCurrency)}
+      />
     </>
   );
 }
