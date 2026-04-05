@@ -531,6 +531,65 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       ctx.fill();
     }
 
+    // Preview trade window lines (when no active trade)
+    if (!activeTrade && candles.length > 0) {
+      const nowSec = Math.floor(Date.now() / 1000);
+      const startTimeSec = nowSec;
+      const endTimeSec = nowSec + selectedDuration;
+
+      const startX = findXForTime(startTimeSec, step, effectiveOffset);
+      const endX = findXForTime(endTimeSec, step, effectiveOffset);
+
+      // "Beginning of trade" line
+      if (startX > -20 && startX < chartWidth + 20) {
+        ctx.strokeStyle = 'rgba(160, 170, 190, 0.25)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([5, 4]);
+        ctx.beginPath();
+        ctx.moveTo(startX, PADDING_TOP);
+        ctx.lineTo(startX, height - TIME_SCALE_HEIGHT);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = 'rgba(160, 170, 190, 0.5)';
+        ctx.font = '10px Montserrat, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        ctx.fillText('Beginning of trade', startX, PADDING_TOP - 4);
+
+        // Play arrow
+        ctx.fillStyle = 'rgba(160, 170, 190, 0.4)';
+        ctx.beginPath();
+        ctx.moveTo(startX - 4, PADDING_TOP - 18);
+        ctx.lineTo(startX + 4, PADDING_TOP - 14);
+        ctx.lineTo(startX - 4, PADDING_TOP - 10);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      // "End of trade" line
+      if (endX > -20 && endX < chartWidth + 20) {
+        ctx.strokeStyle = 'rgba(160, 170, 190, 0.25)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([5, 4]);
+        ctx.beginPath();
+        ctx.moveTo(endX, PADDING_TOP);
+        ctx.lineTo(endX, height - TIME_SCALE_HEIGHT);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = 'rgba(160, 170, 190, 0.5)';
+        ctx.font = '10px Montserrat, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        ctx.fillText('End of trade', endX, PADDING_TOP - 4);
+
+        // Stop square
+        ctx.fillStyle = 'rgba(160, 170, 190, 0.4)';
+        ctx.fillRect(endX - 4, PADDING_TOP - 17, 8, 8);
+      }
+    }
+
     // Draw active trade markers
     if (activeTrade) {
       drawTradeOnChart(ctx, activeTrade, step, effectiveOffset, minPrice, maxPrice, height, chartWidth, true);
