@@ -101,7 +101,7 @@ export default function TradePage() {
               transition={{ duration: 0.4, ease: 'easeOut' }}
               className="absolute top-[52px] left-0 z-10"
             >
-              <div className="bg-success text-success-foreground text-xs font-bold px-2 py-1 rounded-r-md">
+              <div className="bg-primary/20 text-primary text-xs font-bold px-2 py-1 rounded-r-md border border-primary/30 border-l-0">
                 {activePair.payout}%
               </div>
             </motion.div>

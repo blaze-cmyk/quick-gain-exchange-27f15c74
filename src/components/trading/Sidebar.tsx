@@ -35,10 +35,9 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
     else onTabChange(id);
   };
 
-  // Mobile: bottom tab bar
   if (isMobile) {
     return (
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#1C1E2D] border-t border-[#2B3040] flex items-center justify-around px-1 py-1 safe-area-bottom">
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border flex items-center justify-around px-1 py-1 safe-area-bottom backdrop-blur-xl">
         {mobileNavItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
@@ -64,9 +63,8 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
     );
   }
 
-  // Desktop: left sidebar
   return (
-    <div className="w-[52px] bg-[#1C1E2D] flex flex-col items-center py-3 border-r border-[#2B3040]">
+    <div className="w-[52px] bg-card flex flex-col items-center py-3 border-r border-border">
       {navItems.map((item, index) => {
         const Icon = item.icon;
         const isActive = activeTab === item.id;
