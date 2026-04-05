@@ -1,5 +1,6 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { CandleData, Trade } from '@/lib/types';
+import type { ChartType } from './ChartToolbar';
 
 interface CustomChartProps {
   candles: CandleData[];
@@ -9,6 +10,7 @@ interface CustomChartProps {
   activeTrades?: Trade[];
   completedTrades?: Trade[];
   selectedDuration?: number;
+  chartType?: ChartType;
 }
 
 interface ChartState {
@@ -69,7 +71,7 @@ function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t;
 }
 
-export default function CustomChart({ candles, currentPrice, payout = 90, connected = true, activeTrades = [], completedTrades = [], selectedDuration = 60 }: CustomChartProps) {
+export default function CustomChart({ candles, currentPrice, payout = 90, connected = true, activeTrades = [], completedTrades = [], selectedDuration = 60, chartType = 'candles' }: CustomChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const stateRef = useRef<ChartState>({
     offsetX: 0,
@@ -475,56 +477,174 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       ctx.stroke();
     }
 
-    // Draw candles
-    for (let i = startIdx; i <= endIdx && i < candles.length; i++) {
-      const candle = candles[i];
-      const x = (i * step) - effectiveOffset;
-      const centerX = x + step / 2;
-      if (centerX < -candleW * 2 || centerX > chartWidth + candleW * 2) continue;
+    // Compute Heiken Ashi candles if needed
+    const getHeikenAshi = () => {
+      const ha: CandleData[] = [];
+      for (let i = 0; i < candles.length; i++) {
+        const c = candles[i];
+        const haClose = (c.open + c.high + c.low + c.close) / 4;
+        const haOpen = i === 0 ? (c.open + c.close) / 2 : (ha[i - 1].open + ha[i - 1].close) / 2;
+        const haHigh = Math.max(c.high, haOpen, haClose);
+        const haLow = Math.min(c.low, haOpen, haClose);
+        ha.push({ time: c.time, open: haOpen, high: haHigh, low: haLow, close: haClose });
+      }
+      return ha;
+    };
 
-      const isGreen = candle.close >= candle.open;
-      const openY = priceToY(candle.open, minPrice, maxPrice, height);
-      const closeY = priceToY(candle.close, minPrice, maxPrice, height);
-      const highY = priceToY(candle.high, minPrice, maxPrice, height);
-      const lowY = priceToY(candle.low, minPrice, maxPrice, height);
+    const renderCandles = chartType === 'heiken' ? getHeikenAshi() : candles;
 
-      ctx.strokeStyle = isGreen ? COLORS.wickGreen : COLORS.wickRed;
-      ctx.lineWidth = 1;
+    if (chartType === 'area') {
+      // ── Area chart ──
       ctx.beginPath();
-      ctx.moveTo(centerX, highY);
-      ctx.lineTo(centerX, lowY);
+      let firstPoint = true;
+      for (let i = startIdx; i <= endIdx && i < candles.length; i++) {
+        const x = (i * step) - effectiveOffset + step / 2;
+        const y = priceToY(candles[i].close, minPrice, maxPrice, height);
+        if (firstPoint) { ctx.moveTo(x, y); firstPoint = false; } else { ctx.lineTo(x, y); }
+      }
+      // Stroke the line
+      ctx.strokeStyle = COLORS.priceLine;
+      ctx.lineWidth = 1.5;
       ctx.stroke();
 
-      const bodyTop = Math.min(openY, closeY);
-      const bodyHeight = Math.max(1, Math.abs(closeY - openY));
-      ctx.fillStyle = isGreen ? COLORS.candleGreen : COLORS.candleRed;
-      ctx.fillRect(Math.round(centerX - candleW / 2), Math.round(bodyTop), Math.round(candleW), Math.round(bodyHeight));
+      // Fill area
+      if (!firstPoint) {
+        const lastVisibleIdx = Math.min(endIdx, candles.length - 1);
+        const lastX = (lastVisibleIdx * step) - effectiveOffset + step / 2;
+        const firstX = (startIdx * step) - effectiveOffset + step / 2;
+        ctx.lineTo(lastX, height - TIME_SCALE_HEIGHT);
+        ctx.lineTo(firstX, height - TIME_SCALE_HEIGHT);
+        ctx.closePath();
+        const gradient = ctx.createLinearGradient(0, PADDING_TOP, 0, height - TIME_SCALE_HEIGHT);
+        gradient.addColorStop(0, 'rgba(34, 211, 153, 0.25)');
+        gradient.addColorStop(1, 'rgba(34, 211, 153, 0.02)');
+        ctx.fillStyle = gradient;
+        ctx.fill();
+      }
 
-      // Live candle timer on the right-side price line (not under the candle)
-      if (i === candles.length - 1 && activeTrades.length === 0) {
+      // Live timer for last candle
+      if (candles.length > 0 && activeTrades.length === 0) {
+        const lastCandle = candles[candles.length - 1];
         const nowMs = Date.now();
-        const candleEndMs = (candle.time + 60) * 1000;
+        const candleEndMs = (lastCandle.time + 60) * 1000;
         const secsLeft = Math.max(0, Math.ceil((candleEndMs - nowMs) / 1000));
         const timerText = `00:${String(secsLeft).padStart(2, '0')}`;
-        const badgeW2 = 40;
-        const badgeH2 = 16;
-        const livePriceY = priceToY(st.smoothPrice || currentPrice || candle.close, minPrice, maxPrice, height);
+        const livePriceY = priceToY(st.smoothPrice || currentPrice || lastCandle.close, minPrice, maxPrice, height);
+        const badgeW2 = 40, badgeH2 = 16;
         const badgeX2 = chartWidth - badgeW2 - 6;
-
         const timerY2 = livePriceY - badgeH2 - 8;
         ctx.fillStyle = 'rgba(30, 35, 48, 0.95)';
         roundRect(ctx, badgeX2, timerY2, badgeW2, badgeH2, 4);
         ctx.fill();
-        ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-        ctx.lineWidth = 0.5;
-        roundRect(ctx, badgeX2, timerY2, badgeW2, badgeH2, 4);
-        ctx.stroke();
-
         ctx.fillStyle = '#d1d5db';
         ctx.font = '9px Montserrat, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(timerText, badgeX2 + badgeW2 / 2, timerY2 + badgeH2 / 2);
+      }
+
+    } else if (chartType === 'bars') {
+      // ── OHLC Bars ──
+      for (let i = startIdx; i <= endIdx && i < candles.length; i++) {
+        const candle = candles[i];
+        const x = (i * step) - effectiveOffset + step / 2;
+        if (x < -20 || x > chartWidth + 20) continue;
+
+        const isGreen = candle.close >= candle.open;
+        const color = isGreen ? COLORS.candleGreen : COLORS.candleRed;
+        const highY = priceToY(candle.high, minPrice, maxPrice, height);
+        const lowY = priceToY(candle.low, minPrice, maxPrice, height);
+        const openY = priceToY(candle.open, minPrice, maxPrice, height);
+        const closeY = priceToY(candle.close, minPrice, maxPrice, height);
+        const tickW = Math.max(3, candleW * 0.4);
+
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1.2;
+        // Vertical line
+        ctx.beginPath();
+        ctx.moveTo(x, highY);
+        ctx.lineTo(x, lowY);
+        ctx.stroke();
+        // Open tick (left)
+        ctx.beginPath();
+        ctx.moveTo(x - tickW, openY);
+        ctx.lineTo(x, openY);
+        ctx.stroke();
+        // Close tick (right)
+        ctx.beginPath();
+        ctx.moveTo(x, closeY);
+        ctx.lineTo(x + tickW, closeY);
+        ctx.stroke();
+
+        if (i === candles.length - 1 && activeTrades.length === 0) {
+          const nowMs = Date.now();
+          const candleEndMs = (candle.time + 60) * 1000;
+          const secsLeft = Math.max(0, Math.ceil((candleEndMs - nowMs) / 1000));
+          const timerText = `00:${String(secsLeft).padStart(2, '0')}`;
+          const livePriceY = priceToY(st.smoothPrice || currentPrice || candle.close, minPrice, maxPrice, height);
+          const badgeW2 = 40, badgeH2 = 16;
+          const badgeX2 = chartWidth - badgeW2 - 6;
+          const timerY2 = livePriceY - badgeH2 - 8;
+          ctx.fillStyle = 'rgba(30, 35, 48, 0.95)';
+          roundRect(ctx, badgeX2, timerY2, badgeW2, badgeH2, 4);
+          ctx.fill();
+          ctx.fillStyle = '#d1d5db';
+          ctx.font = '9px Montserrat, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(timerText, badgeX2 + badgeW2 / 2, timerY2 + badgeH2 / 2);
+        }
+      }
+
+    } else {
+      // ── Candles & Heiken Ashi ──
+      for (let i = startIdx; i <= endIdx && i < renderCandles.length; i++) {
+        const candle = renderCandles[i];
+        const x = (i * step) - effectiveOffset;
+        const centerX = x + step / 2;
+        if (centerX < -candleW * 2 || centerX > chartWidth + candleW * 2) continue;
+
+        const isGreen = candle.close >= candle.open;
+        const openY = priceToY(candle.open, minPrice, maxPrice, height);
+        const closeY = priceToY(candle.close, minPrice, maxPrice, height);
+        const highY = priceToY(candle.high, minPrice, maxPrice, height);
+        const lowY = priceToY(candle.low, minPrice, maxPrice, height);
+
+        ctx.strokeStyle = isGreen ? COLORS.wickGreen : COLORS.wickRed;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(centerX, highY);
+        ctx.lineTo(centerX, lowY);
+        ctx.stroke();
+
+        const bodyTop = Math.min(openY, closeY);
+        const bodyHeight = Math.max(1, Math.abs(closeY - openY));
+        ctx.fillStyle = isGreen ? COLORS.candleGreen : COLORS.candleRed;
+        ctx.fillRect(Math.round(centerX - candleW / 2), Math.round(bodyTop), Math.round(candleW), Math.round(bodyHeight));
+
+        if (i === renderCandles.length - 1 && activeTrades.length === 0) {
+          const nowMs = Date.now();
+          const candleEndMs = (candle.time + 60) * 1000;
+          const secsLeft = Math.max(0, Math.ceil((candleEndMs - nowMs) / 1000));
+          const timerText = `00:${String(secsLeft).padStart(2, '0')}`;
+          const badgeW2 = 40;
+          const badgeH2 = 16;
+          const livePriceY = priceToY(st.smoothPrice || currentPrice || candle.close, minPrice, maxPrice, height);
+          const badgeX2 = chartWidth - badgeW2 - 6;
+          const timerY2 = livePriceY - badgeH2 - 8;
+          ctx.fillStyle = 'rgba(30, 35, 48, 0.95)';
+          roundRect(ctx, badgeX2, timerY2, badgeW2, badgeH2, 4);
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+          ctx.lineWidth = 0.5;
+          roundRect(ctx, badgeX2, timerY2, badgeW2, badgeH2, 4);
+          ctx.stroke();
+          ctx.fillStyle = '#d1d5db';
+          ctx.font = '9px Montserrat, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(timerText, badgeX2 + badgeW2 / 2, timerY2 + badgeH2 / 2);
+        }
       }
     }
 
@@ -729,7 +849,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
         drawOHLCTooltip(ctx, candles[hoverIdx], 46, height - TIME_SCALE_HEIGHT - 22);
       }
     }
-  }, [candles, currentPrice, activeTrades, completedTrades, selectedDuration, getVisibleRange, getPriceRange, drawTradeOnChart]);
+  }, [candles, currentPrice, activeTrades, completedTrades, selectedDuration, chartType, getVisibleRange, getPriceRange, drawTradeOnChart]);
 
   // Mouse handlers
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
