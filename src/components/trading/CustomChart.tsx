@@ -724,7 +724,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
         drawOHLCTooltip(ctx, candles[hoverIdx], 80, PADDING_TOP + 8);
       }
     }
-  }, [candles, currentPrice, activeTrade, completedTrades, getVisibleRange, getPriceRange, drawTradeOnChart]);
+  }, [candles, currentPrice, activeTrade, completedTrades, selectedDuration, getVisibleRange, getPriceRange, drawTradeOnChart]);
 
   // Mouse handlers
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
