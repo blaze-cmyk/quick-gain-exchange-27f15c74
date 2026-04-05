@@ -167,9 +167,9 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     const tradeColor = isUp ? COLORS.tradeGreen : COLORS.tradeRed;
     const tradeBgColor = isUp ? COLORS.tradeGreenBg : COLORS.tradeRedBg;
 
-    // "Beginning of trade" dashed vertical line
+    // "Beginning of trade" line - same color as price line
     if (startX > 0 && startX < chartWidth) {
-      ctx.strokeStyle = '#8892a0';
+      ctx.strokeStyle = COLORS.priceLine;
       ctx.lineWidth = 1;
       ctx.setLineDash([5, 4]);
       ctx.beginPath();
@@ -178,15 +178,13 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       ctx.stroke();
       ctx.setLineDash([]);
 
-      // Labels
-      ctx.fillStyle = '#8892a0';
+      ctx.fillStyle = COLORS.priceLine;
       ctx.font = '10px Inter, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'bottom';
       ctx.fillText('Beginning of trade', startX, PADDING_TOP - 4);
 
-      // Small play arrow
-      ctx.fillStyle = '#8892a0';
+      ctx.fillStyle = COLORS.priceLine;
       ctx.beginPath();
       ctx.moveTo(startX - 4, PADDING_TOP - 18);
       ctx.lineTo(startX + 4, PADDING_TOP - 14);
@@ -195,16 +193,15 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       ctx.fill();
     }
 
-    // "End of trade" dashed vertical line
+    // "End of trade" solid vertical line
     if (endX > 0 && endX < chartWidth) {
       ctx.strokeStyle = '#8892a0';
       ctx.lineWidth = 1;
-      ctx.setLineDash([5, 4]);
+      ctx.setLineDash([]);
       ctx.beginPath();
       ctx.moveTo(endX, PADDING_TOP);
       ctx.lineTo(endX, height - TIME_SCALE_HEIGHT);
       ctx.stroke();
-      ctx.setLineDash([]);
 
       ctx.fillStyle = '#8892a0';
       ctx.font = '10px Inter, sans-serif';
@@ -540,9 +537,9 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       const startX = findXForTime(startTimeSec, step, effectiveOffset);
       const endX = findXForTime(endTimeSec, step, effectiveOffset);
 
-      // "Beginning of trade" line
+      // "Beginning of trade" preview line - price line color
       if (startX > -20 && startX < chartWidth + 20) {
-        ctx.strokeStyle = 'rgba(160, 170, 190, 0.25)';
+        ctx.strokeStyle = COLORS.priceLine;
         ctx.lineWidth = 1;
         ctx.setLineDash([5, 4]);
         ctx.beginPath();
@@ -551,32 +548,32 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
         ctx.stroke();
         ctx.setLineDash([]);
 
-        ctx.fillStyle = 'rgba(160, 170, 190, 0.5)';
+        ctx.fillStyle = COLORS.priceLine;
         ctx.font = '10px Montserrat, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'bottom';
         ctx.fillText('Beginning of trade', startX, PADDING_TOP - 4);
 
-        // Play arrow
-        ctx.fillStyle = 'rgba(160, 170, 190, 0.4)';
+        ctx.fillStyle = COLORS.priceLine;
+        ctx.globalAlpha = 0.6;
         ctx.beginPath();
         ctx.moveTo(startX - 4, PADDING_TOP - 18);
         ctx.lineTo(startX + 4, PADDING_TOP - 14);
         ctx.lineTo(startX - 4, PADDING_TOP - 10);
         ctx.closePath();
         ctx.fill();
+        ctx.globalAlpha = 1;
       }
 
-      // "End of trade" line
+      // "End of trade" preview line - solid
       if (endX > -20 && endX < chartWidth + 20) {
-        ctx.strokeStyle = 'rgba(160, 170, 190, 0.25)';
+        ctx.strokeStyle = 'rgba(160, 170, 190, 0.35)';
         ctx.lineWidth = 1;
-        ctx.setLineDash([5, 4]);
+        ctx.setLineDash([]);
         ctx.beginPath();
         ctx.moveTo(endX, PADDING_TOP);
         ctx.lineTo(endX, height - TIME_SCALE_HEIGHT);
         ctx.stroke();
-        ctx.setLineDash([]);
 
         ctx.fillStyle = 'rgba(160, 170, 190, 0.5)';
         ctx.font = '10px Montserrat, sans-serif';
