@@ -31,6 +31,7 @@ export default function TradePage() {
   const [selectedDuration, setSelectedDuration] = useState(TIMEFRAMES[0].seconds);
   const [lastSettledTrade, setLastSettledTrade] = useState<Trade | null>(null);
   const [lastOpenedTrade, setLastOpenedTrade] = useState<Trade | null>(null);
+  const [chartType, setChartType] = useState<ChartType>('candles');
   const { currentPrice, priceChange, candles, connected } = usePairData(activePair);
   const { prices: allPrices, changes: allChanges } = useAllPairsPrices();
   const { prices: forexPrices, changes: forexChanges } = useForexPrices();
