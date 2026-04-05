@@ -820,7 +820,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       const x = (i * step) - effectiveOffset + step / 2;
       if (x < 20 || x > chartWidth - 20) continue;
       const date = new Date(candles[i].time * 1000);
-      const label = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+      const label = formatTimeLabel(date, chartInterval);
       ctx.fillText(label, x, height - TIME_SCALE_HEIGHT / 2);
     }
 
