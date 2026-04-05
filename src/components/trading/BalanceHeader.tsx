@@ -81,8 +81,13 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
         <div className="text-[10px] text-muted-foreground mt-0.5">ID: 85396662</div>
         <div className="flex items-center gap-2 mt-1.5">
           <span className="text-[10px] text-muted-foreground">Currency:</span>
-          <span className="text-[10px] font-bold text-foreground">USD</span>
-          <span className="text-[8px] font-bold bg-primary text-primary-foreground px-1.5 py-0.5 rounded">CHANGE</span>
+          <span className="text-[10px] font-bold text-foreground">{currency}</span>
+          <button
+            onClick={(e) => { e.stopPropagation(); setShowExchangeModal(true); setShowDropdown(false); }}
+            className="text-[8px] font-bold bg-primary text-primary-foreground px-1.5 py-0.5 rounded cursor-pointer hover:bg-primary/80 transition-colors"
+          >
+            CHANGE
+          </button>
         </div>
       </div>
 
