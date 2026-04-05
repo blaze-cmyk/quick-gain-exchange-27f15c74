@@ -74,17 +74,17 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
 
   // Generate clock-time options in UTC, recalculated when dropdown opens
   const clockOptions = useMemo(() => {
-    const now = new Date();
-    const utcH = now.getUTCHours();
-    const utcM = now.getUTCMinutes();
-    const baseMs = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), utcH, utcM + 1, 0, 0);
+    const toEST = (date: Date) => new Date(date.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+    const nowEST = toEST(new Date());
+    const baseMs = new Date().getTime();
+    const startMin = nowEST.getMinutes() + 1;
     const offsets = [0, 1, 2, 3, 4, 8, 14, 29, 44, 59, 119, 179, 299];
     return offsets.map(off => {
-      const targetMs = baseMs + off * 60000;
-      const d = new Date(targetMs);
+      const futureMs = baseMs + (off + (startMin - nowEST.getMinutes())) * 60000 - nowEST.getSeconds() * 1000;
+      const d = toEST(new Date(futureMs));
       return {
-        label: `${String(d.getUTCHours()).padStart(2, '0')}:${String(d.getUTCMinutes()).padStart(2, '0')}`,
-        seconds: Math.max(5, Math.floor((targetMs - Date.now()) / 1000)),
+        label: `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`,
+        seconds: Math.max(5, Math.floor((futureMs - Date.now()) / 1000)),
       };
     }).filter(o => o.seconds >= 5);
   }, [showTimeframes]);
@@ -150,8 +150,8 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
               {timeMode === 'duration'
                 ? formatTime(selectedTimeframe)
                 : (() => {
-                    const d = new Date(Date.now() + selectedTimeframe.seconds * 1000);
-                    return `${String(d.getUTCHours()).padStart(2, '0')}:${String(d.getUTCMinutes()).padStart(2, '0')}`;
+                    const d = new Date(new Date(Date.now() + selectedTimeframe.seconds * 1000).toLocaleString('en-US', { timeZone: 'America/New_York' }));
+                    return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
                   })()
               }
             </button>
