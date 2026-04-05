@@ -748,7 +748,6 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       st.dragStartScaleY = st.targetScaleY;
       st.crosshair = null;
       canvas.style.cursor = 'ns-resize';
-      canvas.setPointerCapture?.((e.nativeEvent as PointerEvent).pointerId);
       return;
     }
 
@@ -800,12 +799,10 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     st.crosshair = x < chartWidth ? { x, y } : null;
   }, []);
 
-  const handleMouseUp = useCallback((e: React.MouseEvent) => {
-    const canvas = canvasRef.current;
+  const handleMouseUp = useCallback(() => {
     stateRef.current.isDragging = false;
     stateRef.current.isDraggingPriceScale = false;
-    canvas?.releasePointerCapture?.((e.nativeEvent as PointerEvent).pointerId);
-    if (canvas) canvas.style.cursor = 'crosshair';
+    if (canvasRef.current) canvasRef.current.style.cursor = 'crosshair';
   }, []);
 
   const handleMouseLeave = useCallback(() => {
