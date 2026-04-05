@@ -4,7 +4,13 @@ import { CandleData } from '@/lib/types';
 const HISTORY_LIMIT = 1000;
 const RECONNECT_DELAY_MS = 1200;
 
-export function useBinanceWebSocket(symbol: string) {
+// Map interval string to seconds for candle bucketing
+const INTERVAL_SECONDS: Record<string, number> = {
+  '1s': 1, '1m': 60, '3m': 180, '5m': 300, '15m': 900, '30m': 1800,
+  '1h': 3600, '2h': 7200, '4h': 14400, '1d': 86400,
+};
+
+export function useBinanceWebSocket(symbol: string, interval: string = '1m') {
   const [currentPrice, setCurrentPrice] = useState<number>(0);
   const [priceChange, setPriceChange] = useState<number>(0);
   const [candles, setCandles] = useState<CandleData[]>([]);
