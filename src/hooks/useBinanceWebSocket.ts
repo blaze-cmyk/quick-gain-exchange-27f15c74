@@ -21,10 +21,10 @@ export function useBinanceWebSocket(symbol: string, interval: string = '1m') {
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<number | null>(null);
 
-  const fetchHistoricalData = useCallback(async (sym: string) => {
+  const fetchHistoricalData = useCallback(async (sym: string, intv: string) => {
     try {
       const res = await fetch(
-        `https://api.binance.com/api/v3/klines?symbol=${sym.toUpperCase()}&interval=1m&limit=${HISTORY_LIMIT}`
+        `https://api.binance.com/api/v3/klines?symbol=${sym.toUpperCase()}&interval=${intv}&limit=${HISTORY_LIMIT}`
       );
       const data = await res.json();
       const historical: CandleData[] = Array.isArray(data)
