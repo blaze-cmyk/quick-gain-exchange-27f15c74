@@ -108,7 +108,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
     return acc;
   }, {} as Record<string, Trade[]>);
 
-  const activePnL = getActivePnL();
+  const activePnLs = getActivePnLs();
 
   return (
     <div className="w-[260px] bg-card border-l border-border flex flex-col h-full overflow-y-auto">
