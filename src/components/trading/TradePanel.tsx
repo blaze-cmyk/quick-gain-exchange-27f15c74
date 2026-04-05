@@ -21,6 +21,11 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
   const [selectedTimeframe, setSelectedTimeframe] = useState(TIMEFRAMES[4]); // default 1:00
   const [timeMode, setTimeMode] = useState<'duration' | 'clock'>('duration');
   const [showTimeframes, setShowTimeframes] = useState(false);
+  const [pendingTradeEnabled, setPendingTradeEnabled] = useState(false);
+  const [pendingMode, setPendingMode] = useState<'quote' | 'time'>('quote');
+  const [pendingQuote, setPendingQuote] = useState('');
+  const [pendingTime, setPendingTime] = useState('');
+  const [showPendingModal, setShowPendingModal] = useState(false);
   const [activeTab, setActiveTab] = useState<'trades' | 'orders'>('trades');
   const [, setTick] = useState(0);
 
