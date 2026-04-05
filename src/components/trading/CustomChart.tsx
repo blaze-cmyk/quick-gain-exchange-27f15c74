@@ -124,7 +124,14 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     const basePadding = (maxPrice - minPrice) * 0.035;
     const livePadding = candleRange * 3.2;
     const padding = Math.max(basePadding, livePadding, currentPrice * 0.00008);
-    return { minPrice: minPrice - padding, maxPrice: maxPrice + padding };
+    const rawMin = minPrice - padding;
+    const rawMax = maxPrice + padding;
+    
+    // Apply vertical scale (scaleY) — zoom around center
+    const center = (rawMin + rawMax) / 2;
+    const halfRange = (rawMax - rawMin) / 2;
+    const scaledHalf = halfRange / stateRef.current.scaleY;
+    return { minPrice: center - scaledHalf, maxPrice: center + scaledHalf };
   }, [candles, currentPrice]);
 
   const priceToY = (price: number, minPrice: number, maxPrice: number, height: number) => {
