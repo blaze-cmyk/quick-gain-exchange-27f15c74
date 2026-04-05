@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { TradingPair, Trade, TRADING_PAIRS } from '@/lib/types';
+import { TradingPair, Trade, TRADING_PAIRS, TIMEFRAMES } from '@/lib/types';
 import { usePairData } from '@/hooks/usePairData';
 import { useAllPairsPrices } from '@/hooks/useAllPairsPrices';
 import { useForexPrices } from '@/hooks/useForexPrices';
