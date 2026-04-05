@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { TradingPair, TIMEFRAMES, Trade } from '@/lib/types';
 import { ArrowUp, ArrowDown, Minus, Plus, Clock, ChevronDown, Package } from 'lucide-react';
 import CryptoIcon from './CryptoIcons';
