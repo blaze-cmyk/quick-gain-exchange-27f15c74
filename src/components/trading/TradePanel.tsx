@@ -150,8 +150,8 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
               {timeMode === 'duration'
                 ? formatTime(selectedTimeframe)
                 : (() => {
-                    const d = new Date(Date.now() + selectedTimeframe.seconds * 1000);
-                    return `${String(d.getUTCHours()).padStart(2, '0')}:${String(d.getUTCMinutes()).padStart(2, '0')}`;
+                    const d = new Date(new Date(Date.now() + selectedTimeframe.seconds * 1000).toLocaleString('en-US', { timeZone: 'America/New_York' }));
+                    return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
                   })()
               }
             </button>
