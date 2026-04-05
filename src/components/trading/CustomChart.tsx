@@ -843,6 +843,22 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
   }, []);
 
   useEffect(() => {
+    const stopInteractions = () => {
+      stateRef.current.isDragging = false;
+      stateRef.current.isDraggingPriceScale = false;
+      if (canvasRef.current) canvasRef.current.style.cursor = 'crosshair';
+    };
+
+    window.addEventListener('mouseup', stopInteractions);
+    window.addEventListener('blur', stopInteractions);
+
+    return () => {
+      window.removeEventListener('mouseup', stopInteractions);
+      window.removeEventListener('blur', stopInteractions);
+    };
+  }, []);
+
+  useEffect(() => {
     const loop = () => {
       draw();
       animFrameRef.current = requestAnimationFrame(loop);
