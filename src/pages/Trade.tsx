@@ -15,7 +15,7 @@ import WinLossOverlay from '@/components/trading/WinLossOverlay';
 import TradeNotification from '@/components/trading/TradeNotification';
 import TradeResultToast from '@/components/trading/TradeResultToast';
 import BalanceHeader from '@/components/trading/BalanceHeader';
-import { Info, Pencil } from 'lucide-react';
+import { Info } from 'lucide-react';
 
 export default function TradePage() {
   const [activePair, setActivePair] = useState<TradingPair>(TRADING_PAIRS[0]);
