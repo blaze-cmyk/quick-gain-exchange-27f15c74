@@ -64,11 +64,28 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
   };
 
   const formatTime = (tf: typeof TIMEFRAMES[0]) => {
-    const m = Math.floor(tf.seconds / 60);
-    const h = Math.floor(m / 60);
-    if (h > 0) return `${String(h).padStart(2, '0')}:00:00`;
-    return `00:${String(m).padStart(2, '0')}:00`;
+    const s = tf.seconds;
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const sec = s % 60;
+    if (h > 0) return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+    return `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
   };
+
+  // Generate clock-time options (rounded to next 1min, then spread)
+  const clockOptions = useMemo(() => {
+    const now = new Date();
+    const baseMin = now.getMinutes() + 1;
+    const offsets = [0, 1, 2, 3, 4, 8, 14, 29, 44, 59, 119, 179, 299];
+    return offsets.map(off => {
+      const d = new Date(now);
+      d.setMinutes(baseMin + off, 0, 0);
+      return {
+        label: `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`,
+        seconds: Math.max(5, Math.floor((d.getTime() - Date.now()) / 1000)),
+      };
+    }).filter(o => o.seconds >= 5);
+  }, [showTimeframes]); // recalculate when dropdown opens
 
   const formatDuration = (secs: number) => {
     const h = Math.floor(secs / 3600);
