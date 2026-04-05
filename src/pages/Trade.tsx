@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { TradingPair, Trade, TRADING_PAIRS } from '@/lib/types';
+import { TradingPair, Trade, TRADING_PAIRS, TIMEFRAMES } from '@/lib/types';
 import { usePairData } from '@/hooks/usePairData';
 import { useAllPairsPrices } from '@/hooks/useAllPairsPrices';
 import { useForexPrices } from '@/hooks/useForexPrices';
@@ -26,6 +26,7 @@ export default function TradePage() {
   const [trades, setTrades] = useState<Trade[]>([]);
   const [activeTrade, setActiveTrade] = useState<Trade | null>(null);
   const [tradeResult, setTradeResult] = useState<{ result: 'win' | 'loss'; amount: number } | null>(null);
+  const [selectedDuration, setSelectedDuration] = useState(TIMEFRAMES[0].seconds);
   const [lastSettledTrade, setLastSettledTrade] = useState<Trade | null>(null);
   const { currentPrice, priceChange, candles, connected } = usePairData(activePair);
   const { prices: allPrices, changes: allChanges } = useAllPairsPrices();
@@ -173,6 +174,7 @@ export default function TradePage() {
               connected={connected}
               activeTrade={activeTrade}
               completedTrades={trades}
+              selectedDuration={selectedDuration}
             />
 
             {/* Result toast */}
@@ -222,6 +224,7 @@ export default function TradePage() {
               onTrade={handleTrade}
               activeTrade={activeTrade}
               trades={trades}
+              onDurationChange={setSelectedDuration}
             />
           )}
         </div>
