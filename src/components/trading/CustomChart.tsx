@@ -577,9 +577,9 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
 
         ctx.fillStyle = 'rgba(160, 170, 190, 0.5)';
         ctx.font = '10px Montserrat, sans-serif';
-        ctx.textAlign = 'center';
+        ctx.textAlign = 'left';
         ctx.textBaseline = 'bottom';
-        ctx.fillText('End of trade', endX, PADDING_TOP - 4);
+        ctx.fillText('End of trade', endX + 6, PADDING_TOP - 4);
 
         // Stop square
         ctx.fillStyle = 'rgba(160, 170, 190, 0.4)';
