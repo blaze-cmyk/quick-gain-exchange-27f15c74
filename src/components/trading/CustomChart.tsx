@@ -167,9 +167,9 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     const tradeColor = isUp ? COLORS.tradeGreen : COLORS.tradeRed;
     const tradeBgColor = isUp ? COLORS.tradeGreenBg : COLORS.tradeRedBg;
 
-    // "Beginning of trade" dashed vertical line
+    // "Beginning of trade" line - same color as price line
     if (startX > 0 && startX < chartWidth) {
-      ctx.strokeStyle = '#8892a0';
+      ctx.strokeStyle = COLORS.priceLine;
       ctx.lineWidth = 1;
       ctx.setLineDash([5, 4]);
       ctx.beginPath();
@@ -178,15 +178,13 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       ctx.stroke();
       ctx.setLineDash([]);
 
-      // Labels
-      ctx.fillStyle = '#8892a0';
+      ctx.fillStyle = COLORS.priceLine;
       ctx.font = '10px Inter, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'bottom';
       ctx.fillText('Beginning of trade', startX, PADDING_TOP - 4);
 
-      // Small play arrow
-      ctx.fillStyle = '#8892a0';
+      ctx.fillStyle = COLORS.priceLine;
       ctx.beginPath();
       ctx.moveTo(startX - 4, PADDING_TOP - 18);
       ctx.lineTo(startX + 4, PADDING_TOP - 14);
