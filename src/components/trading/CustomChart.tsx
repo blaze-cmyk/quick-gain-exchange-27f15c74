@@ -6,9 +6,9 @@ interface CustomChartProps {
   currentPrice: number;
   payout?: number;
   connected?: boolean;
-  activeTrade?: Trade | null;
+  activeTrades?: Trade[];
   completedTrades?: Trade[];
-  selectedDuration?: number; // seconds - for preview trade window lines
+  selectedDuration?: number;
 }
 
 interface ChartState {

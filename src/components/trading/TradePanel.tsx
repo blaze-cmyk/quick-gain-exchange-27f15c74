@@ -53,20 +53,18 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
     }
   };
 
-  const timeLeft = activeTrade
-    ? Math.max(0, Math.ceil((activeTrade.endTime - Date.now()) / 1000))
-    : 0;
-
   const completedTrades = trades.filter(t => t.result);
 
-  const getActivePnL = () => {
-    if (!activeTrade || currentPrice <= 0) return null;
-    const isUp = activeTrade.direction === 'up';
-    const priceDiff = currentPrice - activeTrade.entryPrice;
-    const isWinning = isUp ? priceDiff > 0 : priceDiff < 0;
-    const tradeFee = activeTrade.amount * 0.10;
-    const netPool = activeTrade.amount - tradeFee;
-    return isWinning ? netPool : -activeTrade.amount;
+  const getActivePnLs = () => {
+    if (activeTrades.length === 0 || currentPrice <= 0) return [];
+    return activeTrades.map(trade => {
+      const isUp = trade.direction === 'up';
+      const priceDiff = currentPrice - trade.entryPrice;
+      const isWinning = isUp ? priceDiff > 0 : priceDiff < 0;
+      const tradeFee = trade.amount * 0.10;
+      const netPool = trade.amount - tradeFee;
+      return { trade, pnl: isWinning ? netPool : -trade.amount, timeLeft: Math.max(0, Math.ceil((trade.endTime - Date.now()) / 1000)) };
+    });
   };
 
   const formatTime = (tf: typeof TIMEFRAMES[0]) => {
