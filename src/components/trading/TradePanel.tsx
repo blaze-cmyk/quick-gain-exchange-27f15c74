@@ -124,13 +124,104 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
           <span className="text-primary text-xs font-bold">{pair.payout}%</span>
         </div>
         <div className="flex items-center gap-2 mt-1.5">
-          <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-          <span className="text-[9px] text-primary font-semibold tracking-wide">PENDING TRADE</span>
-          <div className="ml-auto w-7 h-3.5 bg-primary/30 rounded-full flex items-center cursor-pointer">
-            <div className="w-2.5 h-2.5 bg-primary rounded-full ml-auto mr-0.5" />
-          </div>
+          <div className={`w-1.5 h-1.5 rounded-full ${pendingTradeEnabled ? 'bg-primary animate-pulse' : 'bg-muted-foreground'}`} />
+          <span className={`text-[9px] font-semibold tracking-wide ${pendingTradeEnabled ? 'text-primary' : 'text-muted-foreground'}`}>PENDING TRADE</span>
+          <button
+            onClick={() => setPendingTradeEnabled(!pendingTradeEnabled)}
+            className={`ml-auto w-8 h-4 rounded-full flex items-center cursor-pointer transition-colors duration-200 ${
+              pendingTradeEnabled ? 'bg-primary' : 'bg-secondary'
+            }`}
+          >
+            <div className={`w-3 h-3 bg-white rounded-full transition-all duration-200 ${
+              pendingTradeEnabled ? 'ml-[18px]' : 'ml-0.5'
+            }`} />
+          </button>
         </div>
       </div>
+
+      {/* Pending trade config — shown when enabled */}
+      {pendingTradeEnabled && (
+        <div className="px-3 py-2.5 border-b border-border">
+          {/* QUOTE / TIME tabs */}
+          <div className="flex rounded-md overflow-hidden border border-border mb-2.5">
+            <button
+              onClick={() => setPendingMode('quote')}
+              className={`flex-1 py-1.5 text-[10px] font-bold tracking-wide transition-colors ${
+                pendingMode === 'quote'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-secondary text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              QUOTE
+            </button>
+            <button
+              onClick={() => setPendingMode('time')}
+              className={`flex-1 py-1.5 text-[10px] font-bold tracking-wide transition-colors ${
+                pendingMode === 'time'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-secondary text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              TIME
+            </button>
+          </div>
+
+          {pendingMode === 'quote' ? (
+            <>
+              <fieldset className="border border-border rounded-md px-2 pb-2 pt-0">
+                <legend className="text-[9px] text-muted-foreground px-1">Quote:</legend>
+                <input
+                  type="text"
+                  value={pendingQuote || (currentPrice > 0 ? currentPrice.toFixed(2) : '')}
+                  onChange={e => setPendingQuote(e.target.value)}
+                  className="w-full bg-transparent text-sm font-semibold text-foreground outline-none text-center py-1"
+                  style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                />
+              </fieldset>
+              <p className="text-[9px] text-muted-foreground mt-1">
+                Current quote: {currentPrice > 0 ? currentPrice.toFixed(2) : '—'}
+              </p>
+            </>
+          ) : (
+            <>
+              <fieldset className="border border-border rounded-md px-2 pb-2 pt-0">
+                <legend className="text-[9px] text-muted-foreground px-1">Time:</legend>
+                <input
+                  type="text"
+                  value={pendingTime || (() => {
+                    const d = new Date(new Date(Date.now() + 120000).toLocaleString('en-US', { timeZone: 'America/New_York' }));
+                    return `${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:00`;
+                  })()}
+                  onChange={e => setPendingTime(e.target.value)}
+                  className="w-full bg-transparent text-sm font-semibold text-foreground outline-none text-center py-1"
+                  style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                />
+              </fieldset>
+              <p className="text-[9px] text-muted-foreground mt-1">
+                Current time: {(() => {
+                  const d = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));
+                  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
+                })()}
+              </p>
+            </>
+          )}
+
+          {/* Period */}
+          <fieldset className="border border-border rounded-md px-2 pb-2 pt-0 mt-2">
+            <legend className="text-[9px] text-muted-foreground px-1">Period:</legend>
+            <div className="text-sm font-semibold text-foreground text-center py-1" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+              M{Math.floor(selectedTimeframe.seconds / 60) || 1}
+            </div>
+          </fieldset>
+
+          <button
+            onClick={() => setShowPendingModal(true)}
+            className="w-full text-center text-[9px] text-primary font-bold mt-2 hover:underline tracking-wide"
+          >
+            HOW IT WORKS?
+          </button>
+        </div>
+      )}
 
       {/* Time selector */}
       <div className="px-3 py-2.5 border-b border-border">
