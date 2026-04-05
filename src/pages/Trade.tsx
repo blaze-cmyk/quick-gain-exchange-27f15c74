@@ -15,7 +15,7 @@ import WinLossOverlay from '@/components/trading/WinLossOverlay';
 import TradeNotification from '@/components/trading/TradeNotification';
 import TradeResultToast from '@/components/trading/TradeResultToast';
 import BalanceHeader from '@/components/trading/BalanceHeader';
-import ChartToolbar from '@/components/trading/ChartToolbar';
+import ChartToolbar, { type ChartType } from '@/components/trading/ChartToolbar';
 import ProbabilityBar from '@/components/trading/ProbabilityBar';
 import { Info } from 'lucide-react';
 
