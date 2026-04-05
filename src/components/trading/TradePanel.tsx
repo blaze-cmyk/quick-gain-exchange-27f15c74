@@ -113,7 +113,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
   const activePnL = getActivePnL();
 
   return (
-    <div className="w-[260px] bg-card border-l border-border flex flex-col h-full overflow-y-auto">
+    <div className="relative w-[260px] bg-card border-l border-border flex flex-col h-full overflow-y-auto">
       {/* Pair info */}
       <div className="px-3 py-2.5 border-b border-border">
         <div className="flex items-center justify-between">
