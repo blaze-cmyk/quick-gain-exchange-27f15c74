@@ -551,7 +551,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     }
 
     // Preview trade window lines (when no active trade)
-    if (!activeTrade && candles.length > 0) {
+    if (activeTrades.length === 0 && candles.length > 0) {
       const lastCandleTime = candles[candles.length - 1].time;
       const startTimeSec = lastCandleTime;
       const endTimeSec = lastCandleTime + selectedDuration;
