@@ -170,7 +170,7 @@ export function useBinanceWebSocket(symbol: string, interval: string = '1m') {
       };
     };
 
-    fetchHistoricalData(sym);
+    fetchHistoricalData(sym, interval);
     fetch24hChange(sym);
     connectTradeStream();
 
