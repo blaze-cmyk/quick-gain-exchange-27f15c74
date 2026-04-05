@@ -409,7 +409,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     ctx.scale(dpr, dpr);
 
     const st = stateRef.current;
-    if (!st.isDragging) {
+    if (!st.isDragging && !st.isDraggingPriceScale) {
       if (Math.abs(st.velocityX) > 0.3) {
         st.targetOffsetX += st.velocityX;
         st.velocityX *= 0.92;
@@ -419,6 +419,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       st.offsetX = lerp(st.offsetX, st.targetOffsetX, 0.18);
     }
     st.scaleX = lerp(st.scaleX, st.targetScaleX, LERP_SPEED);
+    st.scaleY = lerp(st.scaleY, st.targetScaleY, LERP_SPEED);
     if (currentPrice > 0) {
       st.smoothPrice = st.smoothPrice === 0 ? currentPrice : lerp(st.smoothPrice, currentPrice, 0.45);
     }
