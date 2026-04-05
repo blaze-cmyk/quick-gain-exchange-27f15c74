@@ -180,9 +180,9 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
 
       ctx.fillStyle = COLORS.priceLine;
       ctx.font = '10px Inter, sans-serif';
-      ctx.textAlign = 'center';
+      ctx.textAlign = 'right';
       ctx.textBaseline = 'bottom';
-      ctx.fillText('Beginning of trade', startX, PADDING_TOP - 4);
+      ctx.fillText('Beginning of trade', startX - 6, PADDING_TOP - 4);
 
       ctx.fillStyle = COLORS.priceLine;
       ctx.beginPath();
