@@ -30,7 +30,7 @@ const COLORS = {
   gridLine: 'rgba(255, 255, 255, 0.10)',
   priceScaleBg: '#0f1113',
   priceScaleBorder: '#1a1c24',
-  timeScaleBg: '#0c0d12',
+  timeScaleBg: '#0f1113',
   candleGreen: '#22c55e',
   candleRed: '#ef4444',
   wickGreen: '#22c55e88',
