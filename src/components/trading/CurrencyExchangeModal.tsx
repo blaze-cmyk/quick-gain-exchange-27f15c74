@@ -50,6 +50,11 @@ export default function CurrencyExchangeModal({ open, onClose, currentCurrency, 
   const dropdownRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
+  // Smooth scroll state for dropdown
+  const scrollTargetRef = useRef(0);
+  const scrollCurrentRef = useRef(0);
+  const rafRef = useRef<number>(0);
+
   useEffect(() => {
     if (open) {
       setSelectedCurrency(currentCurrency === 'USD' ? 'EUR' : 'USD');
@@ -65,6 +70,40 @@ export default function CurrencyExchangeModal({ open, onClose, currentCurrency, 
     };
     if (showDropdown) document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showDropdown]);
+
+  // Lenis-style smooth scroll for dropdown
+  const smoothScroll = useCallback(() => {
+    const el = listRef.current;
+    if (!el) return;
+    scrollCurrentRef.current += (scrollTargetRef.current - scrollCurrentRef.current) * 0.12;
+    if (Math.abs(scrollTargetRef.current - scrollCurrentRef.current) > 0.5) {
+      el.scrollTop = scrollCurrentRef.current;
+      rafRef.current = requestAnimationFrame(smoothScroll);
+    } else {
+      el.scrollTop = scrollTargetRef.current;
+    }
+  }, []);
+
+  const handleWheel = useCallback((e: React.WheelEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const el = listRef.current;
+    if (!el) return;
+    const maxScroll = el.scrollHeight - el.clientHeight;
+    scrollTargetRef.current = Math.max(0, Math.min(maxScroll, scrollTargetRef.current + e.deltaY * 0.8));
+    cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(smoothScroll);
+  }, [smoothScroll]);
+
+  // Sync scroll position when dropdown opens
+  useEffect(() => {
+    if (showDropdown && listRef.current) {
+      scrollTargetRef.current = 0;
+      scrollCurrentRef.current = 0;
+      listRef.current.scrollTop = 0;
+    }
+    return () => cancelAnimationFrame(rafRef.current);
   }, [showDropdown]);
 
   const fromCurrency = CURRENCIES.find(c => c.code === currentCurrency) || CURRENCIES[0];
