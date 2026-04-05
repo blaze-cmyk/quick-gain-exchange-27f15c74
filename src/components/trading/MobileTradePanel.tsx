@@ -98,7 +98,7 @@ export default function MobileTradePanel({ pair, currentPrice, balance, onTrade 
       <div className="flex items-center justify-between mb-2">
         <span className="text-[11px] text-muted-foreground">Your payout:</span>
         <div className="flex-1 mx-2 border-b border-dotted border-border" />
-        <span className="text-[11px] font-bold text-foreground" style={{ fontFamily: "'JetBrains Mono', monospace" }}>{potentialPayout.toFixed(0)} $</span>
+        <span className="text-[11px] font-bold text-foreground" style={{ fontFamily: "'Montserrat', sans-serif" }}>{potentialPayout.toFixed(0)} $</span>
       </div>
 
       <div className="flex gap-2">
