@@ -207,6 +207,7 @@ export default function CurrencyExchangeModal({ open, onClose, currentCurrency, 
                       >
                         <div
                           ref={listRef}
+                          onWheel={handleWheel}
                           className="max-h-[200px] overflow-y-auto"
                           style={{ scrollbarWidth: 'thin', scrollbarColor: 'hsl(var(--muted)) transparent' }}
                         >
