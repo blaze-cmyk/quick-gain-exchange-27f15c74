@@ -16,9 +16,14 @@ interface ChartState {
   targetOffsetX: number;
   scaleX: number;
   targetScaleX: number;
+  scaleY: number;
+  targetScaleY: number;
   isDragging: boolean;
+  isDraggingPriceScale: boolean;
   dragStartX: number;
+  dragStartY: number;
   dragStartOffsetX: number;
+  dragStartScaleY: number;
   crosshair: { x: number; y: number } | null;
   smoothPrice: number;
   velocityX: number;
@@ -71,9 +76,14 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     targetOffsetX: 0,
     scaleX: 1,
     targetScaleX: 1,
+    scaleY: 1,
+    targetScaleY: 1,
     isDragging: false,
+    isDraggingPriceScale: false,
     dragStartX: 0,
+    dragStartY: 0,
     dragStartOffsetX: 0,
+    dragStartScaleY: 1,
     crosshair: null,
     smoothPrice: 0,
     velocityX: 0,
@@ -114,7 +124,14 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     const basePadding = (maxPrice - minPrice) * 0.035;
     const livePadding = candleRange * 3.2;
     const padding = Math.max(basePadding, livePadding, currentPrice * 0.00008);
-    return { minPrice: minPrice - padding, maxPrice: maxPrice + padding };
+    const rawMin = minPrice - padding;
+    const rawMax = maxPrice + padding;
+    
+    // Apply vertical scale (scaleY) — zoom around center
+    const center = (rawMin + rawMax) / 2;
+    const halfRange = (rawMax - rawMin) / 2;
+    const scaledHalf = halfRange / stateRef.current.scaleY;
+    return { minPrice: center - scaledHalf, maxPrice: center + scaledHalf };
   }, [candles, currentPrice]);
 
   const priceToY = (price: number, minPrice: number, maxPrice: number, height: number) => {
@@ -392,7 +409,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     ctx.scale(dpr, dpr);
 
     const st = stateRef.current;
-    if (!st.isDragging) {
+    if (!st.isDragging && !st.isDraggingPriceScale) {
       if (Math.abs(st.velocityX) > 0.3) {
         st.targetOffsetX += st.velocityX;
         st.velocityX *= 0.92;
@@ -402,6 +419,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       st.offsetX = lerp(st.offsetX, st.targetOffsetX, 0.18);
     }
     st.scaleX = lerp(st.scaleX, st.targetScaleX, LERP_SPEED);
+    st.scaleY = lerp(st.scaleY, st.targetScaleY, LERP_SPEED);
     if (currentPrice > 0) {
       st.smoothPrice = st.smoothPrice === 0 ? currentPrice : lerp(st.smoothPrice, currentPrice, 0.45);
     }
@@ -711,14 +729,27 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
 
   // Mouse handlers
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    const rect = canvasRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const x = e.clientX - rect.left;
+    const chartWidth = rect.width - PRICE_SCALE_WIDTH;
     const st = stateRef.current;
-    st.isDragging = true;
-    st.dragStartX = e.clientX;
-    st.dragStartOffsetX = st.targetOffsetX;
-    st.velocityX = 0;
-    st.lastDragX = e.clientX;
-    st.lastDragTime = performance.now();
-    if (canvasRef.current) canvasRef.current.style.cursor = 'grabbing';
+    
+    if (x >= chartWidth) {
+      // Dragging on price scale — vertical zoom
+      st.isDraggingPriceScale = true;
+      st.dragStartY = e.clientY;
+      st.dragStartScaleY = st.targetScaleY;
+      if (canvasRef.current) canvasRef.current.style.cursor = 'ns-resize';
+    } else {
+      st.isDragging = true;
+      st.dragStartX = e.clientX;
+      st.dragStartOffsetX = st.targetOffsetX;
+      st.velocityX = 0;
+      st.lastDragX = e.clientX;
+      st.lastDragTime = performance.now();
+      if (canvasRef.current) canvasRef.current.style.cursor = 'grabbing';
+    }
   }, []);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
@@ -727,8 +758,14 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     const st = stateRef.current;
+    const chartWidth = rect.width - PRICE_SCALE_WIDTH;
 
-    if (st.isDragging) {
+    if (st.isDraggingPriceScale) {
+      const dy = st.dragStartY - e.clientY; // drag up = zoom in
+      const sensitivity = 0.005;
+      st.targetScaleY = Math.max(0.2, Math.min(10, st.dragStartScaleY + dy * sensitivity));
+      st.crosshair = null;
+    } else if (st.isDragging) {
       const dx = e.clientX - st.dragStartX;
       st.targetOffsetX = st.dragStartOffsetX + dx;
       st.offsetX = st.targetOffsetX;
@@ -742,17 +779,25 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       st.lastDragX = e.clientX;
       st.lastDragTime = now;
     } else {
-      st.crosshair = { x, y };
+      // Hover cursor change
+      if (x >= chartWidth) {
+        if (canvasRef.current) canvasRef.current.style.cursor = 'ns-resize';
+      } else {
+        if (canvasRef.current) canvasRef.current.style.cursor = 'crosshair';
+      }
+      st.crosshair = x < chartWidth ? { x, y } : null;
     }
   }, []);
 
   const handleMouseUp = useCallback(() => {
     stateRef.current.isDragging = false;
+    stateRef.current.isDraggingPriceScale = false;
     if (canvasRef.current) canvasRef.current.style.cursor = 'crosshair';
   }, []);
 
   const handleMouseLeave = useCallback(() => {
     stateRef.current.isDragging = false;
+    stateRef.current.isDraggingPriceScale = false;
     stateRef.current.crosshair = null;
     if (canvasRef.current) canvasRef.current.style.cursor = 'crosshair';
   }, []);
