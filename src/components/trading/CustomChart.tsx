@@ -1,6 +1,6 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { CandleData, Trade } from '@/lib/types';
-import type { ChartType } from './ChartToolbar';
+import type { ChartType, ChartInterval } from './ChartToolbar';
 
 interface CustomChartProps {
   candles: CandleData[];
@@ -11,6 +11,7 @@ interface CustomChartProps {
   completedTrades?: Trade[];
   selectedDuration?: number;
   chartType?: ChartType;
+  chartInterval?: ChartInterval;
 }
 
 interface ChartState {
