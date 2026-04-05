@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { X, ChevronDown, ChevronUp, Check, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -12,26 +12,26 @@ interface Currency {
 
 const CURRENCIES: Currency[] = [
   { code: 'USD', name: 'US Dollar', flag: '🇺🇸', symbol: '$', rate: 1 },
-  { code: 'EUR', name: 'Euro', flag: '🇪🇺', symbol: '€', rate: 0.84 },
-  { code: 'GBP', name: 'British Pound', flag: '🇬🇧', symbol: '£', rate: 0.72 },
-  { code: 'BRL', name: 'Brazilian Real', flag: '🇧🇷', symbol: 'R$', rate: 5.05 },
-  { code: 'IDR', name: 'Indonesian Rupiah', flag: '🇮🇩', symbol: 'Rp', rate: 15700 },
-  { code: 'MYR', name: 'Malaysian Ringgit', flag: '🇲🇾', symbol: 'RM', rate: 4.47 },
-  { code: 'INR', name: 'Indian Rupee', flag: '🇮🇳', symbol: '₹', rate: 83.5 },
-  { code: 'KZT', name: 'Kazakhstani Tenge', flag: '🇰🇿', symbol: '₸', rate: 450 },
-  { code: 'RUB', name: 'Russian Ruble', flag: '🇷🇺', symbol: '₽', rate: 92 },
-  { code: 'THB', name: 'Thai Baht', flag: '🇹🇭', symbol: '฿', rate: 35.5 },
-  { code: 'UAH', name: 'Ukrainian Hryvnia', flag: '🇺🇦', symbol: '₴', rate: 37.5 },
-  { code: 'VND', name: 'Vietnamese Dong', flag: '🇻🇳', symbol: '₫', rate: 24500 },
-  { code: 'NGN', name: 'Nigerian Naira', flag: '🇳🇬', symbol: '₦', rate: 1550 },
-  { code: 'EGP', name: 'Egyptian Pound', flag: '🇪🇬', symbol: 'E£', rate: 48.5 },
-  { code: 'MXN', name: 'Mexican Peso', flag: '🇲🇽', symbol: 'Mex$', rate: 17.2 },
-  { code: 'JPY', name: 'Japanese Yen', flag: '🇯🇵', symbol: '¥', rate: 150 },
-  { code: 'BDT', name: 'Bangladeshi Taka', flag: '🇧🇩', symbol: '৳', rate: 110 },
-  { code: 'PKR', name: 'Pakistani Rupee', flag: '🇵🇰', symbol: '₨', rate: 278 },
-  { code: 'PHP', name: 'Philippine Peso', flag: '🇵🇭', symbol: '₱', rate: 56 },
-  { code: 'TRY', name: 'Turkish Lira', flag: '🇹🇷', symbol: '₺', rate: 32 },
-  { code: 'KRW', name: 'South Korean Won', flag: '🇰🇷', symbol: '₩', rate: 1340 },
+  { code: 'EUR', name: 'Euro', flag: '🇪🇺', symbol: '€', rate: 0.88 },
+  { code: 'GBP', name: 'British Pound', flag: '🇬🇧', symbol: '£', rate: 0.76 },
+  { code: 'BRL', name: 'Brazilian Real', flag: '🇧🇷', symbol: 'R$', rate: 5.18 },
+  { code: 'IDR', name: 'Indonesian Rupiah', flag: '🇮🇩', symbol: 'Rp', rate: 16200 },
+  { code: 'MYR', name: 'Malaysian Ringgit', flag: '🇲🇾', symbol: 'RM', rate: 4.55 },
+  { code: 'INR', name: 'Indian Rupee', flag: '🇮🇳', symbol: '₹', rate: 85.2 },
+  { code: 'KZT', name: 'Kazakhstani Tenge', flag: '🇰🇿', symbol: '₸', rate: 465 },
+  { code: 'RUB', name: 'Russian Ruble', flag: '🇷🇺', symbol: '₽', rate: 94.5 },
+  { code: 'THB', name: 'Thai Baht', flag: '🇹🇭', symbol: '฿', rate: 36.2 },
+  { code: 'UAH', name: 'Ukrainian Hryvnia', flag: '🇺🇦', symbol: '₴', rate: 41.8 },
+  { code: 'VND', name: 'Vietnamese Dong', flag: '🇻🇳', symbol: '₫', rate: 25800 },
+  { code: 'NGN', name: 'Nigerian Naira', flag: '🇳🇬', symbol: '₦', rate: 1620 },
+  { code: 'EGP', name: 'Egyptian Pound', flag: '🇪🇬', symbol: 'E£', rate: 50.5 },
+  { code: 'MXN', name: 'Mexican Peso', flag: '🇲🇽', symbol: 'Mex$', rate: 17.8 },
+  { code: 'JPY', name: 'Japanese Yen', flag: '🇯🇵', symbol: '¥', rate: 154 },
+  { code: 'BDT', name: 'Bangladeshi Taka', flag: '🇧🇩', symbol: '৳', rate: 118 },
+  { code: 'PKR', name: 'Pakistani Rupee', flag: '🇵🇰', symbol: '₨', rate: 286 },
+  { code: 'PHP', name: 'Philippine Peso', flag: '🇵🇭', symbol: '₱', rate: 58.5 },
+  { code: 'TRY', name: 'Turkish Lira', flag: '🇹🇷', symbol: '₺', rate: 34.2 },
+  { code: 'KRW', name: 'South Korean Won', flag: '🇰🇷', symbol: '₩', rate: 1385 },
 ];
 
 const FEE_PERCENT = 3;
@@ -50,6 +50,11 @@ export default function CurrencyExchangeModal({ open, onClose, currentCurrency, 
   const dropdownRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
+  // Smooth scroll state for dropdown
+  const scrollTargetRef = useRef(0);
+  const scrollCurrentRef = useRef(0);
+  const rafRef = useRef<number>(0);
+
   useEffect(() => {
     if (open) {
       setSelectedCurrency(currentCurrency === 'USD' ? 'EUR' : 'USD');
@@ -65,6 +70,40 @@ export default function CurrencyExchangeModal({ open, onClose, currentCurrency, 
     };
     if (showDropdown) document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showDropdown]);
+
+  // Lenis-style smooth scroll for dropdown
+  const smoothScroll = useCallback(() => {
+    const el = listRef.current;
+    if (!el) return;
+    scrollCurrentRef.current += (scrollTargetRef.current - scrollCurrentRef.current) * 0.12;
+    if (Math.abs(scrollTargetRef.current - scrollCurrentRef.current) > 0.5) {
+      el.scrollTop = scrollCurrentRef.current;
+      rafRef.current = requestAnimationFrame(smoothScroll);
+    } else {
+      el.scrollTop = scrollTargetRef.current;
+    }
+  }, []);
+
+  const handleWheel = useCallback((e: React.WheelEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const el = listRef.current;
+    if (!el) return;
+    const maxScroll = el.scrollHeight - el.clientHeight;
+    scrollTargetRef.current = Math.max(0, Math.min(maxScroll, scrollTargetRef.current + e.deltaY * 0.8));
+    cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(smoothScroll);
+  }, [smoothScroll]);
+
+  // Sync scroll position when dropdown opens
+  useEffect(() => {
+    if (showDropdown && listRef.current) {
+      scrollTargetRef.current = 0;
+      scrollCurrentRef.current = 0;
+      listRef.current.scrollTop = 0;
+    }
+    return () => cancelAnimationFrame(rafRef.current);
   }, [showDropdown]);
 
   const fromCurrency = CURRENCIES.find(c => c.code === currentCurrency) || CURRENCIES[0];
@@ -168,6 +207,7 @@ export default function CurrencyExchangeModal({ open, onClose, currentCurrency, 
                       >
                         <div
                           ref={listRef}
+                          onWheel={handleWheel}
                           className="max-h-[200px] overflow-y-auto"
                           style={{ scrollbarWidth: 'thin', scrollbarColor: 'hsl(var(--muted)) transparent' }}
                         >
