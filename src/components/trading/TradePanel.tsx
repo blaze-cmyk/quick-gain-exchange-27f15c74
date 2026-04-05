@@ -297,11 +297,21 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
         </div>
       )}
 
-      {/* Payout line */}
-      <div className="px-3 py-2 border-b border-border flex items-center justify-between">
-        <span className="text-[11px] text-muted-foreground">Your payout:</span>
-        <div className="flex-1 mx-2 border-b border-dotted border-border" />
-        <span className="text-[11px] font-bold text-foreground" style={{ fontFamily: "'JetBrains Mono', monospace" }}>{potentialPayout.toFixed(investMode === 'percent' ? 2 : 0)} $</span>
+      {/* Payout — the money shot */}
+      <div className="px-3 py-3.5 border-b border-border">
+        <div className="flex items-center justify-between mb-1">
+          <span className="text-xs text-muted-foreground tracking-wide" style={{ fontFamily: "'Montserrat', sans-serif" }}>Your payout</span>
+          <span className="text-[10px] text-primary font-semibold" style={{ fontFamily: "'Montserrat', sans-serif" }}>{pair.payout}% return</span>
+        </div>
+        <div className="flex items-center justify-center py-1.5">
+          <span
+            className="text-2xl font-extrabold tracking-tight text-foreground"
+            style={{ fontFamily: "'Montserrat', sans-serif", letterSpacing: '-0.02em' }}
+          >
+            {potentialPayout.toFixed(investMode === 'percent' ? 2 : 0)}
+          </span>
+          <span className="text-lg font-bold text-primary ml-1.5" style={{ fontFamily: "'Montserrat', sans-serif" }}>$</span>
+        </div>
       </div>
 
       {/* Trade buttons */}
