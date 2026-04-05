@@ -10,9 +10,10 @@ interface TradePanelProps {
   onTrade: (direction: 'up' | 'down', amount: number, duration: number) => void;
   activeTrade: Trade | null;
   trades: Trade[];
+  onDurationChange?: (seconds: number) => void;
 }
 
-export default function TradePanel({ pair, currentPrice, balance, onTrade, activeTrade, trades }: TradePanelProps) {
+export default function TradePanel({ pair, currentPrice, balance, onTrade, activeTrade, trades, onDurationChange }: TradePanelProps) {
   const [amount, setAmount] = useState(100);
   const [investMode, setInvestMode] = useState<'dollar' | 'percent'>('dollar');
   const [percentValue, setPercentValue] = useState(1);
