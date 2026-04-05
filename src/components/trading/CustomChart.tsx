@@ -501,7 +501,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       ctx.fillRect(Math.round(centerX - candleW / 2), Math.round(bodyTop), Math.round(candleW), Math.round(bodyHeight));
 
       // Live candle timer on the right-side price line (not under the candle)
-      if (i === candles.length - 1 && !activeTrade) {
+      if (i === candles.length - 1 && activeTrades.length === 0) {
         const nowMs = Date.now();
         const candleEndMs = (candle.time + 60) * 1000;
         const secsLeft = Math.max(0, Math.ceil((candleEndMs - nowMs) / 1000));
