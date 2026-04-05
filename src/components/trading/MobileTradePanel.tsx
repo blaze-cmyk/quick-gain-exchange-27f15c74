@@ -8,10 +8,9 @@ interface MobileTradePanelProps {
   currentPrice: number;
   balance: number;
   onTrade: (direction: 'up' | 'down', amount: number, duration: number) => void;
-  disabled?: boolean;
 }
 
-export default function MobileTradePanel({ pair, currentPrice, balance, onTrade, disabled }: MobileTradePanelProps) {
+export default function MobileTradePanel({ pair, currentPrice, balance, onTrade }: MobileTradePanelProps) {
   const [amount, setAmount] = useState(100);
   const [investMode, setInvestMode] = useState<'dollar' | 'percent'>('dollar');
   const [percentValue, setPercentValue] = useState(1);
