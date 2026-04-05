@@ -180,9 +180,9 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
 
       ctx.fillStyle = COLORS.priceLine;
       ctx.font = '10px Inter, sans-serif';
-      ctx.textAlign = 'center';
+      ctx.textAlign = 'right';
       ctx.textBaseline = 'bottom';
-      ctx.fillText('Beginning of trade', startX, PADDING_TOP - 4);
+      ctx.fillText('Beginning of trade', startX - 6, PADDING_TOP - 4);
 
       ctx.fillStyle = COLORS.priceLine;
       ctx.beginPath();
@@ -205,9 +205,9 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
 
       ctx.fillStyle = '#8892a0';
       ctx.font = '10px Inter, sans-serif';
-      ctx.textAlign = 'center';
+      ctx.textAlign = 'left';
       ctx.textBaseline = 'bottom';
-      ctx.fillText('End of trade', endX, PADDING_TOP - 4);
+      ctx.fillText('End of trade', endX + 6, PADDING_TOP - 4);
     }
 
     // Entry price horizontal dashed line with color
@@ -550,9 +550,9 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
 
         ctx.fillStyle = COLORS.priceLine;
         ctx.font = '10px Montserrat, sans-serif';
-        ctx.textAlign = 'center';
+        ctx.textAlign = 'right';
         ctx.textBaseline = 'bottom';
-        ctx.fillText('Beginning of trade', startX, PADDING_TOP - 4);
+        ctx.fillText('Beginning of trade', startX - 6, PADDING_TOP - 4);
 
         ctx.fillStyle = COLORS.priceLine;
         ctx.globalAlpha = 0.6;
@@ -577,9 +577,9 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
 
         ctx.fillStyle = 'rgba(160, 170, 190, 0.5)';
         ctx.font = '10px Montserrat, sans-serif';
-        ctx.textAlign = 'center';
+        ctx.textAlign = 'left';
         ctx.textBaseline = 'bottom';
-        ctx.fillText('End of trade', endX, PADDING_TOP - 4);
+        ctx.fillText('End of trade', endX + 6, PADDING_TOP - 4);
 
         // Stop square
         ctx.fillStyle = 'rgba(160, 170, 190, 0.4)';
