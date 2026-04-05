@@ -530,9 +530,9 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
 
     // Preview trade window lines (when no active trade)
     if (!activeTrade && candles.length > 0) {
-      const nowSec = Math.floor(Date.now() / 1000);
-      const startTimeSec = nowSec;
-      const endTimeSec = nowSec + selectedDuration;
+      const lastCandleTime = candles[candles.length - 1].time;
+      const startTimeSec = lastCandleTime;
+      const endTimeSec = lastCandleTime + selectedDuration;
 
       const startX = findXForTime(startTimeSec, step, effectiveOffset);
       const endX = findXForTime(endTimeSec, step, effectiveOffset);
