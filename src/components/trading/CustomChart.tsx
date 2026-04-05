@@ -662,6 +662,51 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       ctx.fillText(label, x, height - TIME_SCALE_HEIGHT / 2);
     }
 
+    // Probability bar on the left edge
+    if (candles.length >= 2) {
+      const recentCount = Math.min(20, candles.length);
+      const recentCandles = candles.slice(-recentCount);
+      let bullish = 0;
+      for (const rc of recentCandles) {
+        if (rc.close >= rc.open) bullish++;
+      }
+      // Weight recent price direction more
+      const lastCandle = candles[candles.length - 1];
+      const priceDir = smoothP >= lastCandle.open ? 1 : 0;
+      const rawBull = ((bullish / recentCount) * 0.6 + priceDir * 0.4);
+      const bullPct = Math.max(1, Math.min(99, Math.round(rawBull * 100)));
+      const bearPct = 100 - bullPct;
+
+      const barX = 4;
+      const barW = 4;
+      const barTop = PADDING_TOP + 10;
+      const barBottom = height - TIME_SCALE_HEIGHT - 10;
+      const barH = barBottom - barTop;
+      const splitY = barTop + barH * (bearPct / 100);
+
+      // Red (bear) section - top
+      ctx.fillStyle = COLORS.candleRed;
+      roundRect(ctx, barX, barTop, barW, splitY - barTop, 2);
+      ctx.fill();
+
+      // Green (bull) section - bottom
+      ctx.fillStyle = COLORS.candleGreen;
+      roundRect(ctx, barX, splitY, barW, barBottom - splitY, 2);
+      ctx.fill();
+
+      // Bear % label at top
+      ctx.fillStyle = COLORS.candleRed;
+      ctx.font = 'bold 10px Montserrat, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'bottom';
+      ctx.fillText(`${bearPct}%`, barX, barTop - 3);
+
+      // Bull % label at bottom
+      ctx.fillStyle = COLORS.candleGreen;
+      ctx.textBaseline = 'top';
+      ctx.fillText(`${bullPct}%`, barX, barBottom + 3);
+    }
+
 
     // Crosshair
     const ch = stateRef.current.crosshair;
