@@ -739,13 +739,28 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     const chartWidth = rect.width - PRICE_SCALE_WIDTH;
     const st = stateRef.current;
 
-    if (x >= chartWidth) {
-      // Dragging on price scale — vertical zoom
+    if (x >= chartWidth - 10) {
+      // Dragging on price scale — vertical zoom (10px extra hit area)
       e.preventDefault();
       st.isDraggingPriceScale = true;
       st.dragStartY = e.clientY;
       st.dragStartScaleY = st.targetScaleY;
       if (canvasRef.current) canvasRef.current.style.cursor = 'ns-resize';
+
+      const onMove = (ev: MouseEvent) => {
+        const dy = st.dragStartY - ev.clientY;
+        const sensitivity = 0.006;
+        st.targetScaleY = Math.max(0.2, Math.min(10, st.dragStartScaleY + dy * sensitivity));
+        st.crosshair = null;
+      };
+      const onUp = () => {
+        st.isDraggingPriceScale = false;
+        if (canvasRef.current) canvasRef.current.style.cursor = 'crosshair';
+        window.removeEventListener('mousemove', onMove);
+        window.removeEventListener('mouseup', onUp);
+      };
+      window.addEventListener('mousemove', onMove);
+      window.addEventListener('mouseup', onUp);
     } else {
       st.isDragging = true;
       st.dragStartX = e.clientX;
@@ -766,10 +781,8 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     const chartWidth = rect.width - PRICE_SCALE_WIDTH;
 
     if (st.isDraggingPriceScale) {
-      const dy = st.dragStartY - e.clientY; // drag up = zoom in
-      const sensitivity = 0.005;
-      st.targetScaleY = Math.max(0.2, Math.min(10, st.dragStartScaleY + dy * sensitivity));
-      st.crosshair = null;
+      // handled by window listener
+      return;
     } else if (st.isDragging) {
       const dx = e.clientX - st.dragStartX;
       st.targetOffsetX = st.dragStartOffsetX + dx;
@@ -784,8 +797,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       st.lastDragX = e.clientX;
       st.lastDragTime = now;
     } else {
-      // Hover cursor change
-      if (x >= chartWidth) {
+      if (x >= chartWidth - 10) {
         if (canvasRef.current) canvasRef.current.style.cursor = 'ns-resize';
       } else {
         if (canvasRef.current) canvasRef.current.style.cursor = 'crosshair';
@@ -802,9 +814,11 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
 
   const handleMouseLeave = useCallback(() => {
     stateRef.current.isDragging = false;
-    stateRef.current.isDraggingPriceScale = false;
+    // Don't reset price scale drag — window listener handles it
     stateRef.current.crosshair = null;
-    if (canvasRef.current) canvasRef.current.style.cursor = 'crosshair';
+    if (!stateRef.current.isDraggingPriceScale && canvasRef.current) {
+      canvasRef.current.style.cursor = 'crosshair';
+    }
   }, []);
 
   const handleWheel = useCallback((e: React.WheelEvent) => {
