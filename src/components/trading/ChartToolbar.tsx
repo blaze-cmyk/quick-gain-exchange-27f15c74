@@ -60,6 +60,10 @@ export default function ChartToolbar({ selectedTimeframe = '1m', chartType = 'ca
                   {row.map(tf => (
                     <button
                       key={tf}
+                      onClick={() => {
+                        onTimeframeChange?.(tf);
+                        setShowTimeframes(false);
+                      }}
                       className={`px-2.5 py-1 rounded text-[11px] font-medium transition-colors ${
                         tf === selectedTimeframe
                           ? 'bg-primary/20 text-primary'
