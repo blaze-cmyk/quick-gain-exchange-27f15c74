@@ -25,7 +25,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
             <GraduationCap size={13} className="text-muted-foreground" />
             <div>
               <div className="text-[8px] text-primary font-bold uppercase tracking-wider">DEMO</div>
-              <div className="text-xs font-bold font-mono text-foreground">
+              <div className="text-xs font-bold font-sans text-foreground">
                 ${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </div>
             </div>
@@ -59,7 +59,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
       {/* Logo + Brand */}
       <div className="flex items-center gap-2.5 mr-auto">
         <img src={arcanineLogo} alt="Arcanine" className="w-12 h-12 rounded-lg" />
-        <span className="text-foreground font-bold text-lg tracking-wide" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 800, letterSpacing: '0.08em' }}>ARCANINE</span>
+        <span className="text-foreground font-bold text-lg tracking-wide" style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 800, letterSpacing: '0.08em' }}>ARCANINE</span>
       </div>
 
       <button className="relative text-muted-foreground hover:text-foreground transition-colors">
@@ -72,7 +72,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
         </div>
         <div className="text-left">
           <div className="text-[9px] text-primary font-bold uppercase tracking-wider">DEMO ACCOUNT</div>
-          <div className="text-sm font-bold text-foreground" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+          <div className="text-sm font-bold text-foreground" style={{ fontFamily: "'Montserrat', sans-serif" }}>
             ${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
           </div>
         </div>

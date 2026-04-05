@@ -93,7 +93,7 @@ export default function AssetSelector({ onSelect, onClose, prices, changes }: As
               <Star size={14} className="text-muted-foreground mr-3 flex-shrink-0" />
               <span className="text-lg mr-2">{pair.icon}</span>
               <span className="text-sm font-medium text-foreground flex-1 text-left">{pair.displayName}</span>
-              <span className="w-24 text-right text-xs font-mono text-foreground">
+              <span className="w-24 text-right text-xs font-sans text-foreground">
                 {price ? (price < 1 ? price.toPrecision(4) : price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: price < 100 ? 4 : 2 })) : '—'}
               </span>
               <span className={`w-20 text-right text-xs font-medium ${change >= 0 ? 'text-success' : 'text-danger'}`}>

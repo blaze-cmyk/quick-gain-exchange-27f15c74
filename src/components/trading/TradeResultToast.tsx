@@ -47,7 +47,7 @@ export default function TradeResultToast({ trade, onDismiss }: TradeResultToastP
               <div className="flex items-center gap-2">
                 <span className="text-xs font-medium text-foreground">{trade.pair.displayName}</span>
                 <span className="text-[10px] text-muted-foreground">•</span>
-                <span className="text-[10px] text-muted-foreground font-mono">
+                <span className="text-[10px] text-muted-foreground font-sans">
                   {String(Math.floor(trade.duration / 60)).padStart(2, '0')}:{String(trade.duration % 60).padStart(2, '0')}
                 </span>
               </div>
