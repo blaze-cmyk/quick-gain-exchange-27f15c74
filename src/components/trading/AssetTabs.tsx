@@ -26,14 +26,14 @@ export default function AssetTabs({ pairs, activePair, onSelect, onRemove, onOpe
   };
 
   return (
-    <div className="absolute top-2 left-2 right-[10px] z-10 flex items-center gap-1.5 overflow-x-auto scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+    <div className="absolute top-2 left-2 right-[10px] z-10 flex items-center gap-1 overflow-x-auto scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
       <motion.button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={onOpenSelector}
-        className="flex-shrink-0 w-9 h-9 rounded-lg bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20"
+        className="flex-shrink-0 w-8 h-8 rounded-md bg-primary/20 border border-primary/30 flex items-center justify-center text-primary hover:bg-primary/30 transition-colors"
       >
-        <Plus size={18} />
+        <Plus size={16} />
       </motion.button>
 
       {pairs.map((pair, index) => {
@@ -52,28 +52,28 @@ export default function AssetTabs({ pairs, activePair, onSelect, onRemove, onOpe
           >
             <button
               onClick={() => onSelect(pair)}
-              className={`flex items-center gap-2 pl-3.5 pr-7 py-2 rounded-lg transition-all duration-200 min-w-[110px] ${
+              className={`flex items-center gap-2 pl-3 pr-7 py-1.5 rounded-md transition-all duration-200 min-w-[100px] ${
                 isActive
-                  ? 'bg-[#1E2230] border border-[#3A4255] shadow-lg'
-                  : 'bg-[#2B3040]/80 backdrop-blur-sm hover:bg-[#2B3040] border border-transparent'
+                  ? 'bg-secondary border border-primary/30'
+                  : 'bg-card/60 backdrop-blur-sm hover:bg-secondary border border-transparent'
               }`}
             >
               <div className="flex items-center -space-x-1.5">
-                <CryptoIcon symbol={base} size={22} />
-                <CryptoIcon symbol="USD" size={14} />
+                <CryptoIcon symbol={base} size={20} />
+                <CryptoIcon symbol="USD" size={12} />
               </div>
               <div className="text-left">
                 <div className="flex items-center gap-1">
-                  <span className="text-[11px] font-semibold text-[#E0E2E7]">{pair.displayName}</span>
-                  {isActive && <ChevronDown size={10} className="text-[#6B7280]" />}
+                  <span className="text-[11px] font-semibold text-foreground">{pair.displayName}</span>
+                  {isActive && <ChevronDown size={10} className="text-muted-foreground" />}
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className={`text-[10px] font-semibold ${pair.payout >= 90 ? 'text-[#0EB85B]' : 'text-[#6B7280]'}`}>
+                  <span className={`text-[10px] font-semibold ${pair.payout >= 90 ? 'text-primary' : 'text-muted-foreground'}`}>
                     {pair.payout}%
                   </span>
                   {pnl !== null && (
                     <span className={`text-[10px] font-bold px-1 py-0.5 rounded ${
-                      pnl >= 0 ? 'text-[#0EB85B] bg-[#0EB85B]/10' : 'text-[#FF3F2C] bg-[#FF3F2C]/10'
+                      pnl >= 0 ? 'text-success bg-success/10' : 'text-danger bg-danger/10'
                     }`}>
                       {pnl >= 0 ? '+' : ''}{pnl.toFixed(0)} $
                     </span>
@@ -81,16 +81,15 @@ export default function AssetTabs({ pairs, activePair, onSelect, onRemove, onOpe
                 </div>
               </div>
             </button>
-            {/* Close/remove button */}
             {pairs.length > 1 && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   onRemove(pair);
                 }}
-                className="absolute top-1 right-1 w-4 h-4 rounded-full bg-[#3A4255] hover:bg-[#FF3F2C] flex items-center justify-center transition-colors"
+                className="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-muted hover:bg-destructive flex items-center justify-center transition-colors"
               >
-                <X size={9} className="text-[#9CA3AF] hover:text-white" />
+                <X size={9} className="text-muted-foreground hover:text-white" />
               </button>
             )}
           </motion.div>

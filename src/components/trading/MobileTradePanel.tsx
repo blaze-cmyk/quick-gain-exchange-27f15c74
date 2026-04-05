@@ -42,48 +42,45 @@ export default function MobileTradePanel({ pair, currentPrice, balance, onTrade,
   const base = pair.symbol.replace('USDT', '').replace('USD', '');
 
   return (
-    <div className="bg-[#1E2230] border-t border-[#2B3040] px-3 py-2 pb-[70px]">
+    <div className="bg-card border-t border-border px-3 py-2 pb-[70px]">
       {/* Pair info row */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <CryptoIcon symbol={base} size={20} />
-          <span className="font-semibold text-[#E0E2E7] text-xs">{pair.displayName}</span>
-          <span className="text-[#0EB85B] text-xs font-bold">{pair.payout}%</span>
+          <span className="font-semibold text-foreground text-xs">{pair.displayName}</span>
+          <span className="text-primary text-xs font-bold">{pair.payout}%</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="w-1.5 h-1.5 rounded-full bg-[#4A90D9] animate-pulse" />
-          <span className="text-[9px] text-[#4A90D9] font-semibold tracking-wide">PENDING TRADE</span>
+          <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+          <span className="text-[9px] text-primary font-semibold tracking-wide">PENDING TRADE</span>
         </div>
       </div>
 
       {/* Timer + Investment row */}
       <div className="flex gap-2 mb-2">
-        {/* Timer */}
-        <fieldset className="flex-1 border border-[#3A4255] rounded-md px-2 pb-1.5 pt-0">
-          <legend className="text-[9px] text-[#6B7280] px-1">Timer</legend>
-          <div className="text-center font-mono text-sm font-semibold text-[#E0E2E7]">
+        <fieldset className="flex-1 border border-border rounded-md px-2 pb-1.5 pt-0">
+          <legend className="text-[9px] text-muted-foreground px-1">Timer</legend>
+          <div className="text-center text-sm font-semibold text-foreground" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
             {formatTime(selectedTimeframe)}
           </div>
         </fieldset>
 
-        {/* Investment */}
-        <fieldset className="flex-1 border border-[#3A4255] rounded-md px-2 pb-1.5 pt-0">
-          <legend className="text-[9px] text-[#6B7280] px-1">Investment</legend>
+        <fieldset className="flex-1 border border-border rounded-md px-2 pb-1.5 pt-0">
+          <legend className="text-[9px] text-muted-foreground px-1">Investment</legend>
           <div className="flex items-center gap-1">
-            <button onClick={() => adjustAmount(investMode === 'percent' ? -1 : -10)} className="text-[#6B7280]">
+            <button onClick={() => adjustAmount(investMode === 'percent' ? -1 : -10)} className="text-muted-foreground">
               <Minus size={12} />
             </button>
-            <div className="flex-1 text-center font-mono text-sm font-semibold text-[#E0E2E7]">
+            <div className="flex-1 text-center text-sm font-semibold text-foreground" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
               {investMode === 'dollar' ? `${amount} $` : `${percentValue} %`}
             </div>
-            <button onClick={() => adjustAmount(investMode === 'percent' ? 1 : 10)} className="text-[#6B7280]">
+            <button onClick={() => adjustAmount(investMode === 'percent' ? 1 : 10)} className="text-muted-foreground">
               <Plus size={12} />
             </button>
           </div>
         </fieldset>
       </div>
 
-      {/* Switch link */}
       <button
         onClick={() => {
           if (investMode === 'dollar') {
@@ -94,24 +91,22 @@ export default function MobileTradePanel({ pair, currentPrice, balance, onTrade,
             setInvestMode('dollar');
           }
         }}
-        className="w-full text-center text-[9px] text-[#4A90D9] font-bold mb-1.5 tracking-wide"
+        className="w-full text-center text-[9px] text-primary font-bold mb-1.5 tracking-wide"
       >
         SWITCH
       </button>
 
-      {/* Payout */}
       <div className="flex items-center justify-between mb-2">
-        <span className="text-[11px] text-[#6B7280]">Your payout:</span>
-        <div className="flex-1 mx-2 border-b border-dotted border-[#3A4255]" />
-        <span className="text-[11px] font-bold text-[#E0E2E7]">{potentialPayout.toFixed(0)} $</span>
+        <span className="text-[11px] text-muted-foreground">Your payout:</span>
+        <div className="flex-1 mx-2 border-b border-dotted border-border" />
+        <span className="text-[11px] font-bold text-foreground" style={{ fontFamily: "'JetBrains Mono', monospace" }}>{potentialPayout.toFixed(0)} $</span>
       </div>
 
-      {/* Up / Down buttons */}
       <div className="flex gap-2">
         <button
           disabled={disabled}
           onClick={() => onTrade('up', actualAmount, selectedTimeframe.seconds)}
-          className="flex-1 py-3 rounded-lg flex items-center justify-between px-4 bg-[#0EB85B] hover:bg-[#0EB85B]/90 text-white font-semibold transition-all disabled:opacity-50"
+          className="flex-1 py-3 rounded-lg flex items-center justify-between px-4 bg-success hover:bg-success/90 text-success-foreground font-semibold transition-all disabled:opacity-50"
         >
           <span className="text-sm font-bold">Up</span>
           <ArrowUp size={18} />
@@ -119,7 +114,7 @@ export default function MobileTradePanel({ pair, currentPrice, balance, onTrade,
         <button
           disabled={disabled}
           onClick={() => onTrade('down', actualAmount, selectedTimeframe.seconds)}
-          className="flex-1 py-3 rounded-lg flex items-center justify-between px-4 bg-[#FF3F2C] hover:bg-[#FF3F2C]/90 text-white font-semibold transition-all disabled:opacity-50"
+          className="flex-1 py-3 rounded-lg flex items-center justify-between px-4 bg-danger hover:bg-danger/90 text-danger-foreground font-semibold transition-all disabled:opacity-50"
         >
           <span className="text-sm font-bold">Down</span>
           <ArrowDown size={18} />
