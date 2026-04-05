@@ -10,19 +10,24 @@ interface AssetTabsProps {
   onRemove: (pair: TradingPair) => void;
   onOpenSelector: () => void;
   prices: Record<string, number>;
-  activeTrade?: Trade | null;
+  activeTrades?: Trade[];
   currentPrice?: number;
 }
 
-export default function AssetTabs({ pairs, activePair, onSelect, onRemove, onOpenSelector, prices, activeTrade, currentPrice = 0 }: AssetTabsProps) {
+export default function AssetTabs({ pairs, activePair, onSelect, onRemove, onOpenSelector, prices, activeTrades = [], currentPrice = 0 }: AssetTabsProps) {
   const getTabPnL = (pair: TradingPair) => {
-    if (!activeTrade || activeTrade.pair.symbol !== pair.symbol || currentPrice <= 0) return null;
-    const isUp = activeTrade.direction === 'up';
-    const priceDiff = currentPrice - activeTrade.entryPrice;
-    const isWinning = isUp ? priceDiff > 0 : priceDiff < 0;
-    const fee = activeTrade.amount * 0.10;
-    const netPool = activeTrade.amount - fee;
-    return isWinning ? netPool : -activeTrade.amount;
+    const pairTrades = activeTrades.filter(t => t.pair.symbol === pair.symbol);
+    if (pairTrades.length === 0 || currentPrice <= 0) return null;
+    let totalPnL = 0;
+    for (const trade of pairTrades) {
+      const isUp = trade.direction === 'up';
+      const priceDiff = currentPrice - trade.entryPrice;
+      const isWinning = isUp ? priceDiff > 0 : priceDiff < 0;
+      const fee = trade.amount * 0.10;
+      const netPool = trade.amount - fee;
+      totalPnL += isWinning ? netPool : -trade.amount;
+    }
+    return totalPnL;
   };
 
   return (

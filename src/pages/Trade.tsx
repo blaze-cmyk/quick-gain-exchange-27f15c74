@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { TradingPair, Trade, TRADING_PAIRS, TIMEFRAMES } from '@/lib/types';
 import { usePairData } from '@/hooks/usePairData';
 import { useAllPairsPrices } from '@/hooks/useAllPairsPrices';
@@ -26,10 +26,11 @@ export default function TradePage() {
   const [showSelector, setShowSelector] = useState(false);
   const [balance, setBalance] = useState(10000);
   const [trades, setTrades] = useState<Trade[]>([]);
-  const [activeTrade, setActiveTrade] = useState<Trade | null>(null);
+  const [activeTrades, setActiveTrades] = useState<Trade[]>([]);
   const [tradeResult, setTradeResult] = useState<{ result: 'win' | 'loss'; amount: number } | null>(null);
   const [selectedDuration, setSelectedDuration] = useState(TIMEFRAMES[0].seconds);
   const [lastSettledTrade, setLastSettledTrade] = useState<Trade | null>(null);
+  const [lastOpenedTrade, setLastOpenedTrade] = useState<Trade | null>(null);
   const { currentPrice, priceChange, candles, connected } = usePairData(activePair);
   const { prices: allPrices, changes: allChanges } = useAllPairsPrices();
   const { prices: forexPrices, changes: forexChanges } = useForexPrices();
@@ -38,29 +39,46 @@ export default function TradePage() {
   const prices = { ...allPrices, ...forexPrices, ...(currentPrice > 0 ? { [activePair.symbol]: currentPrice } : {}) };
   const changes = { ...allChanges, ...forexChanges, ...(priceChange !== 0 ? { [activePair.symbol]: priceChange } : {}) };
 
+  // Settle active trades
   useEffect(() => {
-    if (!activeTrade) return;
+    if (activeTrades.length === 0) return;
     const interval = setInterval(() => {
       const now = Date.now();
-      if (now >= activeTrade.endTime) {
-        clearInterval(interval);
-        const exitPrice = currentPrice;
-        const won = activeTrade.direction === 'up'
-          ? exitPrice > activeTrade.entryPrice
-          : exitPrice < activeTrade.entryPrice;
-        const fee = activeTrade.amount * 0.10;
-        const netPool = activeTrade.amount - fee;
-        const payout = won ? activeTrade.amount + netPool : 0;
-        const settled: Trade = { ...activeTrade, exitPrice, result: won ? 'win' : 'loss', payout };
-        setTrades(prev => [settled, ...prev]);
-        setBalance(prev => prev + payout);
-        setActiveTrade(null);
-        setLastSettledTrade(settled);
-        setTradeResult({ result: won ? 'win' : 'loss', amount: won ? netPool : activeTrade.amount });
+      const settled: Trade[] = [];
+      const remaining: Trade[] = [];
+
+      for (const trade of activeTrades) {
+        if (now >= trade.endTime) {
+          const exitPrice = currentPrice;
+          const won = trade.direction === 'up'
+            ? exitPrice > trade.entryPrice
+            : exitPrice < trade.entryPrice;
+          const fee = trade.amount * 0.10;
+          const netPool = trade.amount - fee;
+          const payout = won ? trade.amount + netPool : 0;
+          settled.push({ ...trade, exitPrice, result: won ? 'win' : 'loss', payout });
+        } else {
+          remaining.push(trade);
+        }
+      }
+
+      if (settled.length > 0) {
+        setTrades(prev => [...settled, ...prev]);
+        settled.forEach(s => setBalance(prev => prev + (s.payout || 0)));
+        setActiveTrades(remaining);
+        // Show result for last settled trade
+        const last = settled[settled.length - 1];
+        setLastSettledTrade(last);
+        const fee = last.amount * 0.10;
+        const netPool = last.amount - fee;
+        setTradeResult({
+          result: last.result as 'win' | 'loss',
+          amount: last.result === 'win' ? netPool : last.amount,
+        });
       }
     }, 100);
     return () => clearInterval(interval);
-  }, [activeTrade, currentPrice]);
+  }, [activeTrades, currentPrice]);
 
   const handleTrade = useCallback((direction: 'up' | 'down', amount: number, duration: number) => {
     if (amount > balance) return;
@@ -76,8 +94,9 @@ export default function TradePage() {
       endTime: now + duration * 1000,
     };
     setBalance(prev => prev - amount);
-    setActiveTrade(trade);
-  }, [balance, activeTrade, activePair, currentPrice]);
+    setActiveTrades(prev => [...prev, trade]);
+    setLastOpenedTrade(trade);
+  }, [balance, activePair, currentPrice]);
 
   const selectPair = (pair: TradingPair) => {
     setActivePair(pair);
@@ -88,21 +107,15 @@ export default function TradePage() {
 
   return (
     <div className="h-screen flex overflow-hidden bg-background">
-      {/* Desktop sidebar */}
       {!isMobile && <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />}
 
       <div className="flex-1 flex flex-col min-w-0">
         <BalanceHeader balance={balance} />
 
         <div className={`flex-1 flex ${isMobile ? 'flex-col' : ''} min-h-0`}>
-          {/* Probability bar */}
           {!isMobile && <ProbabilityBar candles={candles} currentPrice={currentPrice} />}
 
-          {/* Chart area */}
           <div className="flex-1 relative min-w-0 min-h-0">
-            {/* Payout % */}
-
-            {/* Connection status */}
             {!isMobile && (
               <motion.div
                 initial={{ opacity: 0 }}
@@ -112,7 +125,7 @@ export default function TradePage() {
               >
                 <div className="flex items-center gap-1.5">
                   <div className={`w-[6px] h-[6px] rounded-full ${connected ? 'bg-success' : 'bg-danger'}`} />
-                  <span className="text-[10px] text-muted-foreground font-mono">
+                  <span className="text-[10px] text-muted-foreground font-sans">
                     {new Date().toLocaleTimeString()} UTC
                   </span>
                 </div>
@@ -123,11 +136,8 @@ export default function TradePage() {
               </motion.div>
             )}
 
-            {/* Trade notification */}
-            <TradeNotification trade={activeTrade} />
+            <TradeNotification trade={lastOpenedTrade} />
 
-
-            {/* Asset tabs */}
             <AssetTabs
               pairs={pinnedPairs}
               activePair={activePair}
@@ -141,31 +151,27 @@ export default function TradePage() {
               }}
               onOpenSelector={() => setShowSelector(true)}
               prices={prices}
-              activeTrade={activeTrade}
+              activeTrades={activeTrades}
               currentPrice={currentPrice}
             />
 
-            {/* Chart */}
             <CustomChart
               candles={candles}
               currentPrice={currentPrice}
               payout={activePair.payout}
               connected={connected}
-              activeTrade={activeTrade}
+              activeTrades={activeTrades}
               completedTrades={trades}
               selectedDuration={selectedDuration}
             />
 
-            {/* Chart toolbar */}
             {!isMobile && <ChartToolbar selectedTimeframe="1m" />}
 
-            {/* Result toast */}
             <TradeResultToast
               trade={lastSettledTrade}
               onDismiss={() => setLastSettledTrade(null)}
             />
 
-            {/* Asset selector overlay */}
             <AnimatePresence>
               {showSelector && (
                 <motion.div
@@ -189,14 +195,12 @@ export default function TradePage() {
             </AnimatePresence>
           </div>
 
-          {/* Trade panel: mobile = below chart, desktop = right sidebar */}
           {isMobile ? (
             <MobileTradePanel
               pair={activePair}
               currentPrice={currentPrice}
               balance={balance}
               onTrade={handleTrade}
-              disabled={!!activeTrade}
             />
           ) : (
             <TradePanel
@@ -204,7 +208,7 @@ export default function TradePage() {
               currentPrice={currentPrice}
               balance={balance}
               onTrade={handleTrade}
-              activeTrade={activeTrade}
+              activeTrades={activeTrades}
               trades={trades}
               onDurationChange={setSelectedDuration}
             />
@@ -212,7 +216,6 @@ export default function TradePage() {
         </div>
       </div>
 
-      {/* Mobile bottom nav */}
       {isMobile && <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />}
 
       <WinLossOverlay

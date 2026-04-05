@@ -6,9 +6,9 @@ interface CustomChartProps {
   currentPrice: number;
   payout?: number;
   connected?: boolean;
-  activeTrade?: Trade | null;
+  activeTrades?: Trade[];
   completedTrades?: Trade[];
-  selectedDuration?: number; // seconds - for preview trade window lines
+  selectedDuration?: number;
 }
 
 interface ChartState {
@@ -69,7 +69,7 @@ function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t;
 }
 
-export default function CustomChart({ candles, currentPrice, payout = 90, connected = true, activeTrade = null, completedTrades = [], selectedDuration = 60 }: CustomChartProps) {
+export default function CustomChart({ candles, currentPrice, payout = 90, connected = true, activeTrades = [], completedTrades = [], selectedDuration = 60 }: CustomChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const stateRef = useRef<ChartState>({
     offsetX: 0,
@@ -501,7 +501,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       ctx.fillRect(Math.round(centerX - candleW / 2), Math.round(bodyTop), Math.round(candleW), Math.round(bodyHeight));
 
       // Live candle timer on the right-side price line (not under the candle)
-      if (i === candles.length - 1 && !activeTrade) {
+      if (i === candles.length - 1 && activeTrades.length === 0) {
         const nowMs = Date.now();
         const candleEndMs = (candle.time + 60) * 1000;
         const secsLeft = Math.max(0, Math.ceil((candleEndMs - nowMs) / 1000));
@@ -551,7 +551,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     }
 
     // Preview trade window lines (when no active trade)
-    if (!activeTrade && candles.length > 0) {
+    if (activeTrades.length === 0 && candles.length > 0) {
       const lastCandleTime = candles[candles.length - 1].time;
       const startTimeSec = lastCandleTime;
       const endTimeSec = lastCandleTime + selectedDuration;
@@ -610,8 +610,8 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     }
 
     // Draw active trade markers
-    if (activeTrade) {
-      drawTradeOnChart(ctx, activeTrade, step, effectiveOffset, minPrice, maxPrice, height, chartWidth, true);
+    for (const trade of activeTrades) {
+      drawTradeOnChart(ctx, trade, step, effectiveOffset, minPrice, maxPrice, height, chartWidth, true);
     }
 
     // Draw only freshly settled trades on chart; full history stays in the trades panel
@@ -729,7 +729,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
         drawOHLCTooltip(ctx, candles[hoverIdx], 46, height - TIME_SCALE_HEIGHT - 22);
       }
     }
-  }, [candles, currentPrice, activeTrade, completedTrades, selectedDuration, getVisibleRange, getPriceRange, drawTradeOnChart]);
+  }, [candles, currentPrice, activeTrades, completedTrades, selectedDuration, getVisibleRange, getPriceRange, drawTradeOnChart]);
 
   // Mouse handlers
   const handleMouseDown = useCallback((e: React.MouseEvent) => {

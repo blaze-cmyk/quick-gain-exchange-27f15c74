@@ -8,10 +8,9 @@ interface MobileTradePanelProps {
   currentPrice: number;
   balance: number;
   onTrade: (direction: 'up' | 'down', amount: number, duration: number) => void;
-  disabled?: boolean;
 }
 
-export default function MobileTradePanel({ pair, currentPrice, balance, onTrade, disabled }: MobileTradePanelProps) {
+export default function MobileTradePanel({ pair, currentPrice, balance, onTrade }: MobileTradePanelProps) {
   const [amount, setAmount] = useState(100);
   const [investMode, setInvestMode] = useState<'dollar' | 'percent'>('dollar');
   const [percentValue, setPercentValue] = useState(1);
@@ -99,22 +98,20 @@ export default function MobileTradePanel({ pair, currentPrice, balance, onTrade,
       <div className="flex items-center justify-between mb-2">
         <span className="text-[11px] text-muted-foreground">Your payout:</span>
         <div className="flex-1 mx-2 border-b border-dotted border-border" />
-        <span className="text-[11px] font-bold text-foreground" style={{ fontFamily: "'JetBrains Mono', monospace" }}>{potentialPayout.toFixed(0)} $</span>
+        <span className="text-[11px] font-bold text-foreground" style={{ fontFamily: "'Montserrat', sans-serif" }}>{potentialPayout.toFixed(0)} $</span>
       </div>
 
       <div className="flex gap-2">
         <button
-          disabled={disabled}
           onClick={() => onTrade('up', actualAmount, selectedTimeframe.seconds)}
-          className="flex-1 py-3 rounded-lg flex items-center justify-between px-4 bg-success hover:bg-success/90 text-success-foreground font-semibold transition-all disabled:opacity-50"
+          className="flex-1 py-3 rounded-lg flex items-center justify-between px-4 bg-success hover:bg-success/90 text-success-foreground font-semibold transition-all"
         >
           <span className="text-sm font-bold">Up</span>
           <ArrowUp size={18} />
         </button>
         <button
-          disabled={disabled}
           onClick={() => onTrade('down', actualAmount, selectedTimeframe.seconds)}
-          className="flex-1 py-3 rounded-lg flex items-center justify-between px-4 bg-danger hover:bg-danger/90 text-danger-foreground font-semibold transition-all disabled:opacity-50"
+          className="flex-1 py-3 rounded-lg flex items-center justify-between px-4 bg-danger hover:bg-danger/90 text-danger-foreground font-semibold transition-all"
         >
           <span className="text-sm font-bold">Down</span>
           <ArrowDown size={18} />
