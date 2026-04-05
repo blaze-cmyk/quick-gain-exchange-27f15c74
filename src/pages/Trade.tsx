@@ -26,6 +26,7 @@ export default function TradePage() {
   const [trades, setTrades] = useState<Trade[]>([]);
   const [activeTrade, setActiveTrade] = useState<Trade | null>(null);
   const [tradeResult, setTradeResult] = useState<{ result: 'win' | 'loss'; amount: number } | null>(null);
+  const [selectedDuration, setSelectedDuration] = useState(TIMEFRAMES[0].seconds);
   const [lastSettledTrade, setLastSettledTrade] = useState<Trade | null>(null);
   const { currentPrice, priceChange, candles, connected } = usePairData(activePair);
   const { prices: allPrices, changes: allChanges } = useAllPairsPrices();
