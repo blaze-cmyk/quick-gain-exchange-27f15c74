@@ -131,50 +131,93 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
           <div className="flex items-center gap-1">
             <button
               onClick={() => {
-                const idx = TIMEFRAMES.indexOf(selectedTimeframe);
-                if (idx > 0) setSelectedTimeframe(TIMEFRAMES[idx - 1]);
+                if (timeMode === 'duration') {
+                  const idx = TIMEFRAMES.indexOf(selectedTimeframe);
+                  if (idx > 0) setSelectedTimeframe(TIMEFRAMES[idx - 1]);
+                }
               }}
-              className="w-6 h-6 rounded flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+              className="w-7 h-7 rounded-md bg-primary/15 flex items-center justify-center text-primary hover:bg-primary/25 transition-colors"
             >
-              <Minus size={12} />
+              <Minus size={13} />
             </button>
             <button
               onClick={() => setShowTimeframes(!showTimeframes)}
-              className="flex-1 text-center text-sm font-semibold text-foreground"
+              className="flex-1 text-center text-sm font-bold text-foreground tracking-wide"
               style={{ fontFamily: "'JetBrains Mono', monospace" }}
             >
-              {formatTime(selectedTimeframe)}
+              {timeMode === 'duration'
+                ? formatTime(selectedTimeframe)
+                : (() => {
+                    const d = new Date(Date.now() + selectedTimeframe.seconds * 1000);
+                    return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+                  })()
+              }
             </button>
             <button
               onClick={() => {
-                const idx = TIMEFRAMES.indexOf(selectedTimeframe);
-                if (idx < TIMEFRAMES.length - 1) setSelectedTimeframe(TIMEFRAMES[idx + 1]);
+                if (timeMode === 'duration') {
+                  const idx = TIMEFRAMES.indexOf(selectedTimeframe);
+                  if (idx < TIMEFRAMES.length - 1) setSelectedTimeframe(TIMEFRAMES[idx + 1]);
+                }
               }}
-              className="w-6 h-6 rounded flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+              className="w-7 h-7 rounded-md bg-primary/15 flex items-center justify-center text-primary hover:bg-primary/25 transition-colors"
             >
-              <Plus size={12} />
+              <Plus size={13} />
             </button>
           </div>
         </fieldset>
-        <button className="w-full text-center text-[9px] text-primary font-bold mt-1 hover:underline tracking-wide">
+        <button
+          onClick={() => {
+            setTimeMode(prev => prev === 'duration' ? 'clock' : 'duration');
+            setShowTimeframes(false);
+          }}
+          className="w-full text-center text-[9px] text-primary font-bold mt-1.5 hover:underline tracking-widest uppercase"
+        >
           SWITCH TIME
         </button>
 
         {showTimeframes && (
-          <div className="mt-1.5 grid grid-cols-3 gap-1">
-            {TIMEFRAMES.map(tf => (
-              <button
-                key={tf.label}
-                onClick={() => { setSelectedTimeframe(tf); setShowTimeframes(false); }}
-                className={`px-2 py-1 rounded text-[10px] font-medium transition-colors ${
-                  tf.label === selectedTimeframe.label
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-secondary text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                {tf.label}
-              </button>
-            ))}
+          <div className="mt-2 bg-card border border-border rounded-lg p-2 shadow-xl">
+            {timeMode === 'duration' ? (
+              <div className="grid grid-cols-3 gap-1">
+                {TIMEFRAMES.map(tf => (
+                  <button
+                    key={tf.seconds}
+                    onClick={() => { setSelectedTimeframe(tf); setShowTimeframes(false); }}
+                    className={`px-1.5 py-1.5 rounded-md text-[10px] font-semibold transition-all ${
+                      tf.seconds === selectedTimeframe.seconds
+                        ? 'bg-primary/20 text-primary border border-primary/30'
+                        : 'bg-secondary/50 text-muted-foreground hover:text-foreground hover:bg-secondary'
+                    }`}
+                    style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                  >
+                    {formatTime(tf)}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-3 gap-1">
+                {clockOptions.slice(0, 12).map((opt, i) => (
+                  <button
+                    key={i}
+                    onClick={() => {
+                      // Find closest TIMEFRAME or use custom
+                      const closest = TIMEFRAMES.reduce((prev, curr) =>
+                        Math.abs(curr.seconds - opt.seconds) < Math.abs(prev.seconds - opt.seconds) ? curr : prev
+                      );
+                      setSelectedTimeframe({ ...closest, seconds: opt.seconds, label: opt.label });
+                      setShowTimeframes(false);
+                    }}
+                    className="px-1.5 py-1.5 rounded-md text-[10px] font-semibold bg-secondary/50 text-muted-foreground hover:text-foreground hover:bg-secondary transition-all"
+                    style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            )}
+            {/* Red bottom accent line like Quotex */}
+            <div className="mt-2 h-[2px] rounded-full bg-danger/60" />
           </div>
         )}
       </div>
