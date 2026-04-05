@@ -43,7 +43,7 @@ export default function WinLossOverlay({ result, amount, onDismiss }: WinLossOve
         }`}>
           {result === 'win' ? '🎉 WIN!' : '✖ LOSS'}
         </div>
-        <div className={`text-2xl font-mono font-semibold ${
+        <div className={`text-2xl font-sans font-semibold ${
           result === 'win' ? 'text-success' : 'text-danger'
         }`}>
           {result === 'win' ? `+$${amount.toFixed(2)}` : `-$${amount.toFixed(2)}`}

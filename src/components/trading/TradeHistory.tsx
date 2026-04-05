@@ -58,7 +58,7 @@ export default function TradeHistory({ trades }: TradeHistoryProps) {
                 <span className="text-sm">{trade.pair.icon}</span>
                 <span className="text-xs font-medium text-foreground">{trade.pair.displayName}</span>
               </div>
-              <span className="text-[10px] text-muted-foreground font-mono">
+              <span className="text-[10px] text-muted-foreground font-sans">
                 00:{String(Math.floor(trade.duration / 60)).padStart(2, '0')}:00
               </span>
             </div>

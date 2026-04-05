@@ -175,7 +175,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
                   value={pendingQuote || (currentPrice > 0 ? currentPrice.toFixed(2) : '')}
                   onChange={e => setPendingQuote(e.target.value)}
                   className="w-full bg-transparent text-sm font-semibold text-foreground outline-none text-center py-1"
-                  style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                  style={{ fontFamily: "'Montserrat', sans-serif" }}
                 />
               </fieldset>
               <p className="text-[9px] text-muted-foreground mt-1">
@@ -194,7 +194,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
                   })()}
                   onChange={e => setPendingTime(e.target.value)}
                   className="w-full bg-transparent text-sm font-semibold text-foreground outline-none text-center py-1"
-                  style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                  style={{ fontFamily: "'Montserrat', sans-serif" }}
                 />
               </fieldset>
               <p className="text-[9px] text-muted-foreground mt-1">
@@ -209,7 +209,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
           {/* Period */}
           <fieldset className="border border-border rounded-md px-2 pb-2 pt-0 mt-2">
             <legend className="text-[9px] text-muted-foreground px-1">Period:</legend>
-            <div className="text-sm font-semibold text-foreground text-center py-1" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+            <div className="text-sm font-semibold text-foreground text-center py-1" style={{ fontFamily: "'Montserrat', sans-serif" }}>
               M{Math.floor(selectedTimeframe.seconds / 60) || 1}
             </div>
           </fieldset>
@@ -242,7 +242,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
             <button
               onClick={() => setShowTimeframes(!showTimeframes)}
               className="flex-1 text-center text-sm font-bold text-foreground tracking-wide"
-              style={{ fontFamily: "'JetBrains Mono', monospace" }}
+              style={{ fontFamily: "'Montserrat', sans-serif" }}
             >
               {timeMode === 'duration'
                 ? formatTime(selectedTimeframe)
@@ -288,7 +288,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
                         ? 'bg-primary/20 text-primary border border-primary/30'
                         : 'bg-secondary/50 text-muted-foreground hover:text-foreground hover:bg-secondary'
                     }`}
-                    style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                    style={{ fontFamily: "'Montserrat', sans-serif" }}
                   >
                     {formatTime(tf)}
                   </button>
@@ -308,7 +308,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
                       setShowTimeframes(false);
                     }}
                     className="px-1.5 py-1.5 rounded-md text-[10px] font-semibold bg-secondary/50 text-muted-foreground hover:text-foreground hover:bg-secondary transition-all"
-                    style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                    style={{ fontFamily: "'Montserrat', sans-serif" }}
                   >
                     {opt.label}
                   </button>
@@ -340,7 +340,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
                     value={amount}
                     onChange={e => setAmount(Math.max(1, parseInt(e.target.value) || 1))}
                     className="w-16 text-center bg-transparent text-sm font-semibold text-foreground outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                    style={{ fontFamily: "'Montserrat', sans-serif" }}
                   />
                   <span className="text-muted-foreground text-xs">$</span>
                 </>
@@ -351,7 +351,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
                     value={percentValue}
                     onChange={e => setPercentValue(Math.min(100, Math.max(1, parseInt(e.target.value) || 1)))}
                     className="w-16 text-center bg-transparent text-sm font-semibold text-foreground outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                    style={{ fontFamily: "'Montserrat', sans-serif" }}
                   />
                   <span className="text-muted-foreground text-xs">%</span>
                 </>
@@ -389,7 +389,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
           <div className="flex items-center justify-between">
             <span className="text-[11px] text-muted-foreground">Investment:</span>
             <div className="flex-1 mx-2 border-b border-dotted border-border" />
-            <span className="text-[11px] font-bold text-foreground" style={{ fontFamily: "'JetBrains Mono', monospace" }}>{actualAmount.toFixed(2)} $</span>
+            <span className="text-[11px] font-bold text-foreground" style={{ fontFamily: "'Montserrat', sans-serif" }}>{actualAmount.toFixed(2)} $</span>
           </div>
         </div>
       )}
@@ -481,7 +481,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
                     </div>
                     <span className="text-[11px] font-medium text-foreground">{activeTrade.pair.displayName}</span>
                   </div>
-                  <span className="text-[10px] text-muted-foreground" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                  <span className="text-[10px] text-muted-foreground" style={{ fontFamily: "'Montserrat', sans-serif" }}>
                     {String(Math.floor(timeLeft / 60)).padStart(2, '0')}:{String(timeLeft % 60).padStart(2, '0')}
                   </span>
                 </div>
@@ -530,7 +530,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
                         </div>
                         <span className="text-[11px] font-medium text-foreground">{trade.pair.displayName}</span>
                       </div>
-                      <span className="text-[10px] text-muted-foreground" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                      <span className="text-[10px] text-muted-foreground" style={{ fontFamily: "'Montserrat', sans-serif" }}>
                         {formatDuration(trade.duration)}
                       </span>
                     </div>
