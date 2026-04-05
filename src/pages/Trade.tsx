@@ -166,6 +166,7 @@ export default function TradePage() {
               completedTrades={trades}
               selectedDuration={selectedDuration}
               chartType={chartType}
+              chartInterval={chartInterval}
             />
 
             {!isMobile && <ChartToolbar selectedTimeframe={chartInterval} chartType={chartType} onChartTypeChange={setChartType} onTimeframeChange={setChartInterval} />}

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { CandleData, Trade } from '@/lib/types';
-import type { ChartType } from './ChartToolbar';
+import type { ChartType, ChartInterval } from './ChartToolbar';
 
 interface CustomChartProps {
   candles: CandleData[];
@@ -11,6 +11,7 @@ interface CustomChartProps {
   completedTrades?: Trade[];
   selectedDuration?: number;
   chartType?: ChartType;
+  chartInterval?: ChartInterval;
 }
 
 interface ChartState {
@@ -71,7 +72,29 @@ function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t;
 }
 
-export default function CustomChart({ candles, currentPrice, payout = 90, connected = true, activeTrades = [], completedTrades = [], selectedDuration = 60, chartType = 'candles' }: CustomChartProps) {
+function formatTimeLabel(date: Date, interval: ChartInterval): string {
+  switch (interval) {
+    case '1s':
+      return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
+    case '1m':
+    case '3m':
+    case '5m':
+      return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+    case '15m':
+    case '30m':
+    case '1h':
+    case '2h':
+      return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+    case '4h':
+      return `${date.getDate()}/${date.getMonth() + 1} ${String(date.getHours()).padStart(2, '0')}:00`;
+    case '1d':
+      return `${date.getDate()} ${date.toLocaleString('en', { month: 'short' })}`;
+    default:
+      return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+  }
+}
+
+export default function CustomChart({ candles, currentPrice, payout = 90, connected = true, activeTrades = [], completedTrades = [], selectedDuration = 60, chartType = 'candles', chartInterval = '1m' }: CustomChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const stateRef = useRef<ChartState>({
     offsetX: 0,
@@ -797,7 +820,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       const x = (i * step) - effectiveOffset + step / 2;
       if (x < 20 || x > chartWidth - 20) continue;
       const date = new Date(candles[i].time * 1000);
-      const label = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+      const label = formatTimeLabel(date, chartInterval);
       ctx.fillText(label, x, height - TIME_SCALE_HEIGHT / 2);
     }
 
@@ -833,8 +856,8 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       const candleIdx = Math.round((ch.x + effectiveOffset) / step);
       if (candleIdx >= 0 && candleIdx < candles.length) {
         const date = new Date(candles[candleIdx].time * 1000);
-        const timeLabel = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
-        const timeLabelW = 48;
+        const timeLabel = formatTimeLabel(date, chartInterval);
+        const timeLabelW = chartInterval === '1s' ? 62 : chartInterval === '4h' || chartInterval === '1d' ? 64 : 48;
         const timeLabelH = 18;
         ctx.fillStyle = COLORS.crosshairLabel;
         roundRect(ctx, ch.x - timeLabelW / 2, height - TIME_SCALE_HEIGHT + 1, timeLabelW, timeLabelH, 3);
