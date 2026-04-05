@@ -130,7 +130,11 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     // Apply vertical scale (scaleY) — zoom around center
     const center = (rawMin + rawMax) / 2;
     const halfRange = (rawMax - rawMin) / 2;
-    const scaledHalf = halfRange / stateRef.current.scaleY;
+    const sy = stateRef.current.scaleY || 1;
+    const scaledHalf = halfRange / sy;
+    if (!isFinite(center) || !isFinite(scaledHalf) || scaledHalf === 0) {
+      return { minPrice: rawMin, maxPrice: rawMax };
+    }
     return { minPrice: center - scaledHalf, maxPrice: center + scaledHalf };
   }, [candles, currentPrice]);
 
