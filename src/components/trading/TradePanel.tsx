@@ -570,6 +570,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
           </div>
         )}
       </div>
+      <PendingTradeModal open={showPendingModal} onClose={() => setShowPendingModal(false)} />
     </div>
   );
 }
