@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
 import arcanineLogo from '@/assets/arcanine-logo.png';
+import CurrencyExchangeModal from './CurrencyExchangeModal';
 
 interface BalanceHeaderProps {
   balance: number;
@@ -19,6 +20,8 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
   const [showSwitchModal, setShowSwitchModal] = useState(false);
   const [pendingSwitchTo, setPendingSwitchTo] = useState<AccountType | null>(null);
   const [liveBalance] = useState(0);
+  const [currency, setCurrency] = useState('USD');
+  const [showExchangeModal, setShowExchangeModal] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -78,8 +81,13 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
         <div className="text-[10px] text-muted-foreground mt-0.5">ID: 85396662</div>
         <div className="flex items-center gap-2 mt-1.5">
           <span className="text-[10px] text-muted-foreground">Currency:</span>
-          <span className="text-[10px] font-bold text-foreground">USD</span>
-          <span className="text-[8px] font-bold bg-primary text-primary-foreground px-1.5 py-0.5 rounded">CHANGE</span>
+          <span className="text-[10px] font-bold text-foreground">{currency}</span>
+          <button
+            onClick={(e) => { e.stopPropagation(); setShowExchangeModal(true); setShowDropdown(false); }}
+            className="text-[8px] font-bold bg-primary text-primary-foreground px-1.5 py-0.5 rounded cursor-pointer hover:bg-primary/80 transition-colors"
+          >
+            CHANGE
+          </button>
         </div>
       </div>
 
@@ -294,6 +302,13 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
           </div>
         </motion.div>
         {switchModal}
+        <CurrencyExchangeModal
+          open={showExchangeModal}
+          onClose={() => setShowExchangeModal(false)}
+          currentCurrency={currency}
+          balance={currentBalance}
+          onExchange={(newCurrency) => setCurrency(newCurrency)}
+        />
       </>
     );
   }
@@ -353,6 +368,13 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
         </button>
       </motion.div>
       {switchModal}
+      <CurrencyExchangeModal
+        open={showExchangeModal}
+        onClose={() => setShowExchangeModal(false)}
+        currentCurrency={currency}
+        balance={currentBalance}
+        onExchange={(newCurrency) => setCurrency(newCurrency)}
+      />
     </>
   );
 }
