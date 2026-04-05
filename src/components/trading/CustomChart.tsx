@@ -610,8 +610,8 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     }
 
     // Draw active trade markers
-    if (activeTrade) {
-      drawTradeOnChart(ctx, activeTrade, step, effectiveOffset, minPrice, maxPrice, height, chartWidth, true);
+    for (const trade of activeTrades) {
+      drawTradeOnChart(ctx, trade, step, effectiveOffset, minPrice, maxPrice, height, chartWidth, true);
     }
 
     // Draw only freshly settled trades on chart; full history stays in the trades panel
