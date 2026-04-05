@@ -72,20 +72,22 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
     return `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
   };
 
-  // Generate clock-time options (rounded to next 1min, then spread)
+  // Generate clock-time options in UTC, recalculated when dropdown opens
   const clockOptions = useMemo(() => {
     const now = new Date();
-    const baseMin = now.getMinutes() + 1;
+    const utcH = now.getUTCHours();
+    const utcM = now.getUTCMinutes();
+    const baseMs = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), utcH, utcM + 1, 0, 0);
     const offsets = [0, 1, 2, 3, 4, 8, 14, 29, 44, 59, 119, 179, 299];
     return offsets.map(off => {
-      const d = new Date(now);
-      d.setMinutes(baseMin + off, 0, 0);
+      const targetMs = baseMs + off * 60000;
+      const d = new Date(targetMs);
       return {
-        label: `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`,
-        seconds: Math.max(5, Math.floor((d.getTime() - Date.now()) / 1000)),
+        label: `${String(d.getUTCHours()).padStart(2, '0')}:${String(d.getUTCMinutes()).padStart(2, '0')}`,
+        seconds: Math.max(5, Math.floor((targetMs - Date.now()) / 1000)),
       };
     }).filter(o => o.seconds >= 5);
-  }, [showTimeframes]); // recalculate when dropdown opens
+  }, [showTimeframes]);
 
   const formatDuration = (secs: number) => {
     const h = Math.floor(secs / 3600);
