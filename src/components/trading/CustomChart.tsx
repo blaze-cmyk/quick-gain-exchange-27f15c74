@@ -748,7 +748,6 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       st.dragStartScaleY = st.targetScaleY;
       st.crosshair = null;
       canvas.style.cursor = 'ns-resize';
-      canvas.setPointerCapture?.((e.nativeEvent as PointerEvent).pointerId);
       return;
     }
 
