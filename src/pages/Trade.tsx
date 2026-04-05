@@ -224,6 +224,7 @@ export default function TradePage() {
               onTrade={handleTrade}
               activeTrade={activeTrade}
               trades={trades}
+              onDurationChange={setSelectedDuration}
             />
           )}
         </div>
