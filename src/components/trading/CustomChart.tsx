@@ -72,7 +72,29 @@ function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t;
 }
 
-export default function CustomChart({ candles, currentPrice, payout = 90, connected = true, activeTrades = [], completedTrades = [], selectedDuration = 60, chartType = 'candles' }: CustomChartProps) {
+function formatTimeLabel(date: Date, interval: ChartInterval): string {
+  switch (interval) {
+    case '1s':
+      return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
+    case '1m':
+    case '3m':
+    case '5m':
+      return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+    case '15m':
+    case '30m':
+    case '1h':
+    case '2h':
+      return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+    case '4h':
+      return `${date.getDate()}/${date.getMonth() + 1} ${String(date.getHours()).padStart(2, '0')}:00`;
+    case '1d':
+      return `${date.getDate()} ${date.toLocaleString('en', { month: 'short' })}`;
+    default:
+      return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+  }
+}
+
+export default function CustomChart({ candles, currentPrice, payout = 90, connected = true, activeTrades = [], completedTrades = [], selectedDuration = 60, chartType = 'candles', chartInterval = '1m' }: CustomChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const stateRef = useRef<ChartState>({
     offsetX: 0,
