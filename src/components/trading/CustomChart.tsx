@@ -565,16 +565,15 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
         ctx.globalAlpha = 1;
       }
 
-      // "End of trade" line
+      // "End of trade" preview line - solid
       if (endX > -20 && endX < chartWidth + 20) {
-        ctx.strokeStyle = 'rgba(160, 170, 190, 0.25)';
+        ctx.strokeStyle = 'rgba(160, 170, 190, 0.35)';
         ctx.lineWidth = 1;
-        ctx.setLineDash([5, 4]);
+        ctx.setLineDash([]);
         ctx.beginPath();
         ctx.moveTo(endX, PADDING_TOP);
         ctx.lineTo(endX, height - TIME_SCALE_HEIGHT);
         ctx.stroke();
-        ctx.setLineDash([]);
 
         ctx.fillStyle = 'rgba(160, 170, 190, 0.5)';
         ctx.font = '10px Montserrat, sans-serif';
