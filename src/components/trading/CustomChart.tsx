@@ -707,7 +707,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
 
       const hoverIdx = Math.round((ch.x + effectiveOffset) / step);
       if (hoverIdx >= 0 && hoverIdx < candles.length) {
-        drawOHLCTooltip(ctx, candles[hoverIdx], 12, height - TIME_SCALE_HEIGHT - 22);
+        drawOHLCTooltip(ctx, candles[hoverIdx], 46, height - TIME_SCALE_HEIGHT - 22);
       }
     }
   }, [candles, currentPrice, activeTrade, completedTrades, selectedDuration, getVisibleRange, getPriceRange, drawTradeOnChart]);
