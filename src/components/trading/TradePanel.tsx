@@ -27,6 +27,10 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    onDurationChange?.(selectedTimeframe.seconds);
+  }, [selectedTimeframe, onDurationChange]);
+
   const actualAmount = investMode === 'percent'
     ? Math.max(1, Math.round((percentValue / 100) * balance * 100) / 100)
     : amount;
