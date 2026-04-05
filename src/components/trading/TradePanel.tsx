@@ -17,7 +17,8 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
   const [amount, setAmount] = useState(100);
   const [investMode, setInvestMode] = useState<'dollar' | 'percent'>('dollar');
   const [percentValue, setPercentValue] = useState(1);
-  const [selectedTimeframe, setSelectedTimeframe] = useState(TIMEFRAMES[0]);
+  const [selectedTimeframe, setSelectedTimeframe] = useState(TIMEFRAMES[4]); // default 1:00
+  const [timeMode, setTimeMode] = useState<'duration' | 'clock'>('duration');
   const [showTimeframes, setShowTimeframes] = useState(false);
   const [activeTab, setActiveTab] = useState<'trades' | 'orders'>('trades');
   const [, setTick] = useState(0);
