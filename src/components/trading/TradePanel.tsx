@@ -441,7 +441,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
           }`}
         >
           Trades
-          <span className="bg-secondary px-1.5 py-0.5 rounded-sm text-[9px]">{completedTrades.length + (activeTrade ? 1 : 0)}</span>
+          <span className="bg-secondary px-1.5 py-0.5 rounded-sm text-[9px]">{completedTrades.length + activeTrades.length}</span>
         </button>
         <button
           onClick={() => setActiveTab('orders')}
