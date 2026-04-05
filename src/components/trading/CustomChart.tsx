@@ -662,20 +662,77 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       ctx.fillText(label, x, height - TIME_SCALE_HEIGHT / 2);
     }
 
-    // Zoom buttons
-    const zoomY = height - TIME_SCALE_HEIGHT - 30;
-    const zoomCenterX = chartWidth / 2;
-    ctx.fillStyle = 'rgba(21, 26, 35, 0.8)';
-    roundRect(ctx, zoomCenterX - 30, zoomY, 24, 20, 4);
+    // Bottom-left toolbar icons (candlestick + ruler)
+    const toolbarX = 12;
+    const toolbarBaseY = height - TIME_SCALE_HEIGHT - 80;
+    const iconSize = 28;
+    const iconGap = 6;
+
+    // Candlestick icon
+    const candleIconY = toolbarBaseY;
+    ctx.fillStyle = 'rgba(20, 24, 32, 0.85)';
+    roundRect(ctx, toolbarX, candleIconY, iconSize, iconSize, 5);
     ctx.fill();
-    roundRect(ctx, zoomCenterX + 6, zoomY, 24, 20, 4);
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+    ctx.lineWidth = 0.5;
+    roundRect(ctx, toolbarX, candleIconY, iconSize, iconSize, 5);
+    ctx.stroke();
+    // Draw mini candlestick icon
+    const cx1 = toolbarX + 9, cx2 = toolbarX + 15, cx3 = toolbarX + 21;
+    const ciy = candleIconY + 5;
+    ctx.strokeStyle = COLORS.textLight;
+    ctx.lineWidth = 1;
+    // Candle 1 (green)
+    ctx.fillStyle = '#22c55e';
+    ctx.fillRect(cx1 - 2, ciy + 6, 4, 8);
+    ctx.beginPath(); ctx.moveTo(cx1, ciy + 3); ctx.lineTo(cx1, ciy + 17); ctx.stroke();
+    // Candle 2 (red)
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect(cx2 - 2, ciy + 4, 4, 10);
+    ctx.beginPath(); ctx.moveTo(cx2, ciy + 1); ctx.lineTo(cx2, ciy + 18); ctx.stroke();
+    // Candle 3 (green)
+    ctx.fillStyle = '#22c55e';
+    ctx.fillRect(cx3 - 2, ciy + 8, 4, 6);
+    ctx.beginPath(); ctx.moveTo(cx3, ciy + 5); ctx.lineTo(cx3, ciy + 17); ctx.stroke();
+
+    // Ruler icon
+    const rulerIconY = candleIconY + iconSize + iconGap;
+    ctx.fillStyle = 'rgba(20, 24, 32, 0.85)';
+    roundRect(ctx, toolbarX, rulerIconY, iconSize, iconSize, 5);
     ctx.fill();
-    ctx.fillStyle = COLORS.textMuted;
-    ctx.font = '14px Inter, sans-serif';
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+    ctx.lineWidth = 0.5;
+    roundRect(ctx, toolbarX, rulerIconY, iconSize, iconSize, 5);
+    ctx.stroke();
+    // Draw ruler marks
+    ctx.strokeStyle = COLORS.textLight;
+    ctx.lineWidth = 1;
+    const ry = rulerIconY + 6;
+    ctx.beginPath(); ctx.moveTo(toolbarX + 6, ry); ctx.lineTo(toolbarX + 22, ry + 16); ctx.stroke();
+    // Tick marks along diagonal
+    for (let t = 0; t < 4; t++) {
+      const tx = toolbarX + 8 + t * 4;
+      const ty = ry + 2 + t * 4;
+      ctx.beginPath();
+      ctx.moveTo(tx, ty);
+      ctx.lineTo(tx + 2, ty - 2);
+      ctx.stroke();
+    }
+
+    // Timeframe label
+    const tfLabelY = rulerIconY + iconSize + iconGap;
+    ctx.fillStyle = 'rgba(20, 24, 32, 0.85)';
+    roundRect(ctx, toolbarX, tfLabelY, iconSize, 20, 5);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+    ctx.lineWidth = 0.5;
+    roundRect(ctx, toolbarX, tfLabelY, iconSize, 20, 5);
+    ctx.stroke();
+    ctx.fillStyle = COLORS.crosshairText;
+    ctx.font = '10px Montserrat, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('−', zoomCenterX - 18, zoomY + 10);
-    ctx.fillText('+', zoomCenterX + 18, zoomY + 10);
+    ctx.fillText('1m', toolbarX + iconSize / 2, tfLabelY + 10);
 
     // Crosshair
     const ch = stateRef.current.crosshair;
@@ -721,7 +778,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
 
       const hoverIdx = Math.round((ch.x + effectiveOffset) / step);
       if (hoverIdx >= 0 && hoverIdx < candles.length) {
-        drawOHLCTooltip(ctx, candles[hoverIdx], 80, PADDING_TOP + 8);
+        drawOHLCTooltip(ctx, candles[hoverIdx], 12, height - TIME_SCALE_HEIGHT - 22);
       }
     }
   }, [candles, currentPrice, activeTrade, completedTrades, selectedDuration, getVisibleRange, getPriceRange, drawTradeOnChart]);
@@ -864,22 +921,36 @@ function calculateTimeStep(candleStep: number): number {
 
 function drawOHLCTooltip(ctx: CanvasRenderingContext2D, c: CandleData, x: number, y: number) {
   const isGreen = c.close >= c.open;
-  ctx.font = '10px Inter, sans-serif';
   const labels = [
-    { label: 'O', value: formatPrice(c.open) },
-    { label: 'H', value: formatPrice(c.high) },
-    { label: 'L', value: formatPrice(c.low) },
-    { label: 'C', value: formatPrice(c.close) },
+    { label: 'Open:', value: formatPrice(c.open) },
+    { label: 'Close:', value: formatPrice(c.close) },
+    { label: 'High:', value: formatPrice(c.high) },
+    { label: 'Low:', value: formatPrice(c.low) },
   ];
-  let xPos = x;
-  labels.forEach(({ label, value }) => {
-    ctx.fillStyle = COLORS.textMuted;
+  const lineH = 15;
+  const boxH = labels.length * lineH + 10;
+  const boxW = 140;
+  const boxY = y - boxH;
+
+  // Background
+  ctx.fillStyle = 'rgba(15, 17, 19, 0.92)';
+  roundRect(ctx, x, boxY, boxW, boxH, 5);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+  ctx.lineWidth = 0.5;
+  roundRect(ctx, x, boxY, boxW, boxH, 5);
+  ctx.stroke();
+
+  labels.forEach(({ label, value }, i) => {
+    const ly = boxY + 8 + i * lineH;
+    ctx.font = '10px Montserrat, sans-serif';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
-    ctx.fillText(label + ' ', xPos, y);
-    xPos += ctx.measureText(label + ' ').width;
-    ctx.fillStyle = isGreen ? COLORS.tooltipGreen : COLORS.tooltipRed;
-    ctx.fillText(value, xPos, y);
-    xPos += ctx.measureText(value).width + 12;
+    ctx.fillStyle = '#6b7280';
+    ctx.fillText(label, x + 8, ly);
+    ctx.fillStyle = isGreen ? '#22c55e' : '#ef4444';
+    ctx.font = '10px Montserrat, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(value, x + boxW - 8, ly);
   });
 }

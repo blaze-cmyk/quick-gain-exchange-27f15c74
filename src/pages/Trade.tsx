@@ -15,7 +15,7 @@ import WinLossOverlay from '@/components/trading/WinLossOverlay';
 import TradeNotification from '@/components/trading/TradeNotification';
 import TradeResultToast from '@/components/trading/TradeResultToast';
 import BalanceHeader from '@/components/trading/BalanceHeader';
-import { Info, Pencil } from 'lucide-react';
+import { Info } from 'lucide-react';
 
 export default function TradePage() {
   const [activePair, setActivePair] = useState<TradingPair>(TRADING_PAIRS[0]);
@@ -131,22 +131,6 @@ export default function TradePage() {
             {/* Trade notification */}
             <TradeNotification trade={activeTrade} />
 
-            {/* Drawing tool + Timeframe */}
-            {!isMobile && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="absolute bottom-[60px] left-3 z-10 flex flex-col gap-2"
-              >
-                <button className="w-8 h-8 rounded-md bg-secondary/80 backdrop-blur-sm flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
-                  <Pencil size={14} />
-                </button>
-                <div className="bg-secondary/80 backdrop-blur-sm rounded-md px-2.5 py-1 text-xs font-medium text-foreground">
-                  1m
-                </div>
-              </motion.div>
-            )}
 
             {/* Asset tabs */}
             <AssetTabs
