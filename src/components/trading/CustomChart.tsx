@@ -733,57 +733,54 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
 
   // Mouse handlers
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    const rect = canvasRef.current?.getBoundingClientRect();
-    if (!rect) return;
+    const canvas = canvasRef.current;
+    const rect = canvas?.getBoundingClientRect();
+    if (!rect || !canvas) return;
+
     const x = e.clientX - rect.left;
     const chartWidth = rect.width - PRICE_SCALE_WIDTH;
     const st = stateRef.current;
 
-    if (x >= chartWidth - 10) {
-      // Dragging on price scale — vertical zoom (10px extra hit area)
+    if (x >= chartWidth - 12) {
       e.preventDefault();
       st.isDraggingPriceScale = true;
       st.dragStartY = e.clientY;
       st.dragStartScaleY = st.targetScaleY;
-      if (canvasRef.current) canvasRef.current.style.cursor = 'ns-resize';
-
-      const onMove = (ev: MouseEvent) => {
-        const dy = st.dragStartY - ev.clientY;
-        const sensitivity = 0.006;
-        st.targetScaleY = Math.max(0.2, Math.min(10, st.dragStartScaleY + dy * sensitivity));
-        st.crosshair = null;
-      };
-      const onUp = () => {
-        st.isDraggingPriceScale = false;
-        if (canvasRef.current) canvasRef.current.style.cursor = 'crosshair';
-        window.removeEventListener('mousemove', onMove);
-        window.removeEventListener('mouseup', onUp);
-      };
-      window.addEventListener('mousemove', onMove);
-      window.addEventListener('mouseup', onUp);
-    } else {
-      st.isDragging = true;
-      st.dragStartX = e.clientX;
-      st.dragStartOffsetX = st.targetOffsetX;
-      st.velocityX = 0;
-      st.lastDragX = e.clientX;
-      st.lastDragTime = performance.now();
-      if (canvasRef.current) canvasRef.current.style.cursor = 'grabbing';
+      st.crosshair = null;
+      canvas.style.cursor = 'ns-resize';
+      canvas.setPointerCapture?.((e.nativeEvent as PointerEvent).pointerId);
+      return;
     }
+
+    st.isDragging = true;
+    st.dragStartX = e.clientX;
+    st.dragStartOffsetX = st.targetOffsetX;
+    st.velocityX = 0;
+    st.lastDragX = e.clientX;
+    st.lastDragTime = performance.now();
+    canvas.style.cursor = 'grabbing';
   }, []);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    const rect = canvasRef.current?.getBoundingClientRect();
-    if (!rect) return;
+    const canvas = canvasRef.current;
+    const rect = canvas?.getBoundingClientRect();
+    if (!rect || !canvas) return;
+
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     const st = stateRef.current;
     const chartWidth = rect.width - PRICE_SCALE_WIDTH;
 
     if (st.isDraggingPriceScale) {
-      // handled by window listener
+      const dy = st.dragStartY - e.clientY;
+      const sensitivity = 0.008;
+      st.targetScaleY = Math.max(0.35, Math.min(8, st.dragStartScaleY + dy * sensitivity));
+      st.crosshair = null;
+      canvas.style.cursor = 'ns-resize';
       return;
-    } else if (st.isDragging) {
+    }
+
+    if (st.isDragging) {
       const dx = e.clientX - st.dragStartX;
       st.targetOffsetX = st.dragStartOffsetX + dx;
       st.offsetX = st.targetOffsetX;
@@ -796,25 +793,23 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       }
       st.lastDragX = e.clientX;
       st.lastDragTime = now;
-    } else {
-      if (x >= chartWidth - 10) {
-        if (canvasRef.current) canvasRef.current.style.cursor = 'ns-resize';
-      } else {
-        if (canvasRef.current) canvasRef.current.style.cursor = 'crosshair';
-      }
-      st.crosshair = x < chartWidth ? { x, y } : null;
+      return;
     }
+
+    canvas.style.cursor = x >= chartWidth - 12 ? 'ns-resize' : 'crosshair';
+    st.crosshair = x < chartWidth ? { x, y } : null;
   }, []);
 
-  const handleMouseUp = useCallback(() => {
+  const handleMouseUp = useCallback((e: React.MouseEvent) => {
+    const canvas = canvasRef.current;
     stateRef.current.isDragging = false;
     stateRef.current.isDraggingPriceScale = false;
-    if (canvasRef.current) canvasRef.current.style.cursor = 'crosshair';
+    canvas?.releasePointerCapture?.((e.nativeEvent as PointerEvent).pointerId);
+    if (canvas) canvas.style.cursor = 'crosshair';
   }, []);
 
   const handleMouseLeave = useCallback(() => {
     stateRef.current.isDragging = false;
-    // Don't reset price scale drag — window listener handles it
     stateRef.current.crosshair = null;
     if (!stateRef.current.isDraggingPriceScale && canvasRef.current) {
       canvasRef.current.style.cursor = 'crosshair';
