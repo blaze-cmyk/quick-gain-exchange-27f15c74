@@ -491,15 +491,20 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
         const livePriceY = priceToY(st.smoothPrice || currentPrice || candle.close, minPrice, maxPrice, height);
         const badgeX2 = chartWidth - badgeW2 - 6;
 
-        ctx.fillStyle = 'rgba(45, 55, 72, 0.9)';
-        roundRect(ctx, badgeX2, livePriceY - badgeH2 / 2, badgeW2, badgeH2, 4);
+        const timerY2 = livePriceY - badgeH2 - 8;
+        ctx.fillStyle = 'rgba(30, 35, 48, 0.95)';
+        roundRect(ctx, badgeX2, timerY2, badgeW2, badgeH2, 4);
         ctx.fill();
+        ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+        ctx.lineWidth = 0.5;
+        roundRect(ctx, badgeX2, timerY2, badgeW2, badgeH2, 4);
+        ctx.stroke();
 
-        ctx.fillStyle = '#cbd5e1';
-        ctx.font = '9px Inter, monospace';
+        ctx.fillStyle = '#d1d5db';
+        ctx.font = '9px Montserrat, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(timerText, badgeX2 + badgeW2 / 2, livePriceY);
+        ctx.fillText(timerText, badgeX2 + badgeW2 / 2, timerY2 + badgeH2 / 2);
       }
     }
 
