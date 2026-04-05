@@ -4,10 +4,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 export type ChartType = 'area' | 'candles' | 'bars' | 'heiken';
 
+// Binance-supported kline intervals
+export type ChartInterval = '1s' | '1m' | '3m' | '5m' | '15m' | '30m' | '1h' | '2h' | '4h' | '1d';
+
 interface ChartToolbarProps {
-  selectedTimeframe?: string;
+  selectedTimeframe?: ChartInterval;
   chartType?: ChartType;
   onChartTypeChange?: (type: ChartType) => void;
+  onTimeframeChange?: (tf: ChartInterval) => void;
 }
 
 const CHART_TYPES: { id: ChartType; label: string; icon: React.FC }[] = [
@@ -17,14 +21,13 @@ const CHART_TYPES: { id: ChartType; label: string; icon: React.FC }[] = [
   { id: 'heiken', label: 'Heiken Ashi', icon: HeikenIcon },
 ];
 
-const TF_OPTIONS = [
-  ['5s', '10s', '15s', '30s'],
-  ['1m', '2m', '3m', '5m'],
-  ['10m', '15m', '30m', '1h'],
+const TF_OPTIONS: ChartInterval[][] = [
+  ['1s', '1m', '3m', '5m'],
+  ['15m', '30m', '1h', '2h'],
   ['4h', '1d'],
 ];
 
-export default function ChartToolbar({ selectedTimeframe = '1m', chartType = 'candles', onChartTypeChange }: ChartToolbarProps) {
+export default function ChartToolbar({ selectedTimeframe = '1m', chartType = 'candles', onChartTypeChange, onTimeframeChange }: ChartToolbarProps) {
   const [showChartTypes, setShowChartTypes] = useState(false);
   const [showTimeframes, setShowTimeframes] = useState(false);
 
