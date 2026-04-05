@@ -20,6 +20,8 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
   const [showSwitchModal, setShowSwitchModal] = useState(false);
   const [pendingSwitchTo, setPendingSwitchTo] = useState<AccountType | null>(null);
   const [liveBalance] = useState(0);
+  const [currency, setCurrency] = useState('USD');
+  const [showExchangeModal, setShowExchangeModal] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
