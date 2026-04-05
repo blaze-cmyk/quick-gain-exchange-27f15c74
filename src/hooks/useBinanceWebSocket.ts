@@ -88,8 +88,9 @@ export function useBinanceWebSocket(symbol: string, interval: string = '1m') {
     };
 
     const upsertLiveCandle = (price: number, tradeTimeMs: number) => {
+      const bucketSec = INTERVAL_SECONDS[interval] || 60;
       const tradeTimeSec = Math.floor(tradeTimeMs / 1000);
-      const candleTime = tradeTimeSec - (tradeTimeSec % 60);
+      const candleTime = tradeTimeSec - (tradeTimeSec % bucketSec);
       const arr = candlesRef.current;
 
       if (arr.length === 0) {
