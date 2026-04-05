@@ -16,6 +16,7 @@ import TradeNotification from '@/components/trading/TradeNotification';
 import TradeResultToast from '@/components/trading/TradeResultToast';
 import BalanceHeader from '@/components/trading/BalanceHeader';
 import ChartToolbar from '@/components/trading/ChartToolbar';
+import ProbabilityBar from '@/components/trading/ProbabilityBar';
 import { Info } from 'lucide-react';
 
 export default function TradePage() {
@@ -94,6 +95,9 @@ export default function TradePage() {
         <BalanceHeader balance={balance} />
 
         <div className={`flex-1 flex ${isMobile ? 'flex-col' : ''} min-h-0`}>
+          {/* Probability bar */}
+          {!isMobile && <ProbabilityBar candles={candles} currentPrice={currentPrice} />}
+
           {/* Chart area */}
           <div className="flex-1 relative min-w-0 min-h-0">
             {/* Payout % */}
