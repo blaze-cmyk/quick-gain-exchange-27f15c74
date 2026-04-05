@@ -181,7 +181,7 @@ export function useBinanceWebSocket(symbol: string, interval: string = '1m') {
       wsRef.current?.close();
       cancelAnimationFrame(rafRef.current);
     };
-  }, [symbol, fetchHistoricalData, fetch24hChange]);
+  }, [symbol, interval, fetchHistoricalData, fetch24hChange]);
 
   return { currentPrice, priceChange, candles, connected };
 }
