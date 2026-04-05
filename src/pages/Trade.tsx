@@ -162,6 +162,9 @@ export default function TradePage() {
               selectedDuration={selectedDuration}
             />
 
+            {/* Chart toolbar */}
+            {!isMobile && <ChartToolbar selectedTimeframe="1m" />}
+
             {/* Result toast */}
             <TradeResultToast
               trade={lastSettledTrade}
