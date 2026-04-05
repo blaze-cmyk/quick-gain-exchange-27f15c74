@@ -6,10 +6,10 @@ import { useTiingoForex } from './useTiingoForex';
  * Unified hook that routes to the correct data source
  * based on the trading pair's category.
  */
-export function usePairData(pair: TradingPair) {
+export function usePairData(pair: TradingPair, interval: string = '1m') {
   const isCrypto = pair.category === 'crypto';
 
-  const binance = useBinanceWebSocket(isCrypto ? pair.binanceSymbol : '');
+  const binance = useBinanceWebSocket(isCrypto ? pair.binanceSymbol : '', interval);
   const tiingo = useTiingoForex(!isCrypto ? (pair.tiingoSymbol || '') : '');
 
   if (isCrypto) {

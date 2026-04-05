@@ -4,7 +4,13 @@ import { CandleData } from '@/lib/types';
 const HISTORY_LIMIT = 1000;
 const RECONNECT_DELAY_MS = 1200;
 
-export function useBinanceWebSocket(symbol: string) {
+// Map interval string to seconds for candle bucketing
+const INTERVAL_SECONDS: Record<string, number> = {
+  '1s': 1, '1m': 60, '3m': 180, '5m': 300, '15m': 900, '30m': 1800,
+  '1h': 3600, '2h': 7200, '4h': 14400, '1d': 86400,
+};
+
+export function useBinanceWebSocket(symbol: string, interval: string = '1m') {
   const [currentPrice, setCurrentPrice] = useState<number>(0);
   const [priceChange, setPriceChange] = useState<number>(0);
   const [candles, setCandles] = useState<CandleData[]>([]);
@@ -15,10 +21,10 @@ export function useBinanceWebSocket(symbol: string) {
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<number | null>(null);
 
-  const fetchHistoricalData = useCallback(async (sym: string) => {
+  const fetchHistoricalData = useCallback(async (sym: string, intv: string) => {
     try {
       const res = await fetch(
-        `https://api.binance.com/api/v3/klines?symbol=${sym.toUpperCase()}&interval=1m&limit=${HISTORY_LIMIT}`
+        `https://api.binance.com/api/v3/klines?symbol=${sym.toUpperCase()}&interval=${intv}&limit=${HISTORY_LIMIT}`
       );
       const data = await res.json();
       const historical: CandleData[] = Array.isArray(data)
@@ -82,8 +88,9 @@ export function useBinanceWebSocket(symbol: string) {
     };
 
     const upsertLiveCandle = (price: number, tradeTimeMs: number) => {
+      const bucketSec = INTERVAL_SECONDS[interval] || 60;
       const tradeTimeSec = Math.floor(tradeTimeMs / 1000);
-      const candleTime = tradeTimeSec - (tradeTimeSec % 60);
+      const candleTime = tradeTimeSec - (tradeTimeSec % bucketSec);
       const arr = candlesRef.current;
 
       if (arr.length === 0) {
@@ -163,7 +170,7 @@ export function useBinanceWebSocket(symbol: string) {
       };
     };
 
-    fetchHistoricalData(sym);
+    fetchHistoricalData(sym, interval);
     fetch24hChange(sym);
     connectTradeStream();
 
@@ -174,7 +181,7 @@ export function useBinanceWebSocket(symbol: string) {
       wsRef.current?.close();
       cancelAnimationFrame(rafRef.current);
     };
-  }, [symbol, fetchHistoricalData, fetch24hChange]);
+  }, [symbol, interval, fetchHistoricalData, fetch24hChange]);
 
   return { currentPrice, priceChange, candles, connected };
 }

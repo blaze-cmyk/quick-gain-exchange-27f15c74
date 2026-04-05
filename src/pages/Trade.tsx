@@ -15,7 +15,7 @@ import WinLossOverlay from '@/components/trading/WinLossOverlay';
 import TradeNotification from '@/components/trading/TradeNotification';
 import TradeResultToast from '@/components/trading/TradeResultToast';
 import BalanceHeader from '@/components/trading/BalanceHeader';
-import ChartToolbar, { type ChartType } from '@/components/trading/ChartToolbar';
+import ChartToolbar, { type ChartType, type ChartInterval } from '@/components/trading/ChartToolbar';
 import ProbabilityBar from '@/components/trading/ProbabilityBar';
 import { Info } from 'lucide-react';
 
@@ -32,7 +32,8 @@ export default function TradePage() {
   const [lastSettledTrade, setLastSettledTrade] = useState<Trade | null>(null);
   const [lastOpenedTrade, setLastOpenedTrade] = useState<Trade | null>(null);
   const [chartType, setChartType] = useState<ChartType>('candles');
-  const { currentPrice, priceChange, candles, connected } = usePairData(activePair);
+  const [chartInterval, setChartInterval] = useState<ChartInterval>('1m');
+  const { currentPrice, priceChange, candles, connected } = usePairData(activePair, chartInterval);
   const { prices: allPrices, changes: allChanges } = useAllPairsPrices();
   const { prices: forexPrices, changes: forexChanges } = useForexPrices();
   const isMobile = useIsMobile();
@@ -167,7 +168,7 @@ export default function TradePage() {
               chartType={chartType}
             />
 
-            {!isMobile && <ChartToolbar selectedTimeframe="1m" chartType={chartType} onChartTypeChange={setChartType} />}
+            {!isMobile && <ChartToolbar selectedTimeframe={chartInterval} chartType={chartType} onChartTypeChange={setChartType} onTimeframeChange={setChartInterval} />}
 
             <TradeResultToast
               trade={lastSettledTrade}
