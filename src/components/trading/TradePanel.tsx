@@ -116,7 +116,10 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
       <div className="px-3 py-2.5 border-b border-border">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-base">{pair.icon}</span>
+            <div className="flex items-center -space-x-1.5">
+              <CryptoIcon symbol={pair.symbol.replace('USDT', '').replace('USD', '')} size={20} />
+              <CryptoIcon symbol="USD" size={12} />
+            </div>
             <span className="font-semibold text-foreground text-xs">{pair.displayName}</span>
           </div>
           <span className="text-primary text-xs font-bold">{pair.payout}%</span>
