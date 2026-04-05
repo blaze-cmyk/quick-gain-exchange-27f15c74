@@ -32,8 +32,8 @@ export default function TradePage() {
   const [lastSettledTrade, setLastSettledTrade] = useState<Trade | null>(null);
   const [lastOpenedTrade, setLastOpenedTrade] = useState<Trade | null>(null);
   const [chartType, setChartType] = useState<ChartType>('candles');
-  const { currentPrice, priceChange, candles, connected } = usePairData(activePair);
-  const { prices: allPrices, changes: allChanges } = useAllPairsPrices();
+  const [chartInterval, setChartInterval] = useState<ChartInterval>('1m');
+  const { currentPrice, priceChange, candles, connected } = usePairData(activePair, chartInterval);
   const { prices: forexPrices, changes: forexChanges } = useForexPrices();
   const isMobile = useIsMobile();
 
