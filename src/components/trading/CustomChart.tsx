@@ -856,8 +856,8 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       const candleIdx = Math.round((ch.x + effectiveOffset) / step);
       if (candleIdx >= 0 && candleIdx < candles.length) {
         const date = new Date(candles[candleIdx].time * 1000);
-        const timeLabel = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
-        const timeLabelW = 48;
+        const timeLabel = formatTimeLabel(date, chartInterval);
+        const timeLabelW = chartInterval === '1s' ? 62 : chartInterval === '4h' || chartInterval === '1d' ? 64 : 48;
         const timeLabelH = 18;
         ctx.fillStyle = COLORS.crosshairLabel;
         roundRect(ctx, ch.x - timeLabelW / 2, height - TIME_SCALE_HEIGHT + 1, timeLabelW, timeLabelH, 3);
