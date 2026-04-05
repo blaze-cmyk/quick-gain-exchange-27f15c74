@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
 import arcanineLogo from '@/assets/arcanine-logo.png';
+import CurrencyExchangeModal from './CurrencyExchangeModal';
 
 interface BalanceHeaderProps {
   balance: number;
