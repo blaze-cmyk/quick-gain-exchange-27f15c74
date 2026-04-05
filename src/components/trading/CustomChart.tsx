@@ -193,16 +193,15 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       ctx.fill();
     }
 
-    // "End of trade" dashed vertical line
+    // "End of trade" solid vertical line
     if (endX > 0 && endX < chartWidth) {
       ctx.strokeStyle = '#8892a0';
       ctx.lineWidth = 1;
-      ctx.setLineDash([5, 4]);
+      ctx.setLineDash([]);
       ctx.beginPath();
       ctx.moveTo(endX, PADDING_TOP);
       ctx.lineTo(endX, height - TIME_SCALE_HEIGHT);
       ctx.stroke();
-      ctx.setLineDash([]);
 
       ctx.fillStyle = '#8892a0';
       ctx.font = '10px Inter, sans-serif';
