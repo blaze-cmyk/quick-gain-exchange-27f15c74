@@ -174,6 +174,7 @@ export default function TradePage() {
               connected={connected}
               activeTrade={activeTrade}
               completedTrades={trades}
+              selectedDuration={selectedDuration}
             />
 
             {/* Result toast */}
