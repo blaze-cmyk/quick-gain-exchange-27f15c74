@@ -34,6 +34,7 @@ export default function TradePage() {
   const [chartType, setChartType] = useState<ChartType>('candles');
   const [chartInterval, setChartInterval] = useState<ChartInterval>('1m');
   const { currentPrice, priceChange, candles, connected } = usePairData(activePair, chartInterval);
+  const { prices: allPrices, changes: allChanges } = useAllPairsPrices();
   const { prices: forexPrices, changes: forexChanges } = useForexPrices();
   const isMobile = useIsMobile();
 
