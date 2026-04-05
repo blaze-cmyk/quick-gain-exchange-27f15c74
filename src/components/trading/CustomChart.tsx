@@ -738,9 +738,10 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     const x = e.clientX - rect.left;
     const chartWidth = rect.width - PRICE_SCALE_WIDTH;
     const st = stateRef.current;
-    
+
     if (x >= chartWidth) {
       // Dragging on price scale — vertical zoom
+      e.preventDefault();
       st.isDraggingPriceScale = true;
       st.dragStartY = e.clientY;
       st.dragStartScaleY = st.targetScaleY;
