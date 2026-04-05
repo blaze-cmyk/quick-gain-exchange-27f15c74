@@ -458,7 +458,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
 
       {/* Trade History Content */}
       <div className="flex-1 overflow-y-auto bg-card">
-        {activeTab === 'trades' && completedTrades.length === 0 && !activeTrade && (
+        {activeTab === 'trades' && completedTrades.length === 0 && activeTrades.length === 0 && (
           <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
             <Package size={28} className="mb-2 opacity-50" />
             <p className="text-[11px]">No trades yet.</p>
@@ -468,46 +468,46 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
 
         {activeTab === 'trades' && (
           <>
-            {activeTrade && (
-              <div className="px-3 py-2.5 border-b border-border bg-accent">
+            {activePnLs.map(({ trade: at, pnl, timeLeft: tl }) => (
+              <div key={at.id} className="px-3 py-2.5 border-b border-border bg-accent">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     <ChevronDown size={12} className="text-muted-foreground" />
                     <div className="flex items-center -space-x-1">
-                      <CryptoIcon symbol={activeTrade.pair.symbol.replace('USDT', '')} size={16} />
+                      <CryptoIcon symbol={at.pair.symbol.replace('USDT', '')} size={16} />
                       <CryptoIcon symbol="USD" size={10} />
                     </div>
-                    <span className="text-[11px] font-medium text-foreground">{activeTrade.pair.displayName}</span>
+                    <span className="text-[11px] font-medium text-foreground">{at.pair.displayName}</span>
                   </div>
                   <span className="text-[10px] text-muted-foreground" style={{ fontFamily: "'Montserrat', sans-serif" }}>
-                    {String(Math.floor(timeLeft / 60)).padStart(2, '0')}:{String(timeLeft % 60).padStart(2, '0')}
+                    {String(Math.floor(tl / 60)).padStart(2, '0')}:{String(tl % 60).padStart(2, '0')}
                   </span>
                 </div>
                 <div className="flex items-center justify-between mt-0.5 pl-6">
                   <div className="flex items-center gap-1">
                     <div className={`w-3 h-3 rounded-full flex items-center justify-center text-[7px] text-white font-bold ${
-                      activeTrade.direction === 'up' ? 'bg-success' : 'bg-danger'
+                      at.direction === 'up' ? 'bg-success' : 'bg-danger'
                     }`}>
-                      {activeTrade.direction === 'up' ? '↑' : '↓'}
+                      {at.direction === 'up' ? '↑' : '↓'}
                     </div>
                     <span className={`text-[10px] font-medium ${
-                      activeTrade.direction === 'up' ? 'text-success' : 'text-danger'
+                      at.direction === 'up' ? 'text-success' : 'text-danger'
                     }`}>
-                      {activeTrade.amount} $
+                      {at.amount} $
                     </span>
                   </div>
                   <span className={`text-[10px] font-bold ${
-                    (activePnL || 0) >= 0 ? 'text-success' : 'text-danger'
+                    pnl >= 0 ? 'text-success' : 'text-danger'
                   }`}>
-                    {(activePnL || 0) >= 0 ? '+' : ''}{(activePnL || 0).toFixed(2)} $
+                    {pnl >= 0 ? '+' : ''}{pnl.toFixed(2)} $
                   </span>
                 </div>
                 <button className="w-full mt-2 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-bold hover:bg-primary/90 transition-colors flex items-center justify-between px-4">
                   <span>Sell now</span>
-                  <span>{Math.max(0, activePnL ? Math.floor(activePnL * 0.1) : 0)} $</span>
+                  <span>{Math.max(0, pnl >= 0 ? Math.floor(pnl * 0.1) : 0)} $</span>
                 </button>
               </div>
-            )}
+            ))}
 
             {Object.entries(groupedTrades).map(([dateKey, dateTrades]) => (
               <div key={dateKey}>
