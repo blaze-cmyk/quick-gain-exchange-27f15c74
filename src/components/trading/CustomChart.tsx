@@ -921,22 +921,36 @@ function calculateTimeStep(candleStep: number): number {
 
 function drawOHLCTooltip(ctx: CanvasRenderingContext2D, c: CandleData, x: number, y: number) {
   const isGreen = c.close >= c.open;
-  ctx.font = '10px Inter, sans-serif';
   const labels = [
-    { label: 'O', value: formatPrice(c.open) },
-    { label: 'H', value: formatPrice(c.high) },
-    { label: 'L', value: formatPrice(c.low) },
-    { label: 'C', value: formatPrice(c.close) },
+    { label: 'Open:', value: formatPrice(c.open) },
+    { label: 'Close:', value: formatPrice(c.close) },
+    { label: 'High:', value: formatPrice(c.high) },
+    { label: 'Low:', value: formatPrice(c.low) },
   ];
-  let xPos = x;
-  labels.forEach(({ label, value }) => {
-    ctx.fillStyle = COLORS.textMuted;
+  const lineH = 15;
+  const boxH = labels.length * lineH + 10;
+  const boxW = 140;
+  const boxY = y - boxH;
+
+  // Background
+  ctx.fillStyle = 'rgba(15, 17, 19, 0.92)';
+  roundRect(ctx, x, boxY, boxW, boxH, 5);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+  ctx.lineWidth = 0.5;
+  roundRect(ctx, x, boxY, boxW, boxH, 5);
+  ctx.stroke();
+
+  labels.forEach(({ label, value }, i) => {
+    const ly = boxY + 8 + i * lineH;
+    ctx.font = '10px Montserrat, sans-serif';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
-    ctx.fillText(label + ' ', xPos, y);
-    xPos += ctx.measureText(label + ' ').width;
-    ctx.fillStyle = isGreen ? COLORS.tooltipGreen : COLORS.tooltipRed;
-    ctx.fillText(value, xPos, y);
-    xPos += ctx.measureText(value).width + 12;
+    ctx.fillStyle = '#6b7280';
+    ctx.fillText(label, x + 8, ly);
+    ctx.fillStyle = isGreen ? '#22c55e' : '#ef4444';
+    ctx.font = '10px Montserrat, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(value, x + boxW - 8, ly);
   });
 }
