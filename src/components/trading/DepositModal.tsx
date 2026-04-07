@@ -577,10 +577,9 @@ function ExchangeView() {
           }`}
         >
           <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center text-xl"
-            style={{ backgroundColor: ex.color + '22' }}
-          >
-            {ex.icon}
+            className="w-10 h-10 rounded-xl flex items-center justify-center"
+            dangerouslySetInnerHTML={{ __html: ex.icon }}
+          />
           </div>
           <span className="font-bold text-sm text-foreground flex-1 text-left">{ex.name}</span>
           {ex.comingSoon && (
