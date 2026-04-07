@@ -1013,6 +1013,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     const stopInteractions = () => {
       stateRef.current.isDragging = false;
       stateRef.current.isDraggingPriceScale = false;
+      stateRef.current.isDraggingTimeScale = false;
       if (canvasRef.current) canvasRef.current.style.cursor = 'crosshair';
     };
 
