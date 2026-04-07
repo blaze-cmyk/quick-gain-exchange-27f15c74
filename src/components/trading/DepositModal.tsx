@@ -39,7 +39,7 @@ const TOKENS: Token[] = [
 
 const CHAINS: Chain[] = [
   { name: 'Ethereum', min: '$10', color: '#627EEA', icon: 'https://sdk-cdn.fun.xyz/images/ethereum.svg' },
-  { name: 'Solana', min: '$3', color: '#9945FF', icon: '◎' },
+  { name: 'Solana', min: '$3', color: '#9945FF', icon: 'https://sdk-cdn.fun.xyz/images/sol.svg' },
   { name: 'BSC', min: '$3', color: '#F3BA2F', icon: '⬡' },
   { name: 'Base', min: '$3', color: '#0052FF', icon: '🔵' },
   { name: 'Polygon', min: '$3', color: '#8247E5', icon: '⬟' },
