@@ -243,7 +243,7 @@ interface DepositModalProps {
 export default function DepositModal({ open, onClose, balance }: DepositModalProps) {
   const [view, setView] = useState<DepositView>('main');
   const [tab, setTab] = useState<'crypto' | 'cash'>('crypto');
-  const [selectedToken, setSelectedToken] = useState(TOKENS[0]);
+  const [selectedToken, setSelectedToken] = useState(TOKENS[1]);
   const [selectedChain, setSelectedChain] = useState(CHAINS[0]);
   const [copied, setCopied] = useState(false);
 
