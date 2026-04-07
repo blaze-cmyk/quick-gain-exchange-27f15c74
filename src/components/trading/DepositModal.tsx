@@ -29,7 +29,7 @@ interface Exchange {
 
 // ─── Data ───
 const TOKENS: Token[] = [
-  { symbol: 'USDC', name: 'USD Coin', color: '#2775CA', icon: '💲' },
+  { symbol: 'USDC', name: 'USD Coin', color: '#2775CA', icon: 'https://sdk-cdn.fun.xyz/images/usdc.svg' },
   { symbol: 'USDT', name: 'Tether', color: '#26A17B', icon: '💵' },
   { symbol: 'ETH', name: 'Ethereum', color: '#627EEA', icon: '◆' },
   { symbol: 'BTC', name: 'Bitcoin', color: '#F7931A', icon: '₿' },
@@ -123,7 +123,10 @@ function useSmoothScroll() {
 
 // ─── Token Icon ───
 function TokenIcon({ token, size = 24 }: { token: Token; size?: number }) {
-  return (
+  const isUrl = token.icon.startsWith('http');
+  return isUrl ? (
+    <img src={token.icon} alt={token.symbol} className="rounded-full flex-shrink-0" style={{ width: size, height: size }} />
+  ) : (
     <div
       className="rounded-full flex items-center justify-center font-bold text-white flex-shrink-0"
       style={{ width: size, height: size, backgroundColor: token.color, fontSize: size * 0.5 }}
