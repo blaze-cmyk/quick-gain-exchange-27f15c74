@@ -127,7 +127,10 @@ function TokenIcon({ token, size = 24 }: { token: Token; size?: number }) {
 }
 
 function ChainIcon({ chain, size = 24 }: { chain: Chain; size?: number }) {
-  return (
+  const isUrl = chain.icon.startsWith('http');
+  return isUrl ? (
+    <img src={chain.icon} alt={chain.name} className="rounded-full flex-shrink-0" style={{ width: size, height: size }} />
+  ) : (
     <div
       className="rounded-full flex items-center justify-center font-bold text-white flex-shrink-0"
       style={{ width: size, height: size, backgroundColor: chain.color, fontSize: size * 0.5 }}
