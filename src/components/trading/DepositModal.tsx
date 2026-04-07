@@ -580,7 +580,6 @@ function ExchangeView() {
             className="w-10 h-10 rounded-xl flex items-center justify-center"
             dangerouslySetInnerHTML={{ __html: ex.icon }}
           />
-          </div>
           <span className="font-bold text-sm text-foreground flex-1 text-left">{ex.name}</span>
           {ex.comingSoon && (
             <span className="text-xs px-3 py-1 rounded-full bg-secondary text-muted-foreground font-medium">
