@@ -45,7 +45,7 @@ const CHAINS: Chain[] = [
   { name: 'Polygon', min: '$3', color: '#8247E5', icon: '⬟' },
   { name: 'Arbitrum', min: '$3', color: '#28A0F0', icon: '🔷' },
   { name: 'Tron', min: '$10', color: '#FF0013', icon: 'https://sdk-cdn.fun.xyz/images/tron.svg' },
-  { name: 'Bitcoin', min: '$10', color: '#F7931A', icon: '₿' },
+  { name: 'Bitcoin', min: '$10', color: '#F7931A', icon: 'https://sdk-cdn.fun.xyz/images/btc.svg' },
   { name: 'Optimism', min: '$3', color: '#FF0420', icon: '🔴' },
   { name: 'Avalanche', min: '$3', color: '#E84142', icon: '🔺' },
 ];
