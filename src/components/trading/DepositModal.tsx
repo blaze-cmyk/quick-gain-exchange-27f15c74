@@ -45,11 +45,9 @@ const CHAINS: Chain[] = [
 ];
 
 const EXCHANGES: Exchange[] = [
-  { name: 'Coinbase', color: '#0052FF', icon: '🟦' },
-  { name: 'Binance', color: '#F3BA2F', icon: '🟨', comingSoon: true },
-  { name: 'Kraken', color: '#5741D9', icon: '🟪', comingSoon: true },
-  { name: 'Bybit', color: '#F7A600', icon: '🟧', comingSoon: true },
-  { name: 'KuCoin', color: '#23AF91', icon: '🟩', comingSoon: true },
+  { name: 'Coinbase', color: '#2C5FF6', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none"><rect width="20" height="20" rx="4" fill="#2C5FF6"></rect><path d="M9.99 13.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5c1.76 0 3.22 1.305 3.46 3h3.52A7.005 7.005 0 0 0 9.99 3c-3.86 0-7 3.14-7 7s3.14 7 7 7c3.69 0 6.725-2.87 6.98-6.5h-3.52c-.24 1.695-1.7 3-3.46 3Z" fill="#fff"></path></svg>' },
+  { name: 'Binance', color: '#F3BA2F', icon: '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="20" height="20" rx="4" fill="#F3BA2F"></rect><path d="M7.67 9.04 10 6.71l2.33 2.34 1.36-1.36L10 4 6.31 7.69zM4 10l1.36-1.36L6.7 10l-1.35 1.36zm3.67.96L10 13.29l2.33-2.33 1.36 1.35-3.69 3.7-3.69-3.7zm5.62-.96 1.35-1.35L16 10l-1.36 1.36z" fill="#fff"></path><path d="M11.38 10 10 8.62 8.98 9.64l-.11.12-.25.24L10 11.38z" fill="#fff"></path></svg>', comingSoon: true },
+  { name: 'Kraken', color: '#5741D9', icon: '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16 0H4a4 4 0 0 0-4 4v12a4 4 0 0 0 4 4h12a4 4 0 0 0 4-4V4a4 4 0 0 0-4-4" fill="#5741D9"></path><path d="M4 11.78v-.67a6.4 6.4 0 0 1 .83-3.26 6 6 0 0 1 2.64-2.3A6 6 0 0 1 9.89 5q1.84-.02 3.4.96a5.6 5.6 0 0 1 2.64 4.18q.1.9.07 1.82l-.01.98q0 .22-.05.43c-.15.54-.8.8-1.27.49a.8.8 0 0 1-.35-.57l-.04-.48v-1.98q0-.4-.26-.68a.83.83 0 0 0-1.17-.04 1 1 0 0 0-.32.65v.28l-.01 2.19c0 .41-.33.73-.76.76a1 1 0 0 1-.56-.17.8.8 0 0 1-.3-.48l-.03-.33v-2.2a1 1 0 0 0-.26-.65.84.84 0 0 0-1.25.02 1 1 0 0 0-.24.64V13q0 .28-.1.54a1 1 0 0 1-.32.34.8.8 0 0 1-1.17-.4 1 1 0 0 1-.07-.38V11q.01-.24-.05-.47a.9.9 0 0 0-.72-.62c-.37-.06-.65.11-.85.4q-.14.22-.14.46v2q.02.3-.04.59a.84.84 0 0 1-.87.63.9.9 0 0 1-.74-.63A1 1 0 0 1 4 13z" fill="#fff"></path></svg>', comingSoon: true },
 ];
 
 // Demo deposit address
