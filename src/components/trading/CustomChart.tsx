@@ -442,7 +442,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     ctx.scale(dpr, dpr);
 
     const st = stateRef.current;
-    if (!st.isDragging && !st.isDraggingPriceScale) {
+    if (!st.isDragging && !st.isDraggingPriceScale && !st.isDraggingTimeScale) {
       if (Math.abs(st.velocityX) > 0.3) {
         st.targetOffsetX += st.velocityX;
         st.velocityX *= 0.92;
