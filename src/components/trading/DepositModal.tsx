@@ -511,12 +511,8 @@ function TransferView({
         </div>
       </div>
 
-      {/* Price impact */}
-      <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-secondary/30 border border-border text-sm text-muted-foreground">
-        <span className="text-primary">💲</span>
-        Price impact: 0.00% <Info size={12} />
-        <ChevronDown size={14} className="ml-auto" />
-      </div>
+      {/* Price impact expandable */}
+      <PriceImpactSection />
     </div>
   );
 }
