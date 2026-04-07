@@ -13,6 +13,30 @@ interface BalanceHeaderProps {
 
 type AccountType = 'demo' | 'live';
 
+const CURRENCY_INFO: Record<string, { symbol: string; rate: number }> = {
+  USD: { symbol: '$', rate: 1 },
+  EUR: { symbol: '€', rate: 0.88 },
+  GBP: { symbol: '£', rate: 0.76 },
+  BRL: { symbol: 'R$', rate: 5.18 },
+  IDR: { symbol: 'Rp', rate: 16200 },
+  MYR: { symbol: 'RM', rate: 4.55 },
+  INR: { symbol: '₹', rate: 85.2 },
+  KZT: { symbol: '₸', rate: 465 },
+  RUB: { symbol: '₽', rate: 94.5 },
+  THB: { symbol: '฿', rate: 36.2 },
+  UAH: { symbol: '₴', rate: 41.8 },
+  VND: { symbol: '₫', rate: 25800 },
+  NGN: { symbol: '₦', rate: 1620 },
+  EGP: { symbol: 'E£', rate: 50.5 },
+  MXN: { symbol: 'Mex$', rate: 17.8 },
+  JPY: { symbol: '¥', rate: 154 },
+  BDT: { symbol: '৳', rate: 118 },
+  PKR: { symbol: '₨', rate: 286 },
+  PHP: { symbol: '₱', rate: 58.5 },
+  TRY: { symbol: '₺', rate: 34.2 },
+  KRW: { symbol: '₩', rate: 1385 },
+};
+
 export default function BalanceHeader({ balance }: BalanceHeaderProps) {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -50,6 +74,9 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
   };
 
   const currentBalance = accountType === 'demo' ? balance : liveBalance;
+  const currencyInfo = CURRENCY_INFO[currency] || CURRENCY_INFO['USD'];
+  const displayBalance = currentBalance * currencyInfo.rate;
+  const currSymbol = currencyInfo.symbol;
   const isDemo = accountType === 'demo';
 
   // Dropdown content
@@ -110,7 +137,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
           <div className="text-left flex-1">
             <div className="text-xs font-semibold text-foreground">Live Account</div>
             <div className="text-sm font-bold text-foreground" style={{ fontFamily: "'Montserrat', sans-serif" }}>
-              ${liveBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+              {currSymbol}{(liveBalance * currencyInfo.rate).toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </div>
             <div className="text-[9px] text-muted-foreground mt-0.5">The daily limit is not set</div>
             <button className="text-[9px] text-primary font-bold mt-0.5 hover:underline">SET LIMIT</button>
@@ -136,7 +163,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
             </div>
             <div className="flex items-center gap-1.5">
               <span className="text-sm font-bold text-foreground" style={{ fontFamily: "'Montserrat', sans-serif" }}>
-                ${currentBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                {currSymbol}{displayBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </span>
               <RefreshCw size={10} className="text-muted-foreground" />
             </div>
@@ -282,7 +309,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
                   {isDemo ? 'DEMO' : 'LIVE'}
                 </div>
                 <div className="text-xs font-bold font-sans text-foreground">
-                  ${currentBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  {currSymbol}{displayBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </div>
               </div>
               <ChevronDown size={12} className="text-muted-foreground" />
@@ -350,7 +377,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
                 {isDemo ? 'DEMO ACCOUNT' : 'LIVE ACCOUNT'}
               </div>
               <div className="text-sm font-bold text-foreground" style={{ fontFamily: "'Montserrat', sans-serif" }}>
-                ${currentBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                {currSymbol}{displayBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </div>
             </div>
             <ChevronDown size={14} className="text-muted-foreground" />
