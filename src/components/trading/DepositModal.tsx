@@ -402,14 +402,13 @@ function MainView({
           <div className="text-xs text-muted-foreground">No limit • 2 min</div>
         </div>
         <div className="flex -space-x-1.5">
-          {EXCHANGES.slice(0, 5).map((ex, i) => (
+          {EXCHANGES.slice(0, 3).map((ex, i) => (
             <div
               key={i}
-              className="w-5 h-5 rounded-full border border-card flex items-center justify-center text-[8px] text-white"
-              style={{ backgroundColor: ex.color, zIndex: 5 - i }}
-            >
-              {ex.icon}
-            </div>
+              className="w-5 h-5 rounded-full border border-card flex items-center justify-center overflow-hidden"
+              style={{ zIndex: 5 - i }}
+              dangerouslySetInnerHTML={{ __html: ex.icon }}
+            />
           ))}
         </div>
       </button>
