@@ -517,6 +517,50 @@ function TransferView({
   );
 }
 
+// ─── Price Impact Section ───
+function PriceImpactSection() {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <div className="rounded-xl bg-secondary/30 border border-border overflow-hidden">
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-muted-foreground hover:bg-secondary/50 transition-colors"
+      >
+        <span className="text-primary">💲</span>
+        Price impact: <span className="font-semibold text-foreground">0.00%</span> <Info size={12} />
+        <ChevronDown size={14} className={`ml-auto transition-transform ${expanded ? 'rotate-180' : ''}`} />
+      </button>
+      <AnimatePresence>
+        {expanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="px-4 pb-3 space-y-2.5 border-t border-border pt-2.5">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <span className="text-primary">🔄</span>
+                Max slippage: <span className="font-semibold text-foreground">Auto • 0.05%</span> <Info size={12} />
+              </div>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <span className="text-primary">⚡</span>
+                Processing time: <span className="font-semibold text-foreground">&lt; 1 min</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <span className="text-primary">📋</span>
+                Have questions? <a href="#" className="text-foreground underline hover:text-primary transition-colors">Get help</a>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 // ─── Exchange View ───
 function ExchangeView() {
   return (
