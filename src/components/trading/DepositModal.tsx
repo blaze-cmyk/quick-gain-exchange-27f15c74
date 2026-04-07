@@ -38,7 +38,7 @@ const TOKENS: Token[] = [
 ];
 
 const CHAINS: Chain[] = [
-  { name: 'Ethereum', min: '$10', color: '#627EEA', icon: '◆' },
+  { name: 'Ethereum', min: '$10', color: '#627EEA', icon: 'https://sdk-cdn.fun.xyz/images/ethereum.svg' },
   { name: 'Solana', min: '$3', color: '#9945FF', icon: '◎' },
   { name: 'BSC', min: '$3', color: '#F3BA2F', icon: '⬡' },
   { name: 'Base', min: '$3', color: '#0052FF', icon: '🔵' },
@@ -127,7 +127,10 @@ function TokenIcon({ token, size = 24 }: { token: Token; size?: number }) {
 }
 
 function ChainIcon({ chain, size = 24 }: { chain: Chain; size?: number }) {
-  return (
+  const isUrl = chain.icon.startsWith('http');
+  return isUrl ? (
+    <img src={chain.icon} alt={chain.name} className="rounded-full flex-shrink-0" style={{ width: size, height: size }} />
+  ) : (
     <div
       className="rounded-full flex items-center justify-center font-bold text-white flex-shrink-0"
       style={{ width: size, height: size, backgroundColor: chain.color, fontSize: size * 0.5 }}
