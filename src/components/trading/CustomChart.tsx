@@ -929,6 +929,15 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     const st = stateRef.current;
     const chartWidth = rect.width - PRICE_SCALE_WIDTH;
 
+    if (st.isDraggingTimeScale) {
+      const dx = e.clientX - st.dragStartX;
+      const sensitivity = 0.005;
+      st.targetScaleX = Math.max(0.3, Math.min(5, st.dragStartScaleX + dx * sensitivity));
+      st.crosshair = null;
+      canvas.style.cursor = 'ew-resize';
+      return;
+    }
+
     if (st.isDraggingPriceScale) {
       const dy = st.dragStartY - e.clientY;
       const sensitivity = 0.008;
@@ -954,8 +963,9 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       return;
     }
 
-    canvas.style.cursor = x >= chartWidth - 12 ? 'ns-resize' : 'crosshair';
-    st.crosshair = x < chartWidth ? { x, y } : null;
+    const cursorY = y >= rect.height - TIME_SCALE_HEIGHT ? 'ew-resize' : (x >= chartWidth - 12 ? 'ns-resize' : 'crosshair');
+    canvas.style.cursor = cursorY;
+    st.crosshair = x < chartWidth && y < rect.height - TIME_SCALE_HEIGHT ? { x, y } : null;
   }, []);
 
   const handleMouseUp = useCallback(() => {
