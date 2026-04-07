@@ -357,7 +357,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
         </div>
 
         <button
-          onClick={() => navigate('/deposit')}
+          onClick={() => setShowDepositModal(true)}
           className="flex items-center gap-1.5 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-sm px-5 py-2.5 rounded-lg transition-colors"
         >
           <Plus size={15} strokeWidth={3} />
