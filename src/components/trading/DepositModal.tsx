@@ -370,13 +370,23 @@ function MainView({
         </div>
         <div className="flex -space-x-1.5">
           {previewTokens.map((t, i) => (
-            <div
-              key={i}
-              className="w-5 h-5 rounded-full border border-card flex items-center justify-center text-[8px] text-white"
-              style={{ backgroundColor: t.color, zIndex: previewTokens.length - i }}
-            >
-              {t.icon}
-            </div>
+            t.icon.startsWith('http') ? (
+              <img
+                key={i}
+                src={t.icon}
+                alt={t.symbol}
+                className="w-5 h-5 rounded-full border border-card flex-shrink-0"
+                style={{ zIndex: previewTokens.length - i }}
+              />
+            ) : (
+              <div
+                key={i}
+                className="w-5 h-5 rounded-full border border-card flex items-center justify-center text-[8px] text-white"
+                style={{ backgroundColor: t.color, zIndex: previewTokens.length - i }}
+              >
+                {t.icon}
+              </div>
+            )
           ))}
         </div>
       </button>
