@@ -23,10 +23,12 @@ interface ChartState {
   targetScaleY: number;
   isDragging: boolean;
   isDraggingPriceScale: boolean;
+  isDraggingTimeScale: boolean;
   dragStartX: number;
   dragStartY: number;
   dragStartOffsetX: number;
   dragStartScaleY: number;
+  dragStartScaleX: number;
   crosshair: { x: number; y: number } | null;
   smoothPrice: number;
   velocityX: number;
@@ -105,10 +107,12 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     targetScaleY: 1,
     isDragging: false,
     isDraggingPriceScale: false,
+    isDraggingTimeScale: false,
     dragStartX: 0,
     dragStartY: 0,
     dragStartOffsetX: 0,
     dragStartScaleY: 1,
+    dragStartScaleX: 1,
     crosshair: null,
     smoothPrice: 0,
     velocityX: 0,
@@ -438,7 +442,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     ctx.scale(dpr, dpr);
 
     const st = stateRef.current;
-    if (!st.isDragging && !st.isDraggingPriceScale) {
+    if (!st.isDragging && !st.isDraggingPriceScale && !st.isDraggingTimeScale) {
       if (Math.abs(st.velocityX) > 0.3) {
         st.targetOffsetX += st.velocityX;
         st.velocityX *= 0.92;
@@ -881,8 +885,20 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     if (!rect || !canvas) return;
 
     const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
     const chartWidth = rect.width - PRICE_SCALE_WIDTH;
     const st = stateRef.current;
+
+    // Time scale drag (bottom area)
+    if (y >= rect.height - TIME_SCALE_HEIGHT) {
+      e.preventDefault();
+      st.isDraggingTimeScale = true;
+      st.dragStartX = e.clientX;
+      st.dragStartScaleX = st.targetScaleX;
+      st.crosshair = null;
+      canvas.style.cursor = 'ew-resize';
+      return;
+    }
 
     if (x >= chartWidth - 12) {
       e.preventDefault();
@@ -913,6 +929,15 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     const st = stateRef.current;
     const chartWidth = rect.width - PRICE_SCALE_WIDTH;
 
+    if (st.isDraggingTimeScale) {
+      const dx = e.clientX - st.dragStartX;
+      const sensitivity = 0.005;
+      st.targetScaleX = Math.max(0.3, Math.min(5, st.dragStartScaleX + dx * sensitivity));
+      st.crosshair = null;
+      canvas.style.cursor = 'ew-resize';
+      return;
+    }
+
     if (st.isDraggingPriceScale) {
       const dy = st.dragStartY - e.clientY;
       const sensitivity = 0.008;
@@ -938,20 +963,22 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       return;
     }
 
-    canvas.style.cursor = x >= chartWidth - 12 ? 'ns-resize' : 'crosshair';
-    st.crosshair = x < chartWidth ? { x, y } : null;
+    const cursorY = y >= rect.height - TIME_SCALE_HEIGHT ? 'ew-resize' : (x >= chartWidth - 12 ? 'ns-resize' : 'crosshair');
+    canvas.style.cursor = cursorY;
+    st.crosshair = x < chartWidth && y < rect.height - TIME_SCALE_HEIGHT ? { x, y } : null;
   }, []);
 
   const handleMouseUp = useCallback(() => {
     stateRef.current.isDragging = false;
     stateRef.current.isDraggingPriceScale = false;
+    stateRef.current.isDraggingTimeScale = false;
     if (canvasRef.current) canvasRef.current.style.cursor = 'crosshair';
   }, []);
 
   const handleMouseLeave = useCallback(() => {
     stateRef.current.isDragging = false;
     stateRef.current.crosshair = null;
-    if (!stateRef.current.isDraggingPriceScale && canvasRef.current) {
+    if (!stateRef.current.isDraggingPriceScale && !stateRef.current.isDraggingTimeScale && canvasRef.current) {
       canvasRef.current.style.cursor = 'crosshair';
     }
   }, []);
@@ -986,6 +1013,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     const stopInteractions = () => {
       stateRef.current.isDragging = false;
       stateRef.current.isDraggingPriceScale = false;
+      stateRef.current.isDraggingTimeScale = false;
       if (canvasRef.current) canvasRef.current.style.cursor = 'crosshair';
     };
 
