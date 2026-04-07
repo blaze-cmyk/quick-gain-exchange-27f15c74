@@ -137,7 +137,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
           <div className="text-left flex-1">
             <div className="text-xs font-semibold text-foreground">Live Account</div>
             <div className="text-sm font-bold text-foreground" style={{ fontFamily: "'Montserrat', sans-serif" }}>
-              ${liveBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+              {currSymbol}{(liveBalance * currencyInfo.rate).toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </div>
             <div className="text-[9px] text-muted-foreground mt-0.5">The daily limit is not set</div>
             <button className="text-[9px] text-primary font-bold mt-0.5 hover:underline">SET LIMIT</button>
@@ -163,7 +163,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
             </div>
             <div className="flex items-center gap-1.5">
               <span className="text-sm font-bold text-foreground" style={{ fontFamily: "'Montserrat', sans-serif" }}>
-                ${currentBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                {currSymbol}{displayBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </span>
               <RefreshCw size={10} className="text-muted-foreground" />
             </div>
@@ -309,7 +309,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
                   {isDemo ? 'DEMO' : 'LIVE'}
                 </div>
                 <div className="text-xs font-bold font-sans text-foreground">
-                  ${currentBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  {currSymbol}{displayBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </div>
               </div>
               <ChevronDown size={12} className="text-muted-foreground" />
@@ -377,7 +377,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
                 {isDemo ? 'DEMO ACCOUNT' : 'LIVE ACCOUNT'}
               </div>
               <div className="text-sm font-bold text-foreground" style={{ fontFamily: "'Montserrat', sans-serif" }}>
-                ${currentBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                {currSymbol}{displayBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </div>
             </div>
             <ChevronDown size={14} className="text-muted-foreground" />
