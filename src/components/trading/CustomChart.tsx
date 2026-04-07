@@ -885,8 +885,20 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     if (!rect || !canvas) return;
 
     const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
     const chartWidth = rect.width - PRICE_SCALE_WIDTH;
     const st = stateRef.current;
+
+    // Time scale drag (bottom area)
+    if (y >= rect.height - TIME_SCALE_HEIGHT) {
+      e.preventDefault();
+      st.isDraggingTimeScale = true;
+      st.dragStartX = e.clientX;
+      st.dragStartScaleX = st.targetScaleX;
+      st.crosshair = null;
+      canvas.style.cursor = 'ew-resize';
+      return;
+    }
 
     if (x >= chartWidth - 12) {
       e.preventDefault();
