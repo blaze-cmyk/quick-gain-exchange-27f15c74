@@ -520,7 +520,7 @@ function PriceImpactSection() {
         onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-muted-foreground hover:bg-secondary/50 transition-colors"
       >
-        <span className="text-primary">💲</span>
+        <img src="https://sdk-cdn.fun.xyz/images/usdc.svg" alt="USDC" className="w-4 h-4 rounded-full" />
         Price impact: <span className="font-semibold text-foreground">0.00%</span> <Info size={12} />
         <ChevronDown size={14} className={`ml-auto transition-transform ${expanded ? 'rotate-180' : ''}`} />
       </button>
