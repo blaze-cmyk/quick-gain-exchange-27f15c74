@@ -30,21 +30,11 @@ interface Exchange {
 // ─── Data ───
 const TOKENS: Token[] = [
   { symbol: 'USDC', name: 'USD Coin', color: '#2775CA', icon: 'https://sdk-cdn.fun.xyz/images/usdc.svg' },
-  { symbol: 'USDT', name: 'Tether', color: '#26A17B', icon: '💵' },
-  { symbol: 'ETH', name: 'Ethereum', color: '#627EEA', icon: '◆' },
-  { symbol: 'BTC', name: 'Bitcoin', color: '#F7931A', icon: '₿' },
-  { symbol: 'BNB', name: 'BNB', color: '#F3BA2F', icon: '⬡' },
-  { symbol: 'SOL', name: 'Solana', color: '#9945FF', icon: '◎' },
-  { symbol: 'ARB', name: 'Arbitrum', color: '#28A0F0', icon: '🔷' },
-  { symbol: 'MATIC', name: 'Polygon', color: '#8247E5', icon: '⬟' },
-  { symbol: 'DAI', name: 'Dai', color: '#F5AC37', icon: '◈' },
-  { symbol: 'DOGE', name: 'Dogecoin', color: '#C2A633', icon: 'Ð' },
-  { symbol: 'ADA', name: 'Cardano', color: '#0033AD', icon: '₳' },
-  { symbol: 'DOT', name: 'Polkadot', color: '#E6007A', icon: '●' },
-  { symbol: 'LINK', name: 'Chainlink', color: '#2A5ADA', icon: '⬡' },
-  { symbol: 'AVAX', name: 'Avalanche', color: '#E84142', icon: '🔺' },
-  { symbol: 'XRP', name: 'Ripple', color: '#23292F', icon: '✕' },
-  { symbol: 'TRX', name: 'Tron', color: '#FF0013', icon: '◬' },
+  { symbol: 'USDT', name: 'Tether', color: '#26A17B', icon: 'https://sdk-cdn.fun.xyz/images/usdt.svg' },
+  { symbol: 'ETH', name: 'Ethereum', color: '#627EEA', icon: 'https://sdk-cdn.fun.xyz/images/eth.svg' },
+  { symbol: 'BTC', name: 'Bitcoin', color: '#F7931A', icon: 'https://sdk-cdn.fun.xyz/images/btc.svg' },
+  { symbol: 'BUSD', name: 'Binance USD', color: '#F3BA2F', icon: 'https://sdk-cdn.fun.xyz/images/busd.svg' },
+  { symbol: 'SOL', name: 'Solana', color: '#9945FF', icon: 'https://sdk-cdn.fun.xyz/images/sol.svg' },
 ];
 
 const CHAINS: Chain[] = [
