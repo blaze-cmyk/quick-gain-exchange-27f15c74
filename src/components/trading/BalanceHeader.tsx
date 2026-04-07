@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
 import arcanineLogo from '@/assets/arcanine-logo.png';
 import CurrencyExchangeModal from './CurrencyExchangeModal';
+import DepositModal from './DepositModal';
 
 interface BalanceHeaderProps {
   balance: number;
@@ -22,6 +23,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
   const [liveBalance] = useState(0);
   const [currency, setCurrency] = useState('USD');
   const [showExchangeModal, setShowExchangeModal] = useState(false);
+  const [showDepositModal, setShowDepositModal] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -357,7 +359,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
         </div>
 
         <button
-          onClick={() => navigate('/deposit')}
+          onClick={() => setShowDepositModal(true)}
           className="flex items-center gap-1.5 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-sm px-5 py-2.5 rounded-lg transition-colors"
         >
           <Plus size={15} strokeWidth={3} />
@@ -374,6 +376,11 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
         currentCurrency={currency}
         balance={currentBalance}
         onExchange={(newCurrency) => setCurrency(newCurrency)}
+      />
+      <DepositModal
+        open={showDepositModal}
+        onClose={() => setShowDepositModal(false)}
+        balance={currentBalance}
       />
     </>
   );
