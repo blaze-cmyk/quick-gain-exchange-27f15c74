@@ -74,6 +74,9 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
   };
 
   const currentBalance = accountType === 'demo' ? balance : liveBalance;
+  const currencyInfo = CURRENCY_INFO[currency] || CURRENCY_INFO['USD'];
+  const displayBalance = currentBalance * currencyInfo.rate;
+  const currSymbol = currencyInfo.symbol;
   const isDemo = accountType === 'demo';
 
   // Dropdown content
