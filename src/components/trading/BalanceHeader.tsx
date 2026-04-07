@@ -13,6 +13,30 @@ interface BalanceHeaderProps {
 
 type AccountType = 'demo' | 'live';
 
+const CURRENCY_INFO: Record<string, { symbol: string; rate: number }> = {
+  USD: { symbol: '$', rate: 1 },
+  EUR: { symbol: '€', rate: 0.88 },
+  GBP: { symbol: '£', rate: 0.76 },
+  BRL: { symbol: 'R$', rate: 5.18 },
+  IDR: { symbol: 'Rp', rate: 16200 },
+  MYR: { symbol: 'RM', rate: 4.55 },
+  INR: { symbol: '₹', rate: 85.2 },
+  KZT: { symbol: '₸', rate: 465 },
+  RUB: { symbol: '₽', rate: 94.5 },
+  THB: { symbol: '฿', rate: 36.2 },
+  UAH: { symbol: '₴', rate: 41.8 },
+  VND: { symbol: '₫', rate: 25800 },
+  NGN: { symbol: '₦', rate: 1620 },
+  EGP: { symbol: 'E£', rate: 50.5 },
+  MXN: { symbol: 'Mex$', rate: 17.8 },
+  JPY: { symbol: '¥', rate: 154 },
+  BDT: { symbol: '৳', rate: 118 },
+  PKR: { symbol: '₨', rate: 286 },
+  PHP: { symbol: '₱', rate: 58.5 },
+  TRY: { symbol: '₺', rate: 34.2 },
+  KRW: { symbol: '₩', rate: 1385 },
+};
+
 export default function BalanceHeader({ balance }: BalanceHeaderProps) {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
