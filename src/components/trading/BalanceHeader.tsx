@@ -377,6 +377,11 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
         balance={currentBalance}
         onExchange={(newCurrency) => setCurrency(newCurrency)}
       />
+      <DepositModal
+        open={showDepositModal}
+        onClose={() => setShowDepositModal(false)}
+        balance={currentBalance}
+      />
     </>
   );
 }
