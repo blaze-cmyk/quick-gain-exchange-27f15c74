@@ -23,10 +23,12 @@ interface ChartState {
   targetScaleY: number;
   isDragging: boolean;
   isDraggingPriceScale: boolean;
+  isDraggingTimeScale: boolean;
   dragStartX: number;
   dragStartY: number;
   dragStartOffsetX: number;
   dragStartScaleY: number;
+  dragStartScaleX: number;
   crosshair: { x: number; y: number } | null;
   smoothPrice: number;
   velocityX: number;
