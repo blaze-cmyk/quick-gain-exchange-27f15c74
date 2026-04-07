@@ -971,6 +971,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
   const handleMouseUp = useCallback(() => {
     stateRef.current.isDragging = false;
     stateRef.current.isDraggingPriceScale = false;
+    stateRef.current.isDraggingTimeScale = false;
     if (canvasRef.current) canvasRef.current.style.cursor = 'crosshair';
   }, []);
 
