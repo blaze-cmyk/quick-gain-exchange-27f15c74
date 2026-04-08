@@ -132,12 +132,12 @@ export default function TradePage() {
               >
                 <div className="flex items-center gap-1.5">
                   <div className={`w-[6px] h-[6px] rounded-full ${connected ? 'bg-success' : 'bg-danger'}`} />
-                  <span className="text-[10px] text-muted-foreground font-sans">
+                  <span className="text-xs text-secondary-foreground font-medium tabular-nums">
                     {new Date().toLocaleTimeString()} UTC
                   </span>
                 </div>
-                <button className="flex items-center gap-1 text-primary text-[11px] font-medium hover:underline w-fit">
-                  <Info size={12} />
+                <button className="flex items-center gap-1 text-primary text-xs font-semibold hover:underline w-fit">
+                  <Info size={13} />
                   PAIR INFORMATION
                 </button>
               </motion.div>

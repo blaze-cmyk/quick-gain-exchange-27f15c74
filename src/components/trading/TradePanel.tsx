@@ -120,13 +120,13 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
               <CryptoIcon symbol={pair.symbol.replace('USDT', '').replace('USD', '')} size={20} />
               <CryptoIcon symbol="USD" size={12} />
             </div>
-            <span className="font-semibold text-foreground text-xs">{pair.displayName}</span>
+            <span className="font-semibold text-foreground text-sm">{pair.displayName}</span>
           </div>
-          <span className="text-primary text-xs font-bold">{pair.payout}%</span>
+          <span className="text-primary text-sm font-bold">{pair.payout}%</span>
         </div>
         <div className="flex items-center gap-2 mt-1.5">
           <div className={`w-1.5 h-1.5 rounded-full ${pendingTradeEnabled ? 'bg-primary animate-pulse' : 'bg-muted-foreground'}`} />
-          <span className={`text-[9px] font-semibold tracking-wide ${pendingTradeEnabled ? 'text-primary' : 'text-muted-foreground'}`}>PENDING TRADE</span>
+          <span className={`text-[10px] font-bold tracking-wide ${pendingTradeEnabled ? 'text-primary' : 'text-secondary-foreground'}`}>PENDING TRADE</span>
           <button
             onClick={() => setPendingTradeEnabled(!pendingTradeEnabled)}
             className={`ml-auto w-8 h-4 rounded-full flex items-center cursor-pointer transition-colors duration-200 ${
@@ -170,7 +170,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
           {pendingMode === 'quote' ? (
             <>
               <fieldset className="border border-border rounded-md px-2 pb-2 pt-0">
-                <legend className="text-[9px] text-muted-foreground px-1">Quote:</legend>
+                <legend className="text-[11px] text-secondary-foreground font-medium px-1">Quote:</legend>
                 <input
                   type="text"
                   value={pendingQuote || (currentPrice > 0 ? currentPrice.toFixed(2) : '')}
@@ -179,14 +179,14 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
                   
                 />
               </fieldset>
-              <p className="text-[9px] text-muted-foreground mt-1">
+              <p className="text-xs text-secondary-foreground/70 mt-1">
                 Current quote: {currentPrice > 0 ? currentPrice.toFixed(2) : '—'}
               </p>
             </>
           ) : (
             <>
               <fieldset className="border border-border rounded-md px-2 pb-2 pt-0">
-                <legend className="text-[9px] text-muted-foreground px-1">Time:</legend>
+                <legend className="text-[11px] text-secondary-foreground font-medium px-1">Time:</legend>
                 <input
                   type="text"
                   value={pendingTime || (() => {
@@ -198,7 +198,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
                   
                 />
               </fieldset>
-              <p className="text-[9px] text-muted-foreground mt-1">
+              <p className="text-xs text-secondary-foreground/70 mt-1">
                 Current time: {(() => {
                   const d = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));
                   return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
@@ -209,7 +209,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
 
           {/* Period */}
           <fieldset className="border border-border rounded-md px-2 pb-2 pt-0 mt-2">
-            <legend className="text-[9px] text-muted-foreground px-1">Period:</legend>
+            <legend className="text-[11px] text-secondary-foreground font-medium px-1">Period:</legend>
             <div className="text-sm font-semibold text-foreground text-center py-1" >
               M{Math.floor(selectedTimeframe.seconds / 60) || 1}
             </div>
@@ -217,7 +217,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
 
           <button
             onClick={() => setShowPendingModal(true)}
-            className="w-full text-center text-[9px] text-primary font-bold mt-2 hover:underline tracking-wide"
+            className="w-full text-center text-[10px] text-primary font-bold mt-2 hover:underline tracking-wide"
           >
             HOW IT WORKS?
           </button>
@@ -227,7 +227,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
       {/* Time selector */}
       <div className="px-3 py-2.5 border-b border-border">
         <fieldset className="border border-border rounded-md px-2 pb-2 pt-0">
-          <legend className="text-[9px] text-muted-foreground px-1">Time</legend>
+          <legend className="text-[11px] text-secondary-foreground font-medium px-1">Time</legend>
           <div className="flex items-center gap-1">
             <button
               onClick={() => {
@@ -271,7 +271,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
             setTimeMode(prev => prev === 'duration' ? 'clock' : 'duration');
             setShowTimeframes(false);
           }}
-          className="w-full text-center text-[9px] text-primary font-bold mt-1.5 hover:underline tracking-widest uppercase"
+          className="w-full text-center text-[10px] text-primary font-bold mt-1.5 hover:underline tracking-widest uppercase"
         >
           SWITCH TIME
         </button>
@@ -325,7 +325,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
       {/* Investment amount */}
       <div className="px-3 py-2.5 border-b border-border">
         <fieldset className="border border-border rounded-md px-2 pb-2 pt-0">
-          <legend className="text-[9px] text-muted-foreground px-1">Investment</legend>
+          <legend className="text-[11px] text-secondary-foreground font-medium px-1">Investment</legend>
           <div className="flex items-center gap-1">
             <button
               onClick={() => adjustAmount(investMode === 'percent' ? -1 : -10)}
@@ -378,7 +378,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
               setInvestMode('dollar');
             }
           }}
-          className="w-full text-center text-[9px] text-primary font-bold mt-1 hover:underline tracking-wide"
+          className="w-full text-center text-[10px] text-primary font-bold mt-1 hover:underline tracking-wide"
         >
           SWITCH
         </button>
@@ -388,9 +388,9 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
       {investMode === 'percent' && (
         <div className="px-3 py-1.5 border-b border-border">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] text-muted-foreground">Investment:</span>
+            <span className="text-xs text-secondary-foreground font-medium">Investment:</span>
             <div className="flex-1 mx-2 border-b border-dotted border-border" />
-            <span className="text-[11px] font-bold text-foreground" >{actualAmount.toFixed(2)} $</span>
+            <span className="text-xs font-bold text-foreground tabular-nums">{actualAmount.toFixed(2)} $</span>
           </div>
         </div>
       )}
@@ -398,8 +398,8 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
       {/* Payout — the money shot */}
       <div className="px-3 py-3.5 border-b border-border">
         <div className="flex items-center justify-between mb-1">
-          <span className="text-xs text-muted-foreground tracking-wide" >Your payout</span>
-          <span className="text-[10px] text-primary font-semibold" >{pair.payout}% return</span>
+          <span className="text-sm text-secondary-foreground font-medium" >Your payout</span>
+          <span className="text-xs text-primary font-bold" >{pair.payout}% return</span>
         </div>
         <div className="flex items-center justify-center py-1.5">
           <span
@@ -436,25 +436,25 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
       <div className="flex border-b border-border">
         <button
           onClick={() => setActiveTab('trades')}
-          className={`flex-1 py-2 text-[11px] font-medium transition-colors flex items-center justify-center gap-1.5 ${
+          className={`flex-1 py-2.5 text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 ${
             activeTab === 'trades'
               ? 'text-foreground border-b-2 border-primary'
-              : 'text-muted-foreground hover:text-foreground'
+              : 'text-secondary-foreground hover:text-foreground'
           }`}
         >
           Trades
-          <span className="bg-secondary px-1.5 py-0.5 rounded-sm text-[9px]">{completedTrades.length + activeTrades.length}</span>
+          <span className="bg-secondary px-1.5 py-0.5 rounded text-[10px] font-semibold text-foreground">{completedTrades.length + activeTrades.length}</span>
         </button>
         <button
           onClick={() => setActiveTab('orders')}
-          className={`flex-1 py-2 text-[11px] font-medium transition-colors flex items-center justify-center gap-1.5 ${
+          className={`flex-1 py-2.5 text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 ${
             activeTab === 'orders'
               ? 'text-foreground border-b-2 border-primary'
-              : 'text-muted-foreground hover:text-foreground'
+              : 'text-secondary-foreground hover:text-foreground'
           }`}
         >
-          <Clock size={11} />
-          <span className="bg-secondary px-1.5 py-0.5 rounded-sm text-[9px]">0</span>
+          <Clock size={13} />
+          <span className="bg-secondary px-1.5 py-0.5 rounded text-[10px] font-semibold text-foreground">0</span>
         </button>
       </div>
 
@@ -462,9 +462,9 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
       <div className="flex-1 overflow-y-auto bg-card">
         {activeTab === 'trades' && completedTrades.length === 0 && activeTrades.length === 0 && (
           <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
-            <Package size={28} className="mb-2 opacity-50" />
-            <p className="text-[11px]">No trades yet.</p>
-            <p className="text-[9px]">Place your first trade above.</p>
+            <Package size={28} className="mb-2 opacity-40" />
+            <p className="text-sm font-medium text-secondary-foreground">No trades yet.</p>
+            <p className="text-xs text-secondary-foreground/70 mt-0.5">Place your first trade above.</p>
           </div>
         )}
 
@@ -479,9 +479,9 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
                       <CryptoIcon symbol={at.pair.symbol.replace('USDT', '')} size={16} />
                       <CryptoIcon symbol="USD" size={10} />
                     </div>
-                    <span className="text-[11px] font-medium text-foreground">{at.pair.displayName}</span>
+                    <span className="text-xs font-semibold text-foreground">{at.pair.displayName}</span>
                   </div>
-                  <span className="text-[10px] text-muted-foreground" >
+                  <span className="text-xs text-secondary-foreground font-medium tabular-nums">
                     {String(Math.floor(tl / 60)).padStart(2, '0')}:{String(tl % 60).padStart(2, '0')}
                   </span>
                 </div>
@@ -492,13 +492,13 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
                     }`}>
                       {at.direction === 'up' ? '↑' : '↓'}
                     </div>
-                    <span className={`text-[10px] font-medium ${
+                    <span className={`text-xs font-semibold tabular-nums ${
                       at.direction === 'up' ? 'text-success' : 'text-danger'
                     }`}>
                       {at.amount} $
                     </span>
                   </div>
-                  <span className={`text-[10px] font-bold ${
+                  <span className={`text-xs font-bold tabular-nums ${
                     pnl >= 0 ? 'text-success' : 'text-danger'
                   }`}>
                     {pnl >= 0 ? '+' : ''}{pnl.toFixed(2)} $
@@ -514,8 +514,8 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
             {Object.entries(groupedTrades).map(([dateKey, dateTrades]) => (
               <div key={dateKey}>
                 <div className="px-3 py-1.5 flex items-center justify-center gap-1.5">
-                  <span className="text-[10px] text-muted-foreground font-medium">{dateKey}</span>
-                  <span className="bg-secondary text-[9px] px-1.5 py-0.5 rounded-sm font-medium text-foreground">
+                  <span className="text-xs text-secondary-foreground font-semibold">{dateKey}</span>
+                  <span className="bg-secondary text-[10px] px-1.5 py-0.5 rounded font-semibold text-foreground">
                     {dateTrades.length}
                   </span>
                 </div>
@@ -528,9 +528,9 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
                           <CryptoIcon symbol={trade.pair.symbol.replace('USDT', '')} size={16} />
                           <CryptoIcon symbol="USD" size={10} />
                         </div>
-                        <span className="text-[11px] font-medium text-foreground">{trade.pair.displayName}</span>
+                        <span className="text-xs font-semibold text-foreground">{trade.pair.displayName}</span>
                       </div>
-                      <span className="text-[10px] text-muted-foreground" >
+                      <span className="text-xs text-secondary-foreground font-medium tabular-nums">
                         {formatDuration(trade.duration)}
                       </span>
                     </div>
@@ -541,13 +541,13 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
                         }`}>
                           {trade.direction === 'up' ? '↑' : '↓'}
                         </div>
-                        <span className={`text-[10px] font-medium ${
+                        <span className={`text-xs font-semibold tabular-nums ${
                           trade.direction === 'up' ? 'text-success' : 'text-danger'
                         }`}>
                           {trade.amount} $
                         </span>
                       </div>
-                      <span className={`text-[10px] font-semibold ${
+                      <span className={`text-xs font-bold tabular-nums ${
                         trade.result === 'win' ? 'text-success' : 'text-danger'
                       }`}>
                         {trade.result === 'win'
@@ -564,9 +564,9 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
 
         {activeTab === 'orders' && (
           <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
-            <Package size={28} className="mb-2 opacity-50" />
-            <p className="text-[11px]">Order list is empty.</p>
-            <p className="text-[9px]">Create a pending trade using the form above.</p>
+            <Package size={28} className="mb-2 opacity-40" />
+            <p className="text-sm font-medium text-secondary-foreground">Order list is empty.</p>
+            <p className="text-xs text-secondary-foreground/70 mt-0.5">Create a pending trade using the form above.</p>
           </div>
         )}
       </div>
