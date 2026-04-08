@@ -55,10 +55,10 @@ export default function AssetTabs({ pairs, activePair, onSelect, onRemove, onOpe
           >
             <button
               onClick={() => onSelect(pair)}
-              className={`flex items-center gap-2 pl-3 pr-7 py-1.5 rounded-md transition-all duration-200 min-w-[100px] ${
+              className={`flex items-center gap-2 pl-3 pr-7 py-1.5 rounded-md transition-all duration-200 min-w-[100px] border border-white/10 bg-white/[0.06] backdrop-blur-sm ${
                 isActive
-                  ? 'glass border border-white/10 bg-white/[0.06]'
-                  : 'bg-card/40 backdrop-blur-sm hover:bg-secondary border border-transparent'
+                  ? 'border-primary/40 bg-white/[0.08]'
+                  : 'hover:bg-white/[0.08]'
               }`}
             >
               <div className="flex items-center -space-x-1.5">
@@ -89,9 +89,9 @@ export default function AssetTabs({ pairs, activePair, onSelect, onRemove, onOpe
                   e.stopPropagation();
                   onRemove(pair);
                 }}
-                className="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-muted hover:bg-destructive flex items-center justify-center transition-colors"
+                className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-muted/80 hover:bg-destructive flex items-center justify-center transition-colors"
               >
-                <X size={9} className="text-muted-foreground hover:text-foreground" />
+                <X size={8} className="text-muted-foreground hover:text-foreground" />
               </button>
             )}
           </motion.div>
