@@ -137,7 +137,7 @@ export default function TradePage() {
                   </span>
                 </div>
                 <button className="flex items-center gap-1.5 text-primary/80 hover:text-primary text-[11px] font-semibold hover:underline w-fit uppercase transition-colors leading-none">
-                  <Info size={13} strokeWidth={2.5} className="shrink-0 relative top-[1px]" />
+                  <Info size={13} strokeWidth={2.5} className="shrink-0 relative -top-[1px]" />
                   <span>Pair Information</span>
                 </button>
               </motion.div>
