@@ -136,9 +136,9 @@ export default function TradePage() {
                     {new Date().toLocaleTimeString()} UTC
                   </span>
                 </div>
-                <button className="flex items-center gap-1 text-primary text-xs font-semibold hover:underline w-fit">
-                  <Info size={13} />
-                  PAIR INFORMATION
+                <button className="flex items-center gap-1 text-primary text-[10px] font-semibold hover:underline w-fit uppercase tracking-wide">
+                  <Info size={11} />
+                  Pair Information
                 </button>
               </motion.div>
             )}
