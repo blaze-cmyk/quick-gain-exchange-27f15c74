@@ -1131,7 +1131,7 @@ function drawOHLCTooltip(ctx: CanvasRenderingContext2D, c: CandleData, x: number
     ctx.font = '300 12px General Sans, sans-serif';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
-    ctx.fillStyle = 'rgba(156, 163, 175, 0.7)';
+    ctx.fillStyle = '#ffffff';
     ctx.fillText(label, x + 10, ly);
     ctx.fillStyle = isGreen ? '#3dbc84' : '#c94545';
     ctx.font = '400 12px General Sans, sans-serif';
