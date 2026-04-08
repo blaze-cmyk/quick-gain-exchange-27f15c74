@@ -57,7 +57,7 @@ export default function AssetTabs({ pairs, activePair, onSelect, onRemove, onOpe
               onClick={() => onSelect(pair)}
               className={`flex items-center gap-2 pl-3 pr-7 py-1.5 rounded-md transition-all duration-200 min-w-[100px] ${
                 isActive
-                  ? 'glass border border-primary/30'
+                  ? 'glass border border-white/10 bg-white/[0.06]'
                   : 'bg-card/40 backdrop-blur-sm hover:bg-secondary border border-transparent'
               }`}
             >
@@ -66,9 +66,8 @@ export default function AssetTabs({ pairs, activePair, onSelect, onRemove, onOpe
                 <CryptoIcon symbol="USD" size={12} />
               </div>
               <div className="text-left">
-                <div className="flex items-center gap-1">
+                <div className="flex items-center">
                   <span className="text-[11px] font-semibold text-foreground">{pair.displayName}</span>
-                  {isActive && <ChevronDown size={10} className="text-muted-foreground" />}
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className={`text-[10px] font-semibold ${pair.payout >= 90 ? 'text-primary' : 'text-muted-foreground'}`}>
