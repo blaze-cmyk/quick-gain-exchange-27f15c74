@@ -234,11 +234,12 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       ctx.textBaseline = 'bottom';
       ctx.fillText('Beginning of trade', startX - 6, PADDING_TOP - 4);
 
+      // Play icon on top of the "e" in "trade"
       ctx.fillStyle = COLORS.priceLine;
       ctx.beginPath();
-      ctx.moveTo(startX - 4, PADDING_TOP - 18);
-      ctx.lineTo(startX + 4, PADDING_TOP - 14);
-      ctx.lineTo(startX - 4, PADDING_TOP - 10);
+      ctx.moveTo(startX - 10, PADDING_TOP - 15);
+      ctx.lineTo(startX - 3, PADDING_TOP - 11);
+      ctx.lineTo(startX - 10, PADDING_TOP - 7);
       ctx.closePath();
       ctx.fill();
     }
@@ -258,6 +259,11 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       ctx.textAlign = 'left';
       ctx.textBaseline = 'bottom';
       ctx.fillText('End of trade', endX + 6, PADDING_TOP - 4);
+
+      // Stop square on top of the "e" in "trade"
+      ctx.fillStyle = '#a0aab8';
+      const endTextWidth = ctx.measureText('End of trade').width;
+      ctx.fillRect(endX + 6 + endTextWidth - 8, PADDING_TOP - 15, 7, 7);
     }
 
     // Entry price horizontal dashed line with color
@@ -723,12 +729,13 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
         ctx.textBaseline = 'bottom';
         ctx.fillText('Beginning of trade', startX - 6, PADDING_TOP - 4);
 
+        // Play icon on top of the "e" in "trade"
         ctx.fillStyle = COLORS.priceLine;
         ctx.globalAlpha = 0.6;
         ctx.beginPath();
-        ctx.moveTo(startX - 4, PADDING_TOP - 18);
-        ctx.lineTo(startX + 4, PADDING_TOP - 14);
-        ctx.lineTo(startX - 4, PADDING_TOP - 10);
+        ctx.moveTo(startX - 10, PADDING_TOP - 15);
+        ctx.lineTo(startX - 3, PADDING_TOP - 11);
+        ctx.lineTo(startX - 10, PADDING_TOP - 7);
         ctx.closePath();
         ctx.fill();
         ctx.globalAlpha = 1;
@@ -750,9 +757,10 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
         ctx.textBaseline = 'bottom';
         ctx.fillText('End of trade', endX + 6, PADDING_TOP - 4);
 
-        // Stop square
+        // Stop square on top of the "e" in "trade"
         ctx.fillStyle = 'rgba(160, 170, 190, 0.4)';
-        ctx.fillRect(endX - 4, PADDING_TOP - 17, 8, 8);
+        const previewEndTextWidth = ctx.measureText('End of trade').width;
+        ctx.fillRect(endX + 6 + previewEndTextWidth - 8, PADDING_TOP - 15, 7, 7);
       }
     }
 
