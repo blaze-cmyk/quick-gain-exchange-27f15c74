@@ -75,7 +75,7 @@ export default function ProbabilityBar({ candles, currentPrice }: ProbabilityBar
   return (
     <motion.div
       className="flex flex-col items-center justify-between h-full py-3 px-2 flex-shrink-0"
-      style={{ background: '#0d0d14', width: 38 }}
+      style={{ background: '#111118', width: 38 }}
       initial={{ opacity: 0, x: -8 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
