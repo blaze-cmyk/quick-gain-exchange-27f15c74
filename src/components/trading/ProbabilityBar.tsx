@@ -39,7 +39,6 @@ export default function ProbabilityBar({ candles, currentPrice }: ProbabilityBar
     return Math.max(1, Math.min(99, Math.round(raw * 100)));
   }, [candles, currentPrice]);
 
-  // Lenis-style smooth spring with ultra-fluid damping
   const bullMotion = useMotionValue(50);
   const bullSpring = useSpring(bullMotion, {
     damping: 30,
@@ -52,7 +51,6 @@ export default function ProbabilityBar({ candles, currentPrice }: ProbabilityBar
 
   useEffect(() => {
     const pct = computeBullPct();
-    // Animate with custom easing for Lenis-like smooth feel
     animate(bullMotion, pct, {
       type: 'spring',
       damping: 35,
@@ -67,39 +65,35 @@ export default function ProbabilityBar({ candles, currentPrice }: ProbabilityBar
   const bullBasis = useTransform(bullSpring, (v) => `${v.toFixed(2)}%`);
   const bearBasis = useTransform(bearSpring, (v) => `${v.toFixed(2)}%`);
 
-  // Glow intensity based on dominance
   const bullGlow = useTransform(bullSpring, [20, 50, 80], [0, 0, 0.6]);
   const bearGlow = useTransform(bearSpring, [20, 50, 80], [0, 0, 0.6]);
-  const bullShadow = useTransform(bullGlow, (v) => `0 0 ${v * 8}px rgba(34, 197, 94, ${v})`);
-  const bearShadow = useTransform(bearGlow, (v) => `0 0 ${v * 8}px rgba(239, 68, 68, ${v})`);
+  const bullShadow = useTransform(bullGlow, (v) => `0 0 ${v * 8}px hsl(160 45% 50% / ${v})`);
+  const bearShadow = useTransform(bearGlow, (v) => `0 0 ${v * 8}px hsl(0 55% 55% / ${v})`);
 
   if (candles.length < 2) return null;
 
   return (
     <motion.div
       className="flex flex-col items-center justify-between h-full py-2 w-5 flex-shrink-0"
-      style={{ background: '#0f1113' }}
+      style={{ background: '#0d0d14' }}
       initial={{ opacity: 0, x: -8 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
     >
-      {/* Bear % on top */}
       <motion.span
-        className="text-[10px] font-bold"
+        className="text-[10px] font-bold font-mono"
         style={{
-          color: '#ef4444',
-          fontFamily: 'Montserrat, sans-serif',
+          color: 'hsl(0 55% 55%)',
           textShadow: bearShadow,
         }}
       >
         {bearText}
       </motion.span>
 
-      {/* Vertical probability bar */}
       <div className="flex-1 w-[4px] rounded-full overflow-hidden flex flex-col my-1 relative">
         <motion.div
           style={{
-            background: 'linear-gradient(to bottom, #ef4444, #dc2626)',
+            background: 'linear-gradient(to bottom, hsl(0 55% 55%), hsl(355 60% 48%))',
             flexBasis: bearBasis,
           }}
           layout
@@ -107,7 +101,7 @@ export default function ProbabilityBar({ candles, currentPrice }: ProbabilityBar
         />
         <motion.div
           style={{
-            background: 'linear-gradient(to bottom, #16a34a, #22c55e)',
+            background: 'linear-gradient(to bottom, hsl(155 50% 42%), hsl(160 45% 50%))',
             flexBasis: bullBasis,
           }}
           layout
@@ -115,12 +109,10 @@ export default function ProbabilityBar({ candles, currentPrice }: ProbabilityBar
         />
       </div>
 
-      {/* Bull % on bottom */}
       <motion.span
-        className="text-[10px] font-bold"
+        className="text-[10px] font-bold font-mono"
         style={{
-          color: '#22c55e',
-          fontFamily: 'Montserrat, sans-serif',
+          color: 'hsl(160 45% 50%)',
           textShadow: bullShadow,
         }}
       >

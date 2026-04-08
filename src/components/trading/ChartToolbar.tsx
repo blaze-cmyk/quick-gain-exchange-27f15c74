@@ -3,8 +3,6 @@ import { Pencil, Scissors } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export type ChartType = 'area' | 'candles' | 'bars' | 'heiken';
-
-// Binance-supported kline intervals
 export type ChartInterval = '1s' | '1m' | '3m' | '5m' | '15m' | '30m' | '1h' | '2h' | '4h' | '1d';
 
 interface ChartToolbarProps {
@@ -42,7 +40,7 @@ export default function ChartToolbar({ selectedTimeframe = '1m', chartType = 'ca
 
       <div className="relative">
         <ToolButton onClick={() => { setShowTimeframes(!showTimeframes); setShowChartTypes(false); }}>
-          <span className="text-[10px] font-semibold" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+          <span className="text-[10px] font-semibold font-mono">
             {selectedTimeframe}
           </span>
         </ToolButton>
@@ -53,7 +51,7 @@ export default function ChartToolbar({ selectedTimeframe = '1m', chartType = 'ca
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -5 }}
               transition={{ duration: 0.15 }}
-              className="absolute left-[calc(100%+6px)] bottom-0 bg-card border border-border rounded-md p-2 min-w-[180px] shadow-xl"
+              className="absolute left-[calc(100%+6px)] bottom-0 glass-strong rounded-md p-2 min-w-[180px] shadow-xl"
             >
               {TF_OPTIONS.map((row, ri) => (
                 <div key={ri} className="flex gap-1 mb-1 last:mb-0">
@@ -91,7 +89,7 @@ export default function ChartToolbar({ selectedTimeframe = '1m', chartType = 'ca
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -5 }}
               transition={{ duration: 0.15 }}
-              className="absolute left-[calc(100%+6px)] bottom-0 bg-card border border-border rounded-md py-1 min-w-[150px] shadow-xl"
+              className="absolute left-[calc(100%+6px)] bottom-0 glass-strong rounded-md py-1 min-w-[150px] shadow-xl"
             >
               {CHART_TYPES.map(ct => {
                 const Icon = ct.icon;
@@ -129,7 +127,7 @@ function ToolButton({ children, onClick }: { children: React.ReactNode; onClick?
   return (
     <button
       onClick={onClick}
-      className="w-7 h-7 rounded-md bg-card/90 border border-border/60 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+      className="w-7 h-7 rounded-md glass flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
     >
       {children}
     </button>
