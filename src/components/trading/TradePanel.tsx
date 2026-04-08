@@ -403,8 +403,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
         </div>
         <div className="flex items-center justify-center py-1.5">
           <span
-            className="text-2xl font-extrabold tracking-tight text-foreground"
-            style={{ fontFamily: "'Montserrat', sans-serif", letterSpacing: '-0.02em' }}
+            className="text-2xl font-extrabold tracking-tight text-foreground font-display"
           >
             {potentialPayout.toFixed(investMode === 'percent' ? 2 : 0)}
           </span>
