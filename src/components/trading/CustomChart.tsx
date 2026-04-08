@@ -1134,7 +1134,7 @@ function drawOHLCTooltip(ctx: CanvasRenderingContext2D, c: CandleData, x: number
     ctx.fillStyle = '#ffffff';
     ctx.fillText(label, x + 10, ly);
     ctx.fillStyle = isGreen ? '#3dbc84' : '#c94545';
-    ctx.font = '400 12px General Sans, sans-serif';
+    ctx.font = '600 12px General Sans, sans-serif';
     ctx.textAlign = 'right';
     ctx.fillText(value, x + boxW - 10, ly);
   });
