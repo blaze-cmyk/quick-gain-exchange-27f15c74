@@ -182,8 +182,8 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
             {item.label}
           </button>
         ))}
-        <button className="w-full text-left px-3 py-1.5 text-xs text-primary hover:bg-accent rounded-md transition-colors flex items-center gap-1.5 mt-1">
-          <LogOut size={12} />
+        <button className="w-full text-left px-3 py-2 text-sm text-primary font-semibold hover:bg-accent rounded-md transition-colors flex items-center gap-2 mt-1">
+          <LogOut size={14} />
           Logout
         </button>
       </div>
