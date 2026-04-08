@@ -260,6 +260,7 @@ export function bootstrapHistory(
 
   const now = Math.floor(Date.now() / 1000);
   const startBucket = (Math.floor(now / intervalSecs) - count) * intervalSecs;
+  let lastClose = round(st.smoothedPrice, cfg.decimals);
 
   for (let i = 0; i < count; i++) {
     const bucket = startBucket + i * intervalSecs;
