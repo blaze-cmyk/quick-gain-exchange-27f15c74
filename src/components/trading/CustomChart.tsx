@@ -48,7 +48,7 @@ const COLORS = {
   wickRed: '#c9454588',
   priceLine: '#ff6a00',
   priceLabel: '#ff6a00',
-  textMuted: '#3a3f50',
+  textMuted: '#6b7280',
   textLight: '#6b7280',
   crosshairLine: '#252830',
   crosshairLabel: '#1a1a24',
