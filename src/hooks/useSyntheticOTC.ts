@@ -51,14 +51,12 @@ export function useSyntheticOTC(
     setConnected(true);
   }, [symbol, cfg, intervalSecs]);
 
-  // Tick loop — uses per-pair tickRateMs (100ms for crypto, 500ms for others)
+  // Tick loop — 1 second
   useEffect(() => {
     if (!cfg) {
       setConnected(false);
       return;
     }
-
-    const rate = cfg.tickRateMs || 1000;
 
     const id = setInterval(() => {
       const bias = computeHouseBias(activeTradesRef.current);
@@ -72,7 +70,7 @@ export function useSyntheticOTC(
         const pct = ((result.price - oldest) / oldest) * 100;
         setPriceChange(Math.round(pct * 100) / 100);
       }
-    }, rate);
+    }, 1000);
 
     // Run one tick immediately
     const bias = computeHouseBias(activeTradesRef.current);
