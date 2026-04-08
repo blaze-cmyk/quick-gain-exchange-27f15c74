@@ -74,8 +74,6 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
             initial={{ opacity: 0, x: -8 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: index * 0.04, duration: 0.25 }}
-            whileHover={{ scale: 1.06 }}
-            whileTap={{ scale: 0.94 }}
             onClick={() => handleNav(item.id)}
             className={`relative flex flex-col items-center justify-center w-[44px] h-[44px] rounded-lg transition-all duration-200 ${
               isActive
