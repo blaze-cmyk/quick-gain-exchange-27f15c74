@@ -74,14 +74,14 @@ export default function ProbabilityBar({ candles, currentPrice }: ProbabilityBar
 
   return (
     <motion.div
-      className="flex flex-col items-center justify-between h-full py-2 w-5 flex-shrink-0"
-      style={{ background: '#0d0d14' }}
+      className="flex flex-col items-center justify-between h-full py-3 px-2 flex-shrink-0"
+      style={{ background: '#0d0d14', width: 38 }}
       initial={{ opacity: 0, x: -8 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
     >
       <motion.span
-        className="text-[10px] font-bold tabular-nums"
+        className="text-[9px] font-bold tabular-nums leading-none"
         style={{
           color: 'hsl(0 55% 55%)',
           textShadow: bearShadow,
@@ -90,7 +90,7 @@ export default function ProbabilityBar({ candles, currentPrice }: ProbabilityBar
         {bearText}
       </motion.span>
 
-      <div className="flex-1 w-[4px] rounded-full overflow-hidden flex flex-col my-1 relative">
+      <div className="flex-1 w-[4px] rounded-full overflow-hidden flex flex-col my-2 relative">
         <motion.div
           style={{
             background: 'linear-gradient(to bottom, hsl(0 55% 55%), hsl(355 60% 48%))',
@@ -110,7 +110,7 @@ export default function ProbabilityBar({ candles, currentPrice }: ProbabilityBar
       </div>
 
       <motion.span
-        className="text-[10px] font-bold tabular-nums"
+        className="text-[9px] font-bold tabular-nums leading-none"
         style={{
           color: 'hsl(160 45% 50%)',
           textShadow: bullShadow,
