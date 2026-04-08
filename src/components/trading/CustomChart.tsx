@@ -237,9 +237,9 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       // Play icon above the "e" in "trade"
       ctx.fillStyle = COLORS.priceLine;
       ctx.beginPath();
-      ctx.moveTo(startX - 10, PADDING_TOP - 20);
-      ctx.lineTo(startX - 3, PADDING_TOP - 16);
-      ctx.lineTo(startX - 10, PADDING_TOP - 12);
+      ctx.moveTo(startX - 10, PADDING_TOP - 25);
+      ctx.lineTo(startX - 3, PADDING_TOP - 21);
+      ctx.lineTo(startX - 10, PADDING_TOP - 17);
       ctx.closePath();
       ctx.fill();
     }
@@ -262,7 +262,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
 
       // Stop square above "End"
       ctx.fillStyle = '#a0aab8';
-      ctx.fillRect(endX + 10, PADDING_TOP - 20, 7, 7);
+      ctx.fillRect(endX + 6, PADDING_TOP - 25, 7, 7);
     }
 
     // Entry price horizontal dashed line with color
@@ -732,9 +732,9 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
         ctx.fillStyle = COLORS.priceLine;
         ctx.globalAlpha = 0.6;
         ctx.beginPath();
-        ctx.moveTo(startX - 10, PADDING_TOP - 20);
-        ctx.lineTo(startX - 3, PADDING_TOP - 16);
-        ctx.lineTo(startX - 10, PADDING_TOP - 12);
+        ctx.moveTo(startX - 10, PADDING_TOP - 25);
+        ctx.lineTo(startX - 3, PADDING_TOP - 21);
+        ctx.lineTo(startX - 10, PADDING_TOP - 17);
         ctx.closePath();
         ctx.fill();
         ctx.globalAlpha = 1;
@@ -758,7 +758,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
 
         // Stop square above "End"
         ctx.fillStyle = 'rgba(160, 170, 190, 0.4)';
-        ctx.fillRect(endX + 10, PADDING_TOP - 20, 7, 7);
+        ctx.fillRect(endX + 6, PADDING_TOP - 25, 7, 7);
       }
     }
 
