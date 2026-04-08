@@ -338,10 +338,10 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
         className="flex items-center gap-3 px-4 py-2 border-b border-white/[0.06]"
         style={{ background: '#111118' }}
       >
-        <div className="flex items-center gap-1 mr-auto">
+        <div className="flex items-center mr-auto">
           <img src={arcanineLogo} alt="Arcanine" className="w-8 h-8" />
           <span className="text-base font-bold tracking-tight font-display text-foreground">Arcanine</span>
-          <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />
+          <span className="w-1 h-1 rounded-full bg-muted-foreground/40 mx-2.5" />
           <span className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Web Trading Platform</span>
         </div>
 
