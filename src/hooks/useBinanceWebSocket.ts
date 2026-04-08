@@ -42,7 +42,6 @@ export function useBinanceWebSocket(symbol: string, interval: string = '1m') {
       const lastClose = historical[historical.length - 1]?.close ?? 0;
       if (lastClose > 0) {
         setCurrentPrice(lastClose);
-        lastRealPriceRef.current = lastClose;
       }
     } catch (err) {
       console.error('Failed to fetch historical data:', err);
@@ -128,19 +127,6 @@ export function useBinanceWebSocket(symbol: string, interval: string = '1m') {
       scheduleFlush();
     };
 
-    // Micro-interpolation: inject tiny noise between real WS ticks
-    const startMicroTick = () => {
-      microTickRef.current = window.setInterval(() => {
-        if (destroyed) return;
-        const base = lastRealPriceRef.current;
-        if (base <= 0) return;
-        const jittered = base + microNoise(base);
-        setCurrentPrice(jittered);
-        // Also update the current candle with micro-movement
-        upsertLiveCandle(jittered, Date.now());
-      }, MICRO_TICK_MS);
-    };
-
     const connectTradeStream = () => {
       clearReconnect();
 
@@ -150,7 +136,6 @@ export function useBinanceWebSocket(symbol: string, interval: string = '1m') {
       ws.onopen = () => {
         if (!destroyed) {
           setConnected(true);
-          startMicroTick();
         }
       };
 
@@ -165,8 +150,6 @@ export function useBinanceWebSocket(symbol: string, interval: string = '1m') {
           return;
         }
 
-        // Update the real anchor price for micro-interpolation
-        lastRealPriceRef.current = price;
         setCurrentPrice(price);
         upsertLiveCandle(price, tradeTimeMs);
       };
@@ -195,10 +178,6 @@ export function useBinanceWebSocket(symbol: string, interval: string = '1m') {
       clearReconnect();
       wsRef.current?.close();
       cancelAnimationFrame(rafRef.current);
-      if (microTickRef.current !== null) {
-        clearInterval(microTickRef.current);
-        microTickRef.current = null;
-      }
     };
   }, [symbol, interval, fetchHistoricalData, fetch24hChange]);
 
