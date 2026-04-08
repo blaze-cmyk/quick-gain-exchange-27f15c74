@@ -341,8 +341,8 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
         <div className="flex items-center gap-2.5 mr-auto">
           <img src={arcanineLogo} alt="Arcanine" className="w-8 h-8" />
           <span className="text-base font-bold tracking-tight font-display text-foreground">Arcanine</span>
-          <div className="h-4 w-px bg-white/[0.08] mx-1" />
-          <span className="text-[11px] text-muted-foreground/60 font-medium tracking-[0.08em]">Web Trading Platform</span>
+          <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />
+          <span className="text-xs text-muted-foreground font-medium tracking-wide uppercase">Web Trading Platform</span>
         </div>
 
         <button className="relative text-muted-foreground hover:text-foreground transition-colors mr-2">
