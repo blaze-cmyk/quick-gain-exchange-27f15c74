@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Bell, ChevronDown, GraduationCap, Plus, Send, Eye, Pencil, RefreshCw, X, LogOut } from 'lucide-react';
+import { Bell, ChevronDown, GraduationCap, Plus, Send, Eye, Pencil, RefreshCw, X, LogOut, ArrowUpRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -132,7 +132,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
           </div>
           <div className="text-left flex-1">
             <div className="text-xs font-semibold text-foreground">Live Account</div>
-            <div className="text-sm font-bold text-foreground font-mono">
+            <div className="text-sm font-bold text-foreground tabular-nums">
               {currSymbol}{(liveBalance * currencyInfo.rate).toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </div>
             <div className="text-[9px] text-muted-foreground mt-0.5">The daily limit is not set</div>
@@ -157,7 +157,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
               <Pencil size={10} className="text-muted-foreground" />
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="text-sm font-bold text-foreground font-mono">
+              <span className="text-sm font-bold text-foreground tabular-nums">
                 {currSymbol}{displayBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </span>
               <RefreshCw size={10} className="text-muted-foreground" />
@@ -234,7 +234,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
                 }`}>
                   DEMO ACCOUNT
                 </span>
-                <span className="text-sm font-bold text-foreground font-mono">
+                <span className="text-sm font-bold text-foreground tabular-nums">
                   ${(accountType === 'demo' ? balance : liveBalance).toLocaleString(undefined, { minimumFractionDigits: 0 })}
                 </span>
               </div>
@@ -252,7 +252,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
                 <span className="text-[10px] font-bold uppercase tracking-wider text-primary">
                   {pendingSwitchTo === 'live' ? 'LIVE ACCOUNT' : 'DEMO ACCOUNT'}
                 </span>
-                <span className="text-sm font-bold text-foreground font-mono">
+                <span className="text-sm font-bold text-foreground tabular-nums">
                   ${(pendingSwitchTo === 'live' ? liveBalance : balance).toLocaleString(undefined, { minimumFractionDigits: 0 })}
                 </span>
               </div>
@@ -295,7 +295,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
                 <div className="text-[8px] text-primary font-bold uppercase tracking-wider">
                   {isDemo ? 'DEMO' : 'LIVE'}
                 </div>
-                <div className="text-xs font-bold font-mono text-foreground">
+                <div className="text-xs font-bold tabular-nums text-foreground">
                   {currSymbol}{displayBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </div>
               </div>
@@ -339,8 +339,8 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
         style={{ background: '#0d0d14' }}
       >
         <div className="flex items-center gap-2.5 mr-auto">
-          <img src={arcanineLogo} alt="Arcanine" className="w-12 h-12 rounded-lg" />
-          <span className="text-foreground font-bold text-lg tracking-wide font-display" style={{ fontWeight: 800, letterSpacing: '0.08em' }}>ARCANINE</span>
+          <img src={arcanineLogo} alt="Arcanine" className="w-14 h-14" />
+          <span className="text-lg font-bold tracking-tight font-display text-foreground">Arcanine</span>
         </div>
 
         <button className="relative text-muted-foreground hover:text-foreground transition-colors">
@@ -364,7 +364,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
               <div className="text-[9px] text-primary font-bold uppercase tracking-wider">
                 {isDemo ? 'DEMO ACCOUNT' : 'LIVE ACCOUNT'}
               </div>
-              <div className="text-sm font-bold text-foreground font-mono">
+              <div className="text-sm font-bold text-foreground tabular-nums">
                 {currSymbol}{displayBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </div>
             </div>
@@ -372,6 +372,14 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
           </div>
           <AnimatePresence>{showDropdown && dropdownContent}</AnimatePresence>
         </div>
+
+        <button
+          onClick={() => navigate('/withdrawal')}
+          className="flex items-center gap-1.5 bg-secondary hover:bg-accent text-foreground font-semibold text-sm px-4 py-2.5 rounded-lg transition-colors border border-border"
+        >
+          <ArrowUpRight size={15} />
+          <span>Withdraw</span>
+        </button>
 
         <button
           onClick={() => setShowDepositModal(true)}

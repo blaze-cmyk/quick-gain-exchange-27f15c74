@@ -47,11 +47,11 @@ export default function TradeResultToast({ trade, onDismiss }: TradeResultToastP
               <div className="flex items-center gap-2">
                 <span className="text-xs font-medium text-foreground">{trade.pair.displayName}</span>
                 <span className="text-[10px] text-muted-foreground">•</span>
-                <span className="text-[10px] text-muted-foreground font-mono">
+                <span className="text-[10px] text-muted-foreground tabular-nums">
                   {String(Math.floor(trade.duration / 60)).padStart(2, '0')}:{String(trade.duration % 60).padStart(2, '0')}
                 </span>
               </div>
-              <span className={`text-sm font-bold font-mono ${isWin ? 'text-profit' : 'text-loss'}`}>
+              <span className={`text-sm font-bold tabular-nums ${isWin ? 'text-profit' : 'text-loss'}`}>
                 {pnl > 0 ? `+${pnl.toFixed(2)}` : pnl.toFixed(2)} $
               </span>
             </div>

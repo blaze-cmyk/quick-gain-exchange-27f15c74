@@ -77,7 +77,7 @@ export default function AssetTabs({ pairs, activePair, onSelect, onRemove, onOpe
                     {pair.payout}%
                   </span>
                   {pnl !== null && (
-                    <span className={`text-[10px] font-bold font-mono px-1 py-0.5 rounded ${
+                    <span className={`text-[10px] font-bold tabular-nums px-1 py-0.5 rounded ${
                       pnl >= 0 ? 'text-profit bg-profit/10' : 'text-loss bg-loss/10'
                     }`}>
                       {pnl >= 0 ? '+' : ''}{pnl.toFixed(0)} $

@@ -81,7 +81,7 @@ export default function ProbabilityBar({ candles, currentPrice }: ProbabilityBar
       transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
     >
       <motion.span
-        className="text-[10px] font-bold font-mono"
+        className="text-[10px] font-bold tabular-nums"
         style={{
           color: 'hsl(0 55% 55%)',
           textShadow: bearShadow,
@@ -110,7 +110,7 @@ export default function ProbabilityBar({ candles, currentPrice }: ProbabilityBar
       </div>
 
       <motion.span
-        className="text-[10px] font-bold font-mono"
+        className="text-[10px] font-bold tabular-nums"
         style={{
           color: 'hsl(160 45% 50%)',
           textShadow: bullShadow,
