@@ -110,19 +110,22 @@ export function useTiingoForex(tiingoSymbol: string) {
 
   useEffect(() => {
     if (!tiingoSymbol) return;
+    let destroyed = false;
     const sym = tiingoSymbol.toLowerCase();
     openPriceRef.current = 0;
 
     // Fetch historical candles first, then start polling live price
     fetchCandles(sym).then(() => {
-      fetchTopPrice(sym);
+      if (!destroyed) fetchTopPrice(sym);
     });
 
-    intervalRef.current = window.setInterval(() => fetchTopPrice(sym), 5000);
+    intervalRef.current = window.setInterval(() => {
+      if (!destroyed) fetchTopPrice(sym);
+    }, 5000);
 
     return () => {
+      destroyed = true;
       if (intervalRef.current) clearInterval(intervalRef.current);
-      setConnected(false);
     };
   }, [tiingoSymbol, fetchCandles, fetchTopPrice]);
 
