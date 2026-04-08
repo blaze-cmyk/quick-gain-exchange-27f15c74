@@ -3,11 +3,13 @@ export interface TradingPair {
   displayName: string;
   binanceSymbol: string;
   tiingoSymbol?: string;
+  /** Key into OTC_PAIR_CONFIGS for synthetic feed pairs */
+  otcSymbol?: string;
   icon: string;
   payout: number;
   price: number;
   change24h: number;
-  category: 'crypto' | 'forex';
+  category: 'crypto' | 'forex' | 'otc_crypto' | 'commodity' | 'stock';
 }
 
 export interface Trade {
