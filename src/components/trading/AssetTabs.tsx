@@ -89,9 +89,9 @@ export default function AssetTabs({ pairs, activePair, onSelect, onRemove, onOpe
                   e.stopPropagation();
                   onRemove(pair);
                 }}
-                className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-muted/80 hover:bg-destructive flex items-center justify-center transition-colors"
+                className="group absolute -top-1 -right-1 w-4 h-4 rounded-full bg-muted/80 hover:bg-destructive flex items-center justify-center transition-colors"
               >
-                <X size={8} className="text-muted-foreground hover:text-foreground" />
+                <X size={8} className="text-muted-foreground group-hover:text-foreground transition-colors" />
               </button>
             )}
           </motion.div>
