@@ -393,6 +393,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
       <DepositModal
         open={showDepositModal}
         onClose={() => setShowDepositModal(false)}
+        balance={currentBalance}
       />
     </>
   );
