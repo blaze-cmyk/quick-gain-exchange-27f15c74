@@ -339,7 +339,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
         style={{ background: '#111118' }}
       >
         <div className="flex items-center gap-2 mr-auto">
-          <img src={arcanineLogo} alt="Arcanine" className="w-7 h-7" />
+          <img src={arcanineLogo} alt="Arcanine" className="w-8 h-8" />
           <span className="text-base font-bold tracking-tight font-display text-foreground">Arcanine</span>
         </div>
 
