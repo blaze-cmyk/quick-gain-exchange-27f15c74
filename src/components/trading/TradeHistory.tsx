@@ -43,10 +43,10 @@ export default function TradeHistory({ trades }: TradeHistoryProps) {
       {/* Content */}
       <div className="max-h-[240px] overflow-y-auto">
         {activeTab === 'trades' && completedTrades.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
-            <Package size={32} className="mb-2 opacity-50" />
-            <p className="text-xs">No trades yet.</p>
-            <p className="text-[10px]">Place your first trade above.</p>
+          <div className="flex flex-col items-center justify-center py-8">
+            <Package size={32} className="mb-2 opacity-40 text-secondary-foreground" />
+            <p className="text-sm font-medium text-secondary-foreground">No trades yet.</p>
+            <p className="text-xs text-secondary-foreground/70 mt-0.5">Place your first trade above.</p>
           </div>
         )}
 
@@ -77,10 +77,10 @@ export default function TradeHistory({ trades }: TradeHistoryProps) {
         ))}
 
         {activeTab === 'orders' && (
-          <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
-            <Package size={32} className="mb-2 opacity-50" />
-            <p className="text-xs">Order list is empty.</p>
-            <p className="text-[10px]">Create a pending trade using the form above.</p>
+          <div className="flex flex-col items-center justify-center py-8">
+            <Package size={32} className="mb-2 opacity-40 text-secondary-foreground" />
+            <p className="text-sm font-medium text-secondary-foreground">Order list is empty.</p>
+            <p className="text-xs text-secondary-foreground/70 mt-0.5">Create a pending trade using the form above.</p>
           </div>
         )}
       </div>
