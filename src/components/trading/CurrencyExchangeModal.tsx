@@ -151,7 +151,7 @@ export default function CurrencyExchangeModal({ open, onClose, currentCurrency, 
           >
             {/* Header */}
             <div className="flex items-center justify-between px-6 pt-5 pb-3">
-              <h2 className="text-lg font-bold text-foreground" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+              <h2 className="text-lg font-bold text-foreground" style={{ fontFamily: "'General Sans', sans-serif" }}>
                 Exchange Form
               </h2>
               <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors">
@@ -167,7 +167,7 @@ export default function CurrencyExchangeModal({ open, onClose, currentCurrency, 
                   <legend className="text-[10px] text-muted-foreground px-1">My Currency:</legend>
                   <div className="flex items-center gap-2 py-1.5">
                     <span className="text-lg">{fromCurrency.flag}</span>
-                    <span className="text-sm font-bold text-foreground" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                    <span className="text-sm font-bold text-foreground" style={{ fontFamily: "'General Sans', sans-serif" }}>
                       {fromCurrency.code}
                     </span>
                   </div>
@@ -183,7 +183,7 @@ export default function CurrencyExchangeModal({ open, onClose, currentCurrency, 
                     >
                       <div className="flex items-center gap-2">
                         <span className="text-lg">{toCurrency.flag}</span>
-                        <span className="text-sm font-bold text-foreground" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                        <span className="text-sm font-bold text-foreground" style={{ fontFamily: "'General Sans', sans-serif" }}>
                           {toCurrency.code}
                         </span>
                       </div>
@@ -241,7 +241,7 @@ export default function CurrencyExchangeModal({ open, onClose, currentCurrency, 
                 {/* From */}
                 <div className="text-center">
                   <div className="text-[10px] text-muted-foreground mb-1">You are exchanging:</div>
-                  <div className="text-lg font-bold text-foreground" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                  <div className="text-lg font-bold text-foreground" style={{ fontFamily: "'General Sans', sans-serif" }}>
                     {balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {fromCurrency.code}
                   </div>
                 </div>
@@ -266,7 +266,7 @@ export default function CurrencyExchangeModal({ open, onClose, currentCurrency, 
                 {/* To */}
                 <div className="text-center">
                   <div className="text-[10px] text-muted-foreground mb-1">You will receive:</div>
-                  <div className="text-lg font-bold text-foreground" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                  <div className="text-lg font-bold text-foreground" style={{ fontFamily: "'General Sans', sans-serif" }}>
                     {receivedAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {toCurrency.code}
                   </div>
                 </div>
@@ -291,7 +291,7 @@ export default function CurrencyExchangeModal({ open, onClose, currentCurrency, 
                   onClose();
                 }}
                 className="flex-1 py-3 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-sm transition-colors flex items-center justify-center gap-2"
-                style={{ fontFamily: "'Montserrat', sans-serif" }}
+                style={{ fontFamily: "'General Sans', sans-serif" }}
               >
                 <Check size={16} />
                 Yes, proceed
@@ -299,7 +299,7 @@ export default function CurrencyExchangeModal({ open, onClose, currentCurrency, 
               <button
                 onClick={onClose}
                 className="flex-1 py-3 rounded-xl bg-secondary hover:bg-accent text-foreground font-bold text-sm transition-colors border border-border"
-                style={{ fontFamily: "'Montserrat', sans-serif" }}
+                style={{ fontFamily: "'General Sans', sans-serif" }}
               >
                 No, go back
               </button>
