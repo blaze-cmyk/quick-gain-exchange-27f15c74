@@ -343,9 +343,9 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
           <span className="text-2xl font-bold tracking-tight font-display text-foreground">Arcanine</span>
         </div>
 
-        <button className="relative text-muted-foreground hover:text-foreground transition-colors">
+        <button className="relative text-muted-foreground hover:text-foreground transition-colors mr-2">
           <Bell size={20} />
-          <span className="absolute -top-1.5 -right-1.5 w-4.5 h-4.5 bg-destructive rounded-full text-[9px] font-bold flex items-center justify-center text-destructive-foreground min-w-[18px] min-h-[18px]">5</span>
+          <span className="absolute -top-2 -right-2 w-[18px] h-[18px] bg-destructive rounded-full text-[9px] font-bold flex items-center justify-center text-destructive-foreground">5</span>
         </button>
 
         <div className="relative" ref={dropdownRef}>
