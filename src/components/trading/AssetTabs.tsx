@@ -32,14 +32,12 @@ export default function AssetTabs({ pairs, activePair, onSelect, onRemove, onOpe
 
   return (
     <div className="absolute top-2 left-3 right-[10px] z-10 flex items-center gap-1.5 overflow-x-auto scrollbar-hide">
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
+      <button
         onClick={onOpenSelector}
-        className="flex-shrink-0 w-8 h-8 rounded-md bg-primary/20 border border-primary/30 flex items-center justify-center text-primary hover:bg-primary/30 transition-colors"
+        className="flex-shrink-0 w-8 h-8 rounded-md bg-primary/20 border border-primary/30 flex items-center justify-center text-primary hover:bg-primary/30 active:scale-95 transition-all"
       >
         <Plus size={16} />
-      </motion.button>
+      </button>
 
       {pairs.map((pair, index) => {
         const isActive = pair.symbol === activePair.symbol;
