@@ -280,6 +280,7 @@ export function bootstrapHistory(
       high = Math.max(high, p);
       low = Math.min(low, p);
       close = p;
+      lastClose = p;
     }
 
     // Regime transition check
@@ -298,9 +299,9 @@ export function bootstrapHistory(
   st.candleBucket = Math.floor(now / intervalSecs) * intervalSecs;
   st.currentCandle = {
     time: st.candleBucket * 1000,
-    open: close ?? st.smoothedPrice,
-    high: close ?? st.smoothedPrice,
-    low: close ?? st.smoothedPrice,
-    close: close ?? st.smoothedPrice,
+    open: lastClose,
+    high: lastClose,
+    low: lastClose,
+    close: lastClose,
   };
 }
