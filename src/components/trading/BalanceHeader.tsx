@@ -94,21 +94,21 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
               <Send size={14} className="text-primary" />
             </div>
             <div>
-              <div className="text-[9px] text-primary font-bold uppercase tracking-wider">STANDARD:</div>
-              <div className="text-[10px] text-muted-foreground">+0% profit</div>
+              <div className="text-[10px] text-primary font-bold uppercase tracking-wider">STANDARD:</div>
+              <div className="text-xs text-secondary-foreground font-medium">+0% profit</div>
             </div>
           </div>
           <button className="text-muted-foreground hover:text-foreground transition-colors">
             <Eye size={16} />
           </button>
         </div>
-        <div className="text-xs text-muted-foreground mt-2 truncate">
+        <div className="text-sm text-secondary-foreground mt-2 truncate font-medium">
           trader@arcanine.com
         </div>
-        <div className="text-[10px] text-muted-foreground mt-0.5">ID: 85396662</div>
+        <div className="text-xs text-secondary-foreground mt-0.5">ID: 85396662</div>
         <div className="flex items-center gap-2 mt-1.5">
-          <span className="text-[10px] text-muted-foreground">Currency:</span>
-          <span className="text-[10px] font-bold text-foreground">{currency}</span>
+          <span className="text-xs text-secondary-foreground font-medium">Currency:</span>
+          <span className="text-xs font-bold text-foreground">{currency}</span>
           <button
             onClick={(e) => { e.stopPropagation(); setShowExchangeModal(true); setShowDropdown(false); }}
             className="text-[8px] font-bold bg-primary text-primary-foreground px-1.5 py-0.5 rounded cursor-pointer hover:bg-primary/80 transition-colors"
@@ -135,8 +135,8 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
             <div className="text-sm font-bold text-foreground tabular-nums">
               {currSymbol}{(liveBalance * currencyInfo.rate).toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </div>
-            <div className="text-[9px] text-muted-foreground mt-0.5">The daily limit is not set</div>
-            <button className="text-[9px] text-primary font-bold mt-0.5 hover:underline">SET LIMIT</button>
+            <div className="text-xs text-secondary-foreground mt-0.5">The daily limit is not set</div>
+            <button className="text-xs text-primary font-bold mt-0.5 hover:underline">SET LIMIT</button>
           </div>
         </button>
 
@@ -339,8 +339,8 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
         style={{ background: '#0d0d14' }}
       >
         <div className="flex items-center gap-2.5 mr-auto">
-          <img src={arcanineLogo} alt="Arcanine" className="w-8 h-8" />
-          <span className="text-xl font-bold tracking-tight font-display text-foreground">Arcanine</span>
+          <img src={arcanineLogo} alt="Arcanine" className="w-10 h-10" />
+          <span className="text-2xl font-bold tracking-tight font-display text-foreground">Arcanine</span>
         </div>
 
         <button className="relative text-muted-foreground hover:text-foreground transition-colors">
@@ -361,7 +361,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
               )}
             </div>
             <div className="text-left">
-              <div className="text-[9px] text-primary font-bold uppercase tracking-wider">
+              <div className="text-[10px] text-primary font-bold uppercase tracking-wider">
                 {isDemo ? 'DEMO ACCOUNT' : 'LIVE ACCOUNT'}
               </div>
               <div className="text-sm font-bold text-foreground tabular-nums">

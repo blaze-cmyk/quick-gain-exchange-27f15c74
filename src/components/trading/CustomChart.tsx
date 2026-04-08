@@ -229,7 +229,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       ctx.setLineDash([]);
 
       ctx.fillStyle = COLORS.priceLine;
-      ctx.font = '10px General Sans, sans-serif';
+      ctx.font = '600 11px General Sans, sans-serif';
       ctx.textAlign = 'right';
       ctx.textBaseline = 'bottom';
       ctx.fillText('Beginning of trade', startX - 6, PADDING_TOP - 4);
@@ -253,8 +253,8 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       ctx.lineTo(endX, height - TIME_SCALE_HEIGHT);
       ctx.stroke();
 
-      ctx.fillStyle = '#8892a0';
-      ctx.font = '10px General Sans, sans-serif';
+      ctx.fillStyle = '#a0aab8';
+      ctx.font = '600 11px General Sans, sans-serif';
       ctx.textAlign = 'left';
       ctx.textBaseline = 'bottom';
       ctx.fillText('End of trade', endX + 6, PADDING_TOP - 4);
@@ -718,7 +718,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
         ctx.setLineDash([]);
 
         ctx.fillStyle = COLORS.priceLine;
-        ctx.font = '10px General Sans, sans-serif';
+        ctx.font = '600 11px General Sans, sans-serif';
         ctx.textAlign = 'right';
         ctx.textBaseline = 'bottom';
         ctx.fillText('Beginning of trade', startX - 6, PADDING_TOP - 4);
@@ -744,8 +744,8 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
         ctx.lineTo(endX, height - TIME_SCALE_HEIGHT);
         ctx.stroke();
 
-        ctx.fillStyle = 'rgba(160, 170, 190, 0.5)';
-        ctx.font = '10px General Sans, sans-serif';
+        ctx.fillStyle = 'rgba(180, 190, 210, 0.7)';
+        ctx.font = '600 11px General Sans, sans-serif';
         ctx.textAlign = 'left';
         ctx.textBaseline = 'bottom';
         ctx.fillText('End of trade', endX + 6, PADDING_TOP - 4);
@@ -1096,9 +1096,9 @@ function drawOHLCTooltip(ctx: CanvasRenderingContext2D, c: CandleData, x: number
     { label: 'High:', value: formatPrice(c.high) },
     { label: 'Low:', value: formatPrice(c.low) },
   ];
-  const lineH = 15;
-  const boxH = labels.length * lineH + 10;
-  const boxW = 140;
+  const lineH = 20;
+  const boxH = labels.length * lineH + 14;
+  const boxW = 160;
   const boxY = y - boxH;
 
   // Background
@@ -1111,15 +1111,15 @@ function drawOHLCTooltip(ctx: CanvasRenderingContext2D, c: CandleData, x: number
   ctx.stroke();
 
   labels.forEach(({ label, value }, i) => {
-    const ly = boxY + 8 + i * lineH;
-    ctx.font = '10px General Sans, sans-serif';
+    const ly = boxY + 10 + i * lineH;
+    ctx.font = '500 13px General Sans, sans-serif';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
-    ctx.fillStyle = '#6b7280';
-    ctx.fillText(label, x + 8, ly);
-    ctx.fillStyle = isGreen ? '#22c55e' : '#ef4444';
-    ctx.font = '10px General Sans, sans-serif';
+    ctx.fillStyle = '#9ca3af';
+    ctx.fillText(label, x + 10, ly);
+    ctx.fillStyle = isGreen ? '#3dbc84' : '#c94545';
+    ctx.font = '600 13px General Sans, sans-serif';
     ctx.textAlign = 'right';
-    ctx.fillText(value, x + boxW - 8, ly);
+    ctx.fillText(value, x + boxW - 10, ly);
   });
 }
