@@ -9,16 +9,6 @@ const INTERVAL_SECONDS: Record<string, number> = {
   '1h': 3600, '2h': 7200, '4h': 14400, '1d': 86400,
 };
 
-/** Tiny gaussian noise for micro-interpolation */
-function microNoise(price: number): number {
-  const u1 = Math.random() || 0.0001;
-  const u2 = Math.random() || 0.0001;
-  const g = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
-  // Scale noise relative to price — very subtle (0.001% – 0.003%)
-  const magnitude = price * 0.000015;
-  return g * magnitude;
-}
-
 export function useBinanceWebSocket(symbol: string, interval: string = '1m') {
   const [currentPrice, setCurrentPrice] = useState<number>(0);
   const [priceChange, setPriceChange] = useState<number>(0);
@@ -29,8 +19,6 @@ export function useBinanceWebSocket(symbol: string, interval: string = '1m') {
   const pendingRef = useRef(false);
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<number | null>(null);
-  const lastRealPriceRef = useRef<number>(0);
-  const microTickRef = useRef<number | null>(null);
 
   const fetchHistoricalData = useCallback(async (sym: string, intv: string) => {
     try {
