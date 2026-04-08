@@ -128,16 +128,16 @@ export default function TradePage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}
-                className="absolute top-[80px] left-3 z-10 flex flex-col gap-1"
+                className="absolute top-[80px] left-3 z-10 flex flex-col gap-1.5"
               >
-                <div className="flex items-center gap-1.5">
-                  <div className={`w-[6px] h-[6px] rounded-full ${connected ? 'bg-success' : 'bg-danger'}`} />
-                  <span className="text-xs text-secondary-foreground font-medium tabular-nums">
+                <div className="flex items-center gap-2">
+                  <div className={`w-2 h-2 rounded-full ${connected ? 'bg-success' : 'bg-danger'}`} />
+                  <span className="text-sm text-foreground/70 font-medium tabular-nums">
                     {new Date().toLocaleTimeString()} UTC
                   </span>
                 </div>
-                <button className="flex items-center gap-1.5 text-primary text-[10px] font-semibold hover:underline w-fit uppercase tracking-wide">
-                  <Info size={12} className="text-primary opacity-90" />
+                <button className="flex items-center gap-1.5 text-primary/80 hover:text-primary text-[11px] font-semibold hover:underline w-fit uppercase tracking-wider transition-colors">
+                  <Info size={13} strokeWidth={2.5} />
                   Pair Information
                 </button>
               </motion.div>
