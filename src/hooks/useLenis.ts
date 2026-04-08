@@ -8,21 +8,30 @@ export function useLenis() {
     if (lenisInstance) return;
 
     lenisInstance = new Lenis({
-      duration: 1.2,
-      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      duration: 1.4,
+      easing: (t: number) => 1 - Math.pow(1 - t, 4),
       smoothWheel: true,
+      touchMultiplier: 1.5,
+      infinite: false,
     });
+
+    let rafId: number;
 
     function raf(time: number) {
       lenisInstance?.raf(time);
-      requestAnimationFrame(raf);
+      rafId = requestAnimationFrame(raf);
     }
 
-    requestAnimationFrame(raf);
+    rafId = requestAnimationFrame(raf);
 
     return () => {
+      cancelAnimationFrame(rafId);
       lenisInstance?.destroy();
       lenisInstance = null;
     };
   }, []);
+}
+
+export function getLenis() {
+  return lenisInstance;
 }
