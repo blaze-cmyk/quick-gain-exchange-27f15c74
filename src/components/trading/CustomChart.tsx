@@ -237,9 +237,9 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       // Play icon above the "e" in "trade"
       ctx.fillStyle = COLORS.priceLine;
       ctx.beginPath();
-      ctx.moveTo(startX - 10, PADDING_TOP - 25);
-      ctx.lineTo(startX - 3, PADDING_TOP - 21);
-      ctx.lineTo(startX - 10, PADDING_TOP - 17);
+      ctx.moveTo(startX - 10, PADDING_TOP - 30);
+      ctx.lineTo(startX - 3, PADDING_TOP - 26);
+      ctx.lineTo(startX - 10, PADDING_TOP - 22);
       ctx.closePath();
       ctx.fill();
     }
@@ -260,9 +260,14 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       ctx.textBaseline = 'bottom';
       ctx.fillText('End of trade', endX + 6, PADDING_TOP - 4);
 
-      // Stop square above "End"
+      // Inverted play icon above "End"
       ctx.fillStyle = '#a0aab8';
-      ctx.fillRect(endX + 6, PADDING_TOP - 25, 7, 7);
+      ctx.beginPath();
+      ctx.moveTo(endX + 13, PADDING_TOP - 30);
+      ctx.lineTo(endX + 6, PADDING_TOP - 26);
+      ctx.lineTo(endX + 13, PADDING_TOP - 22);
+      ctx.closePath();
+      ctx.fill();
     }
 
     // Entry price horizontal dashed line with color
@@ -732,9 +737,9 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
         ctx.fillStyle = COLORS.priceLine;
         ctx.globalAlpha = 0.6;
         ctx.beginPath();
-        ctx.moveTo(startX - 10, PADDING_TOP - 25);
-        ctx.lineTo(startX - 3, PADDING_TOP - 21);
-        ctx.lineTo(startX - 10, PADDING_TOP - 17);
+        ctx.moveTo(startX - 10, PADDING_TOP - 30);
+        ctx.lineTo(startX - 3, PADDING_TOP - 26);
+        ctx.lineTo(startX - 10, PADDING_TOP - 22);
         ctx.closePath();
         ctx.fill();
         ctx.globalAlpha = 1;
@@ -756,9 +761,14 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
         ctx.textBaseline = 'bottom';
         ctx.fillText('End of trade', endX + 6, PADDING_TOP - 4);
 
-        // Stop square above "End"
+        // Inverted play icon above "End"
         ctx.fillStyle = 'rgba(160, 170, 190, 0.4)';
-        ctx.fillRect(endX + 6, PADDING_TOP - 25, 7, 7);
+        ctx.beginPath();
+        ctx.moveTo(endX + 13, PADDING_TOP - 30);
+        ctx.lineTo(endX + 6, PADDING_TOP - 26);
+        ctx.lineTo(endX + 13, PADDING_TOP - 22);
+        ctx.closePath();
+        ctx.fill();
       }
     }
 
