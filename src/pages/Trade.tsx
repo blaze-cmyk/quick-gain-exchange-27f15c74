@@ -33,7 +33,12 @@ export default function TradePage() {
   const [lastOpenedTrade, setLastOpenedTrade] = useState<Trade | null>(null);
   const [chartType, setChartType] = useState<ChartType>('candles');
   const [chartInterval, setChartInterval] = useState<ChartInterval>('1m');
-  const { currentPrice, priceChange, candles, connected } = usePairData(activePair, chartInterval);
+  const pairTrades = activeTrades.filter(t => t.pair.symbol === activePair.symbol);
+  const { currentPrice, priceChange, candles, connected } = usePairData(
+    activePair,
+    chartInterval,
+    pairTrades.map(t => ({ direction: t.direction, amount: t.amount })),
+  );
   const { prices: allPrices, changes: allChanges } = useAllPairsPrices();
   const { prices: forexPrices, changes: forexChanges } = useForexPrices();
   const isMobile = useIsMobile();
