@@ -170,7 +170,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
           {pendingMode === 'quote' ? (
             <>
               <fieldset className="border border-border rounded-md px-2 pb-2 pt-0">
-                <legend className="text-[9px] text-muted-foreground px-1">Quote:</legend>
+                <legend className="text-[11px] text-secondary-foreground font-medium px-1">Quote:</legend>
                 <input
                   type="text"
                   value={pendingQuote || (currentPrice > 0 ? currentPrice.toFixed(2) : '')}
@@ -179,14 +179,14 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
                   
                 />
               </fieldset>
-              <p className="text-[9px] text-muted-foreground mt-1">
+              <p className="text-xs text-secondary-foreground/70 mt-1">
                 Current quote: {currentPrice > 0 ? currentPrice.toFixed(2) : '—'}
               </p>
             </>
           ) : (
             <>
               <fieldset className="border border-border rounded-md px-2 pb-2 pt-0">
-                <legend className="text-[9px] text-muted-foreground px-1">Time:</legend>
+                <legend className="text-[11px] text-secondary-foreground font-medium px-1">Time:</legend>
                 <input
                   type="text"
                   value={pendingTime || (() => {
@@ -198,7 +198,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
                   
                 />
               </fieldset>
-              <p className="text-[9px] text-muted-foreground mt-1">
+              <p className="text-xs text-secondary-foreground/70 mt-1">
                 Current time: {(() => {
                   const d = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));
                   return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
@@ -209,7 +209,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
 
           {/* Period */}
           <fieldset className="border border-border rounded-md px-2 pb-2 pt-0 mt-2">
-            <legend className="text-[9px] text-muted-foreground px-1">Period:</legend>
+            <legend className="text-[11px] text-secondary-foreground font-medium px-1">Period:</legend>
             <div className="text-sm font-semibold text-foreground text-center py-1" >
               M{Math.floor(selectedTimeframe.seconds / 60) || 1}
             </div>
@@ -217,7 +217,7 @@ export default function TradePanel({ pair, currentPrice, balance, onTrade, activ
 
           <button
             onClick={() => setShowPendingModal(true)}
-            className="w-full text-center text-[9px] text-primary font-bold mt-2 hover:underline tracking-wide"
+            className="w-full text-center text-[10px] text-primary font-bold mt-2 hover:underline tracking-wide"
           >
             HOW IT WORKS?
           </button>
