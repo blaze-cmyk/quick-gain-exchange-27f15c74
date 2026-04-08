@@ -61,9 +61,9 @@ export default function AssetTabs({ pairs, activePair, onSelect, onRemove, onOpe
                   : 'bg-white/[0.04] hover:bg-white/[0.08]'
               }`}
             >
-              <div className="flex items-center -space-x-1.5">
-                <CryptoIcon symbol={base} size={20} />
-                <CryptoIcon symbol="USD" size={12} />
+              <div className="flex items-center -space-x-1">
+                <CryptoIcon symbol={base} size={16} />
+                <CryptoIcon symbol="USD" size={10} />
               </div>
               <div className="text-left">
                 <div className="flex items-center">
