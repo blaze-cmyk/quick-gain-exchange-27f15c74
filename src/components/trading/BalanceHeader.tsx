@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Bell, ChevronDown, GraduationCap, Plus, Send, Eye, Pencil, RefreshCw, X, LogOut } from 'lucide-react';
+import { Bell, ChevronDown, GraduationCap, Plus, Send, Eye, Pencil, RefreshCw, X, LogOut, ArrowUpRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -372,6 +372,14 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
           </div>
           <AnimatePresence>{showDropdown && dropdownContent}</AnimatePresence>
         </div>
+
+        <button
+          onClick={() => navigate('/withdrawal')}
+          className="flex items-center gap-1.5 bg-secondary hover:bg-accent text-foreground font-semibold text-sm px-4 py-2.5 rounded-lg transition-colors border border-border"
+        >
+          <ArrowUpRight size={15} />
+          <span>Withdraw</span>
+        </button>
 
         <button
           onClick={() => setShowDepositModal(true)}
