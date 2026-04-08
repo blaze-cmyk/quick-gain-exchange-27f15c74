@@ -110,6 +110,20 @@ export const TRADING_PAIRS: TradingPair[] = [
   { symbol: 'USDPLN', displayName: 'USD/PLN', binanceSymbol: '', tiingoSymbol: 'usdpln', icon: '🇵🇱', payout: 78, price: 0, change24h: 0, category: 'forex' },
   { symbol: 'USDINR', displayName: 'USD/INR', binanceSymbol: '', tiingoSymbol: 'usdinr', icon: '🇮🇳', payout: 78, price: 0, change24h: 0, category: 'forex' },
   { symbol: 'USDCNH', displayName: 'USD/CNH', binanceSymbol: '', tiingoSymbol: 'usdcnh', icon: '🇨🇳', payout: 78, price: 0, change24h: 0, category: 'forex' },
+
+  // ── OTC Crypto ──
+  { symbol: 'BTCUSDT_OTC', displayName: 'BTC/USDT OTC', binanceSymbol: '', otcSymbol: 'BTCUSDT_OTC', icon: '₿', payout: 92, price: 0, change24h: 0, category: 'otc_crypto' },
+  { symbol: 'ETHUSDT_OTC', displayName: 'ETH/USDT OTC', binanceSymbol: '', otcSymbol: 'ETHUSDT_OTC', icon: 'Ξ', payout: 92, price: 0, change24h: 0, category: 'otc_crypto' },
+  { symbol: 'SOLUSDT_OTC', displayName: 'SOL/USDT OTC', binanceSymbol: '', otcSymbol: 'SOLUSDT_OTC', icon: '◎', payout: 91, price: 0, change24h: 0, category: 'otc_crypto' },
+
+  // ── Commodities OTC ──
+  { symbol: 'XAUUSD_OTC', displayName: 'XAU/USD OTC', binanceSymbol: '', otcSymbol: 'XAUUSD_OTC', icon: '🥇', payout: 88, price: 0, change24h: 0, category: 'commodity' },
+  { symbol: 'USOIL_OTC', displayName: 'USOIL OTC', binanceSymbol: '', otcSymbol: 'USOIL_OTC', icon: '🛢️', payout: 87, price: 0, change24h: 0, category: 'commodity' },
+
+  // ── US Stocks OTC ──
+  { symbol: 'AAPL_OTC', displayName: 'AAPL OTC', binanceSymbol: '', otcSymbol: 'AAPL_OTC', icon: '🍎', payout: 86, price: 0, change24h: 0, category: 'stock' },
+  { symbol: 'TSLA_OTC', displayName: 'TSLA OTC', binanceSymbol: '', otcSymbol: 'TSLA_OTC', icon: '⚡', payout: 85, price: 0, change24h: 0, category: 'stock' },
+  { symbol: 'NVDA_OTC', displayName: 'NVDA OTC', binanceSymbol: '', otcSymbol: 'NVDA_OTC', icon: '💚', payout: 85, price: 0, change24h: 0, category: 'stock' },
 ];
 
 export const TIMEFRAMES = [
