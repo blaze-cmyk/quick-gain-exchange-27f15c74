@@ -3,7 +3,6 @@ import { CandleData } from '@/lib/types';
 
 const HISTORY_LIMIT = 1000;
 const RECONNECT_DELAY_MS = 1200;
-const MICRO_TICK_MS = 50; // interpolate every 50ms for ultra-smooth feel
 
 const INTERVAL_SECONDS: Record<string, number> = {
   '1s': 1, '1m': 60, '3m': 180, '5m': 300, '15m': 900, '30m': 1800,
