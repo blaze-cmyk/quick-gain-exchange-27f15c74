@@ -335,12 +335,12 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="flex items-center gap-3 px-4 py-2 border-b border-border"
-        style={{ background: '#0d0d14' }}
+        className="flex items-center gap-3 px-4 py-2"
+        style={{ background: '#111118' }}
       >
-        <div className="flex items-center gap-2.5 mr-auto">
-          <img src={arcanineLogo} alt="Arcanine" className="w-10 h-10" />
-          <span className="text-2xl font-bold tracking-tight font-display text-foreground">Arcanine</span>
+        <div className="flex items-center gap-2 mr-auto">
+          <img src={arcanineLogo} alt="Arcanine" className="w-6 h-6" />
+          <span className="text-base font-bold tracking-tight font-display text-foreground">Arcanine</span>
         </div>
 
         <button className="relative text-muted-foreground hover:text-foreground transition-colors mr-2">
