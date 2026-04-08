@@ -26,6 +26,8 @@ export interface OTCPairConfig {
   smoothing: number;
   /** Price decimal precision */
   decimals: number;
+  /** Tick interval in ms (lower = more frequent updates, default 1000) */
+  tickRateMs: number;
 }
 
 /** Tunable house-edge factor (0 = no bias, 0.3 = moderate, 1 = very aggressive) */
@@ -34,17 +36,17 @@ export const DEFAULT_HOUSE_EDGE_FACTOR = 0.25;
 /* ────────────────────────── preset configs ────────────────────────── */
 
 export const OTC_PAIR_CONFIGS: Record<string, OTCPairConfig> = {
-  // ── Crypto ──
-  BTCUSDT_OTC:   { basePrice: 84500,  volatility: 0.00025, meanReversion: 0.00008, momentum: 0.55, smoothing: 0.35, decimals: 2 },
-  ETHUSDT_OTC:   { basePrice: 1820,   volatility: 0.00030, meanReversion: 0.00010, momentum: 0.50, smoothing: 0.35, decimals: 2 },
-  SOLUSDT_OTC:   { basePrice: 130,    volatility: 0.00035, meanReversion: 0.00012, momentum: 0.50, smoothing: 0.35, decimals: 3 },
+  // ── Crypto (fast ticks, high micro-volatility) ──
+  BTCUSDT_OTC:   { basePrice: 84500,  volatility: 0.00012, meanReversion: 0.00004, momentum: 0.40, smoothing: 0.55, decimals: 2, tickRateMs: 100 },
+  ETHUSDT_OTC:   { basePrice: 1820,   volatility: 0.00014, meanReversion: 0.00005, momentum: 0.38, smoothing: 0.55, decimals: 2, tickRateMs: 100 },
+  SOLUSDT_OTC:   { basePrice: 130,    volatility: 0.00016, meanReversion: 0.00006, momentum: 0.38, smoothing: 0.55, decimals: 3, tickRateMs: 100 },
   // ── Commodities ──
-  XAUUSD_OTC:    { basePrice: 3020,   volatility: 0.00015, meanReversion: 0.00005, momentum: 0.60, smoothing: 0.40, decimals: 2 },
-  USOIL_OTC:     { basePrice: 72.50,  volatility: 0.00020, meanReversion: 0.00008, momentum: 0.55, smoothing: 0.38, decimals: 3 },
+  XAUUSD_OTC:    { basePrice: 3020,   volatility: 0.00015, meanReversion: 0.00005, momentum: 0.60, smoothing: 0.40, decimals: 2, tickRateMs: 500 },
+  USOIL_OTC:     { basePrice: 72.50,  volatility: 0.00020, meanReversion: 0.00008, momentum: 0.55, smoothing: 0.38, decimals: 3, tickRateMs: 500 },
   // ── US Stocks ──
-  AAPL_OTC:      { basePrice: 218,    volatility: 0.00018, meanReversion: 0.00006, momentum: 0.58, smoothing: 0.38, decimals: 2 },
-  TSLA_OTC:      { basePrice: 265,    volatility: 0.00040, meanReversion: 0.00010, momentum: 0.52, smoothing: 0.32, decimals: 2 },
-  NVDA_OTC:      { basePrice: 112,    volatility: 0.00035, meanReversion: 0.00009, momentum: 0.54, smoothing: 0.34, decimals: 2 },
+  AAPL_OTC:      { basePrice: 218,    volatility: 0.00018, meanReversion: 0.00006, momentum: 0.58, smoothing: 0.38, decimals: 2, tickRateMs: 500 },
+  TSLA_OTC:      { basePrice: 265,    volatility: 0.00040, meanReversion: 0.00010, momentum: 0.52, smoothing: 0.32, decimals: 2, tickRateMs: 500 },
+  NVDA_OTC:      { basePrice: 112,    volatility: 0.00035, meanReversion: 0.00009, momentum: 0.54, smoothing: 0.34, decimals: 2, tickRateMs: 500 },
 };
 
 /* ────────────────────────── internal state ────────────────────────── */
