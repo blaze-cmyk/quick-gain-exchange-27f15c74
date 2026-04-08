@@ -33,7 +33,7 @@ export default function ChartToolbar({ selectedTimeframe = '1m', chartType = 'ca
   const ActiveIcon = activeIcon;
 
   return (
-    <div className="absolute bottom-[34px] left-2 z-10 flex flex-col gap-1">
+    <div className="absolute bottom-[34px] left-2 z-10 flex flex-col items-start justify-end gap-1">
       <ToolButton>
         <Pencil size={14} />
       </ToolButton>
