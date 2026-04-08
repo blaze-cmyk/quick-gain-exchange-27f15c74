@@ -58,7 +58,7 @@ const COLORS = {
   tradeGreen: '#3dbc84',
   tradeRed: '#c94545',
   tradeGreenBg: 'rgba(61, 188, 132, 0.12)',
-  tradeRedBg: 'rgba(239, 68, 68, 0.12)',
+  tradeRedBg: 'rgba(201, 69, 69, 0.12)',
 };
 
 const CANDLE_WIDTH_BASE = 7;
