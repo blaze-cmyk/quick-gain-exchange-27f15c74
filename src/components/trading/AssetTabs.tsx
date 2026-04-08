@@ -51,14 +51,14 @@ export default function AssetTabs({ pairs, activePair, onSelect, onRemove, onOpe
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ delay: index * 0.05, duration: 0.25 }}
-            className="relative flex-shrink-0"
+            className="relative flex-shrink-0 mt-1"
           >
             <button
               onClick={() => onSelect(pair)}
-              className={`flex items-center gap-2 pl-3 pr-7 py-1.5 rounded-md transition-all duration-200 min-w-[100px] border border-white/10 bg-white/[0.06] backdrop-blur-sm ${
+              className={`flex items-center gap-2 pl-3 pr-7 py-1.5 rounded-md transition-all duration-200 min-w-[100px] border border-white/[0.07] backdrop-blur-sm ${
                 isActive
-                  ? 'border-primary/40 bg-white/[0.08]'
-                  : 'hover:bg-white/[0.08]'
+                  ? 'bg-white/[0.12] shadow-[0_0_12px_rgba(255,106,0,0.15)]'
+                  : 'bg-white/[0.04] hover:bg-white/[0.08]'
               }`}
             >
               <div className="flex items-center -space-x-1.5">
