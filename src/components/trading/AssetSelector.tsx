@@ -11,11 +11,14 @@ interface AssetSelectorProps {
 
 export default function AssetSelector({ onSelect, onClose, prices, changes }: AssetSelectorProps) {
   const [search, setSearch] = useState('');
-  const [activeCategory, setActiveCategory] = useState<'crypto' | 'forex'>('crypto');
+  const [activeCategory, setActiveCategory] = useState<string>('crypto');
 
-  const categories: { key: 'crypto' | 'forex'; label: string }[] = [
+  const categories: { key: string; label: string }[] = [
     { key: 'crypto', label: 'CRYPTO' },
     { key: 'forex', label: 'FOREX' },
+    { key: 'otc_crypto', label: 'OTC CRYPTO' },
+    { key: 'commodity', label: 'COMMODITIES' },
+    { key: 'stock', label: 'STOCKS' },
   ];
 
   const filtered = TRADING_PAIRS.filter(p => {
