@@ -64,7 +64,7 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
   }
 
   return (
-    <div className="w-[52px] flex flex-col items-center py-3 border-r border-border" style={{ background: '#0d0d14' }}>
+    <div className="w-[52px] flex flex-col items-center py-3 border-r border-border" style={{ background: '#111118' }}>
       {navItems.map((item, index) => {
         const Icon = item.icon;
         const isActive = activeTab === item.id;
