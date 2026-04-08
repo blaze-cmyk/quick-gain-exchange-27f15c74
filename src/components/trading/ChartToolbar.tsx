@@ -40,7 +40,7 @@ export default function ChartToolbar({ selectedTimeframe = '1m', chartType = 'ca
 
       <div className="relative">
         <ToolButton onClick={() => { setShowTimeframes(!showTimeframes); setShowChartTypes(false); }}>
-          <span className="text-[10px] font-semibold font-mono">
+          <span className="text-[10px] font-semibold tabular-nums">
             {selectedTimeframe}
           </span>
         </ToolButton>

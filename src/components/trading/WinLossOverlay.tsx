@@ -50,7 +50,7 @@ export default function WinLossOverlay({ result, amount, onDismiss }: WinLossOve
           <div className={`text-5xl font-bold font-display mb-2 ${isWin ? 'text-profit' : 'text-loss'}`}>
             {isWin ? '🎉 WIN!' : '✖ LOSS'}
           </div>
-          <div className={`text-2xl font-bold font-mono ${isWin ? 'text-profit' : 'text-loss'}`}>
+          <div className={`text-2xl font-bold tabular-nums ${isWin ? 'text-profit' : 'text-loss'}`}>
             {isWin ? `+$${amount.toFixed(2)}` : `-$${amount.toFixed(2)}`}
           </div>
         </motion.div>

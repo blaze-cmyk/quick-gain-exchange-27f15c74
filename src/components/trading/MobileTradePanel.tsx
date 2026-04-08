@@ -59,7 +59,7 @@ export default function MobileTradePanel({ pair, currentPrice, balance, onTrade 
       <div className="flex gap-2 mb-2">
         <fieldset className="flex-1 border border-border rounded-md px-2 pb-1.5 pt-0">
           <legend className="text-[9px] text-muted-foreground px-1">Timer</legend>
-          <div className="text-center text-sm font-semibold text-foreground font-mono">
+          <div className="text-center text-sm font-semibold text-foreground tabular-nums">
             {formatTime(selectedTimeframe)}
           </div>
         </fieldset>
@@ -70,7 +70,7 @@ export default function MobileTradePanel({ pair, currentPrice, balance, onTrade 
             <button onClick={() => adjustAmount(investMode === 'percent' ? -1 : -10)} className="text-muted-foreground">
               <Minus size={12} />
             </button>
-            <div className="flex-1 text-center text-sm font-semibold text-foreground font-mono">
+            <div className="flex-1 text-center text-sm font-semibold text-foreground tabular-nums">
               {investMode === 'dollar' ? `${amount} $` : `${percentValue} %`}
             </div>
             <button onClick={() => adjustAmount(investMode === 'percent' ? 1 : 10)} className="text-muted-foreground">

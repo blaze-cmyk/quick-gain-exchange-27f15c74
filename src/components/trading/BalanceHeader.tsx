@@ -132,7 +132,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
           </div>
           <div className="text-left flex-1">
             <div className="text-xs font-semibold text-foreground">Live Account</div>
-            <div className="text-sm font-bold text-foreground font-mono">
+            <div className="text-sm font-bold text-foreground tabular-nums">
               {currSymbol}{(liveBalance * currencyInfo.rate).toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </div>
             <div className="text-[9px] text-muted-foreground mt-0.5">The daily limit is not set</div>
@@ -157,7 +157,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
               <Pencil size={10} className="text-muted-foreground" />
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="text-sm font-bold text-foreground font-mono">
+              <span className="text-sm font-bold text-foreground tabular-nums">
                 {currSymbol}{displayBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </span>
               <RefreshCw size={10} className="text-muted-foreground" />
@@ -234,7 +234,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
                 }`}>
                   DEMO ACCOUNT
                 </span>
-                <span className="text-sm font-bold text-foreground font-mono">
+                <span className="text-sm font-bold text-foreground tabular-nums">
                   ${(accountType === 'demo' ? balance : liveBalance).toLocaleString(undefined, { minimumFractionDigits: 0 })}
                 </span>
               </div>
@@ -252,7 +252,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
                 <span className="text-[10px] font-bold uppercase tracking-wider text-primary">
                   {pendingSwitchTo === 'live' ? 'LIVE ACCOUNT' : 'DEMO ACCOUNT'}
                 </span>
-                <span className="text-sm font-bold text-foreground font-mono">
+                <span className="text-sm font-bold text-foreground tabular-nums">
                   ${(pendingSwitchTo === 'live' ? liveBalance : balance).toLocaleString(undefined, { minimumFractionDigits: 0 })}
                 </span>
               </div>
@@ -295,7 +295,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
                 <div className="text-[8px] text-primary font-bold uppercase tracking-wider">
                   {isDemo ? 'DEMO' : 'LIVE'}
                 </div>
-                <div className="text-xs font-bold font-mono text-foreground">
+                <div className="text-xs font-bold tabular-nums text-foreground">
                   {currSymbol}{displayBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </div>
               </div>
@@ -364,7 +364,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
               <div className="text-[9px] text-primary font-bold uppercase tracking-wider">
                 {isDemo ? 'DEMO ACCOUNT' : 'LIVE ACCOUNT'}
               </div>
-              <div className="text-sm font-bold text-foreground font-mono">
+              <div className="text-sm font-bold text-foreground tabular-nums">
                 {currSymbol}{displayBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </div>
             </div>
