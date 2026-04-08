@@ -31,7 +31,7 @@ export default function AssetTabs({ pairs, activePair, onSelect, onRemove, onOpe
   };
 
   return (
-    <div className="absolute top-2 left-2 right-[10px] z-10 flex items-center gap-1 overflow-x-auto scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+    <div className="absolute top-2 left-2 right-[10px] z-10 flex items-center gap-1 overflow-x-auto scrollbar-hide">
       <motion.button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
@@ -59,8 +59,8 @@ export default function AssetTabs({ pairs, activePair, onSelect, onRemove, onOpe
               onClick={() => onSelect(pair)}
               className={`flex items-center gap-2 pl-3 pr-7 py-1.5 rounded-md transition-all duration-200 min-w-[100px] ${
                 isActive
-                  ? 'bg-secondary border border-primary/30'
-                  : 'bg-card/60 backdrop-blur-sm hover:bg-secondary border border-transparent'
+                  ? 'glass border border-primary/30'
+                  : 'bg-card/40 backdrop-blur-sm hover:bg-secondary border border-transparent'
               }`}
             >
               <div className="flex items-center -space-x-1.5">
@@ -77,8 +77,8 @@ export default function AssetTabs({ pairs, activePair, onSelect, onRemove, onOpe
                     {pair.payout}%
                   </span>
                   {pnl !== null && (
-                    <span className={`text-[10px] font-bold px-1 py-0.5 rounded ${
-                      pnl >= 0 ? 'text-success bg-success/10' : 'text-danger bg-danger/10'
+                    <span className={`text-[10px] font-bold font-mono px-1 py-0.5 rounded ${
+                      pnl >= 0 ? 'text-profit bg-profit/10' : 'text-loss bg-loss/10'
                     }`}>
                       {pnl >= 0 ? '+' : ''}{pnl.toFixed(0)} $
                     </span>
@@ -94,7 +94,7 @@ export default function AssetTabs({ pairs, activePair, onSelect, onRemove, onOpe
                 }}
                 className="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-muted hover:bg-destructive flex items-center justify-center transition-colors"
               >
-                <X size={9} className="text-muted-foreground hover:text-white" />
+                <X size={9} className="text-muted-foreground hover:text-foreground" />
               </button>
             )}
           </motion.div>

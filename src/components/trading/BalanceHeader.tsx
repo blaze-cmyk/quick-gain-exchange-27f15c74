@@ -79,16 +79,14 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
   const currSymbol = currencyInfo.symbol;
   const isDemo = accountType === 'demo';
 
-  // Dropdown content
   const dropdownContent = (
     <motion.div
       initial={{ opacity: 0, y: -8, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -8, scale: 0.96 }}
       transition={{ duration: 0.2, ease: 'easeOut' }}
-      className="absolute top-full right-0 mt-2 w-[340px] bg-card border border-border rounded-xl shadow-2xl shadow-black/40 z-50 overflow-hidden"
+      className="absolute top-full right-0 mt-2 w-[340px] glass-strong rounded-xl shadow-2xl shadow-black/40 z-50 overflow-hidden"
     >
-      {/* Top section - user info */}
       <div className="px-4 py-3 border-b border-border">
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center gap-2">
@@ -104,7 +102,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
             <Eye size={16} />
           </button>
         </div>
-        <div className="text-xs text-muted-foreground mt-2 truncate" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+        <div className="text-xs text-muted-foreground mt-2 truncate">
           trader@arcanine.com
         </div>
         <div className="text-[10px] text-muted-foreground mt-0.5">ID: 85396662</div>
@@ -120,9 +118,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
         </div>
       </div>
 
-      {/* Account options */}
       <div className="px-3 py-2">
-        {/* Live Account */}
         <button
           onClick={() => handleSwitch('live')}
           className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors mb-1 ${
@@ -132,11 +128,11 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
           <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
             accountType === 'live' ? 'border-primary bg-primary' : 'border-muted-foreground'
           }`}>
-            {accountType === 'live' && <div className="w-2 h-2 rounded-full bg-white" />}
+            {accountType === 'live' && <div className="w-2 h-2 rounded-full bg-primary-foreground" />}
           </div>
           <div className="text-left flex-1">
             <div className="text-xs font-semibold text-foreground">Live Account</div>
-            <div className="text-sm font-bold text-foreground" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+            <div className="text-sm font-bold text-foreground font-mono">
               {currSymbol}{(liveBalance * currencyInfo.rate).toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </div>
             <div className="text-[9px] text-muted-foreground mt-0.5">The daily limit is not set</div>
@@ -144,7 +140,6 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
           </div>
         </button>
 
-        {/* Demo Account */}
         <button
           onClick={() => handleSwitch('demo')}
           className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
@@ -154,7 +149,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
           <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
             accountType === 'demo' ? 'border-primary bg-primary' : 'border-muted-foreground'
           }`}>
-            {accountType === 'demo' && <div className="w-2 h-2 rounded-full bg-white" />}
+            {accountType === 'demo' && <div className="w-2 h-2 rounded-full bg-primary-foreground" />}
           </div>
           <div className="text-left flex-1">
             <div className="text-xs font-semibold text-foreground flex items-center gap-2">
@@ -162,7 +157,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
               <Pencil size={10} className="text-muted-foreground" />
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="text-sm font-bold text-foreground" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+              <span className="text-sm font-bold text-foreground font-mono">
                 {currSymbol}{displayBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </span>
               <RefreshCw size={10} className="text-muted-foreground" />
@@ -171,7 +166,6 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
         </button>
       </div>
 
-      {/* Navigation links */}
       <div className="border-t border-border px-3 py-2">
         {[
           { label: 'Deposit', path: '/deposit' },
@@ -196,7 +190,6 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
     </motion.div>
   );
 
-  // Switch modal
   const switchModal = (
     <AnimatePresence>
       {showSwitchModal && (
@@ -212,11 +205,11 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="bg-card border border-border rounded-2xl w-[420px] shadow-2xl overflow-hidden"
+            className="glass-strong rounded-2xl w-[420px] shadow-2xl overflow-hidden"
             onClick={e => e.stopPropagation()}
           >
             <div className="flex items-center justify-between px-6 pt-5 pb-2">
-              <h2 className="text-lg font-bold text-foreground" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+              <h2 className="text-lg font-bold text-foreground font-display">
                 Account type changed
               </h2>
               <button onClick={() => setShowSwitchModal(false)} className="text-muted-foreground hover:text-foreground transition-colors">
@@ -232,7 +225,6 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
             </div>
 
             <div className="flex items-center justify-center gap-4 py-6 px-6">
-              {/* From account */}
               <div className={`flex flex-col items-center gap-1.5 px-4 py-3 rounded-xl ${
                 pendingSwitchTo === 'live' ? '' : 'border border-primary/30'
               }`}>
@@ -242,15 +234,13 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
                 }`}>
                   DEMO ACCOUNT
                 </span>
-                <span className="text-sm font-bold text-foreground" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                <span className="text-sm font-bold text-foreground font-mono">
                   ${(accountType === 'demo' ? balance : liveBalance).toLocaleString(undefined, { minimumFractionDigits: 0 })}
                 </span>
               </div>
 
-              {/* Arrow */}
               <div className="text-primary text-lg font-bold">→</div>
 
-              {/* To account */}
               <div className={`flex flex-col items-center gap-1.5 px-4 py-3 rounded-xl ${
                 pendingSwitchTo === 'live' ? 'border border-primary/30' : ''
               }`}>
@@ -259,12 +249,10 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
                 ) : (
                   <GraduationCap size={24} className="text-muted-foreground" />
                 )}
-                <span className={`text-[10px] font-bold uppercase tracking-wider ${
-                  pendingSwitchTo === 'live' ? 'text-primary' : 'text-primary'
-                }`}>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-primary">
                   {pendingSwitchTo === 'live' ? 'LIVE ACCOUNT' : 'DEMO ACCOUNT'}
                 </span>
-                <span className="text-sm font-bold text-foreground" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                <span className="text-sm font-bold text-foreground font-mono">
                   ${(pendingSwitchTo === 'live' ? liveBalance : balance).toLocaleString(undefined, { minimumFractionDigits: 0 })}
                 </span>
               </div>
@@ -274,7 +262,6 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
               <button
                 onClick={confirmSwitch}
                 className="w-full py-3 rounded-xl bg-secondary hover:bg-accent text-foreground font-bold text-sm transition-colors border border-border"
-                style={{ fontFamily: "'Montserrat', sans-serif" }}
               >
                 Close
               </button>
@@ -292,7 +279,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          className="flex items-center justify-between px-3 py-2 border-b border-border bg-card"
+          className="flex items-center justify-between px-3 py-2 border-b border-border glass-strong"
         >
           <div className="flex items-center gap-2 relative" ref={dropdownRef}>
             <div
@@ -308,7 +295,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
                 <div className="text-[8px] text-primary font-bold uppercase tracking-wider">
                   {isDemo ? 'DEMO' : 'LIVE'}
                 </div>
-                <div className="text-xs font-bold font-sans text-foreground">
+                <div className="text-xs font-bold font-mono text-foreground">
                   {currSymbol}{displayBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </div>
               </div>
@@ -324,7 +311,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
             </button>
             <button
               onClick={() => navigate('/deposit')}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs px-4 py-2 rounded-lg transition-colors"
+              className="bg-gradient-accent text-primary-foreground font-bold text-xs px-4 py-2 rounded-lg transition-colors"
             >
               Deposit
             </button>
@@ -348,11 +335,12 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="flex items-center gap-3 px-4 py-2 border-b border-border bg-card"
+        className="flex items-center gap-3 px-4 py-2 border-b border-border"
+        style={{ background: '#0d0d14' }}
       >
         <div className="flex items-center gap-2.5 mr-auto">
           <img src={arcanineLogo} alt="Arcanine" className="w-12 h-12 rounded-lg" />
-          <span className="text-foreground font-bold text-lg tracking-wide" style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 800, letterSpacing: '0.08em' }}>ARCANINE</span>
+          <span className="text-foreground font-bold text-lg tracking-wide font-display" style={{ fontWeight: 800, letterSpacing: '0.08em' }}>ARCANINE</span>
         </div>
 
         <button className="relative text-muted-foreground hover:text-foreground transition-colors">
@@ -376,7 +364,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
               <div className="text-[9px] text-primary font-bold uppercase tracking-wider">
                 {isDemo ? 'DEMO ACCOUNT' : 'LIVE ACCOUNT'}
               </div>
-              <div className="text-sm font-bold text-foreground" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+              <div className="text-sm font-bold text-foreground font-mono">
                 {currSymbol}{displayBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </div>
             </div>
@@ -387,15 +375,13 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
 
         <button
           onClick={() => setShowDepositModal(true)}
-          className="flex items-center gap-1.5 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-sm px-5 py-2.5 rounded-lg transition-colors"
+          className="flex items-center gap-1.5 bg-gradient-accent text-primary-foreground font-bold text-sm px-5 py-2.5 rounded-lg transition-colors"
         >
           <Plus size={15} strokeWidth={3} />
           <span>Deposit</span>
         </button>
-        <button onClick={() => navigate('/withdrawal')} className="text-foreground font-medium text-sm px-4 py-2.5 rounded-lg border border-border bg-transparent hover:bg-secondary transition-colors">
-          Withdrawal
-        </button>
       </motion.div>
+
       {switchModal}
       <CurrencyExchangeModal
         open={showExchangeModal}

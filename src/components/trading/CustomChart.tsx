@@ -37,28 +37,28 @@ interface ChartState {
 }
 
 const COLORS = {
-  bg: '#0f1113',
-  gridLine: 'rgba(255, 255, 255, 0.10)',
-  priceScaleBg: '#0f1113',
-  priceScaleBorder: '#1a1c24',
-  timeScaleBg: '#0f1113',
-  candleGreen: '#22c55e',
-  candleRed: '#ef4444',
-  wickGreen: '#22c55e88',
-  wickRed: '#ef444488',
-  priceLine: '#2dd4bf',
-  priceLabel: '#14b8a6',
+  bg: '#111118',
+  gridLine: 'rgba(255, 255, 255, 0.06)',
+  priceScaleBg: '#111118',
+  priceScaleBorder: '#1a1a24',
+  timeScaleBg: '#111118',
+  candleGreen: '#3dbc84',
+  candleRed: '#c94545',
+  wickGreen: '#3dbc8488',
+  wickRed: '#c9454588',
+  priceLine: '#ff6a00',
+  priceLabel: '#ff6a00',
   textMuted: '#3a3f50',
   textLight: '#6b7280',
   crosshairLine: '#252830',
-  crosshairLabel: '#1a1c24',
+  crosshairLabel: '#1a1a24',
   crosshairText: '#d1d5db',
-  tooltipGreen: '#22c55e',
-  tooltipRed: '#ef4444',
-  tradeGreen: '#22c55e',
-  tradeRed: '#ef4444',
-  tradeGreenBg: 'rgba(34, 197, 94, 0.12)',
-  tradeRedBg: 'rgba(239, 68, 68, 0.12)',
+  tooltipGreen: '#3dbc84',
+  tooltipRed: '#c94545',
+  tradeGreen: '#3dbc84',
+  tradeRed: '#c94545',
+  tradeGreenBg: 'rgba(61, 188, 132, 0.12)',
+  tradeRedBg: 'rgba(201, 69, 69, 0.12)',
 };
 
 const CANDLE_WIDTH_BASE = 7;
@@ -229,7 +229,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       ctx.setLineDash([]);
 
       ctx.fillStyle = COLORS.priceLine;
-      ctx.font = '10px Montserrat, sans-serif';
+      ctx.font = '10px General Sans, sans-serif';
       ctx.textAlign = 'right';
       ctx.textBaseline = 'bottom';
       ctx.fillText('Beginning of trade', startX - 6, PADDING_TOP - 4);
@@ -254,7 +254,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       ctx.stroke();
 
       ctx.fillStyle = '#8892a0';
-      ctx.font = '10px Montserrat, sans-serif';
+      ctx.font = '10px General Sans, sans-serif';
       ctx.textAlign = 'left';
       ctx.textBaseline = 'bottom';
       ctx.fillText('End of trade', endX + 6, PADDING_TOP - 4);
@@ -310,14 +310,14 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
 
       // Arrow
       ctx.fillStyle = '#fff';
-      ctx.font = 'bold 10px Montserrat, sans-serif';
+      ctx.font = 'bold 10px General Sans, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(isUp ? '↑' : '↓', badgeX + 12, entryY);
 
       // Amount
       ctx.fillStyle = '#fff';
-      ctx.font = 'bold 11px Montserrat, sans-serif';
+      ctx.font = 'bold 11px General Sans, sans-serif';
       ctx.textAlign = 'left';
       ctx.textBaseline = 'middle';
       ctx.fillText(`${trade.amount} $`, badgeX + 24, entryY);
@@ -328,7 +328,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
         const secs = timeLeft % 60;
         const countdownText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
         ctx.fillStyle = 'rgba(255,255,255,0.7)';
-        ctx.font = '10px Montserrat, monospace';
+        ctx.font = '10px General Sans, monospace';
         ctx.textAlign = 'right';
         ctx.fillText(countdownText, badgeX + badgeW - 8, entryY);
       }
@@ -377,7 +377,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       ctx.stroke();
 
       ctx.fillStyle = '#d1d5db';
-      ctx.font = '10px Montserrat, sans-serif';
+      ctx.font = '10px General Sans, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(countdownText, timerX, timerY + countBadgeH / 2);
@@ -406,19 +406,19 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
         ctx.fill();
 
         ctx.fillStyle = '#fff';
-        ctx.font = 'bold 9px Montserrat, sans-serif';
+        ctx.font = 'bold 9px General Sans, sans-serif';
         ctx.textAlign = 'left';
         ctx.textBaseline = 'top';
         ctx.fillText('RESULT (P/L)', resultX + 10, resultY + 6);
 
-        ctx.font = 'bold 13px Montserrat, sans-serif';
+        ctx.font = 'bold 13px General Sans, sans-serif';
         ctx.textBaseline = 'bottom';
         const pnlText = currentPnL >= 0 ? `+${currentPnL.toFixed(2)} $` : `${currentPnL.toFixed(2)} $`;
         ctx.fillText(pnlText, resultX + 10, resultY + resultBadgeH - 5);
 
         // X close icon
         ctx.fillStyle = 'rgba(255,255,255,0.5)';
-        ctx.font = '12px Montserrat, sans-serif';
+        ctx.font = '12px General Sans, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText('✕', resultX + resultBadgeW - 14, resultY + 12);
@@ -462,7 +462,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
 
     if (candles.length === 0) {
       ctx.fillStyle = COLORS.textMuted;
-      ctx.font = '13px Montserrat, sans-serif';
+      ctx.font = '13px General Sans, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText('Connecting to price feed...', width / 2, height / 2);
@@ -564,7 +564,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
         roundRect(ctx, badgeX2, timerY2, badgeW2, badgeH2, 4);
         ctx.fill();
         ctx.fillStyle = '#d1d5db';
-        ctx.font = '9px Montserrat, sans-serif';
+        ctx.font = '9px General Sans, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(timerText, badgeX2 + badgeW2 / 2, timerY2 + badgeH2 / 2);
@@ -616,7 +616,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
           roundRect(ctx, badgeX2, timerY2, badgeW2, badgeH2, 4);
           ctx.fill();
           ctx.fillStyle = '#d1d5db';
-          ctx.font = '9px Montserrat, sans-serif';
+          ctx.font = '9px General Sans, sans-serif';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.fillText(timerText, badgeX2 + badgeW2 / 2, timerY2 + badgeH2 / 2);
@@ -667,7 +667,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
           roundRect(ctx, badgeX2, timerY2, badgeW2, badgeH2, 4);
           ctx.stroke();
           ctx.fillStyle = '#d1d5db';
-          ctx.font = '9px Montserrat, sans-serif';
+          ctx.font = '9px General Sans, sans-serif';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.fillText(timerText, badgeX2 + badgeW2 / 2, timerY2 + badgeH2 / 2);
@@ -718,7 +718,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
         ctx.setLineDash([]);
 
         ctx.fillStyle = COLORS.priceLine;
-        ctx.font = '10px Montserrat, sans-serif';
+        ctx.font = '10px General Sans, sans-serif';
         ctx.textAlign = 'right';
         ctx.textBaseline = 'bottom';
         ctx.fillText('Beginning of trade', startX - 6, PADDING_TOP - 4);
@@ -745,7 +745,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
         ctx.stroke();
 
         ctx.fillStyle = 'rgba(160, 170, 190, 0.5)';
-        ctx.font = '10px Montserrat, sans-serif';
+        ctx.font = '10px General Sans, sans-serif';
         ctx.textAlign = 'left';
         ctx.textBaseline = 'bottom';
         ctx.fillText('End of trade', endX + 6, PADDING_TOP - 4);
@@ -782,7 +782,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     ctx.stroke();
 
     ctx.fillStyle = COLORS.textMuted;
-    ctx.font = '10px Montserrat, sans-serif';
+    ctx.font = '10px General Sans, sans-serif';
     ctx.textAlign = 'right';
     ctx.textBaseline = 'middle';
     for (let p = firstPrice; p <= maxPrice; p += priceStep) {
@@ -800,7 +800,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       roundRect(ctx, chartWidth + 1, priceY - labelH / 2, PRICE_SCALE_WIDTH - 2, labelH, 4);
       ctx.fill();
       ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 11px Montserrat, sans-serif';
+      ctx.font = 'bold 11px General Sans, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(labelText, chartWidth + PRICE_SCALE_WIDTH / 2, priceY);
@@ -816,7 +816,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     ctx.stroke();
 
     ctx.fillStyle = COLORS.textMuted;
-    ctx.font = '10px Montserrat, sans-serif';
+    ctx.font = '10px General Sans, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     for (let i = startIdx; i <= endIdx; i++) {
@@ -852,7 +852,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       roundRect(ctx, chartWidth + 1, ch.y - crossLabelH / 2, PRICE_SCALE_WIDTH - 2, crossLabelH, 3);
       ctx.fill();
       ctx.fillStyle = COLORS.crosshairText;
-      ctx.font = '10px Montserrat, sans-serif';
+      ctx.font = '10px General Sans, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(crossLabel, chartWidth + PRICE_SCALE_WIDTH / 2, ch.y);
@@ -867,7 +867,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
         roundRect(ctx, ch.x - timeLabelW / 2, height - TIME_SCALE_HEIGHT + 1, timeLabelW, timeLabelH, 3);
         ctx.fill();
         ctx.fillStyle = COLORS.crosshairText;
-        ctx.font = '10px Montserrat, sans-serif';
+        ctx.font = '10px General Sans, sans-serif';
         ctx.fillText(timeLabel, ch.x, height - TIME_SCALE_HEIGHT + 1 + timeLabelH / 2);
       }
 
@@ -1112,13 +1112,13 @@ function drawOHLCTooltip(ctx: CanvasRenderingContext2D, c: CandleData, x: number
 
   labels.forEach(({ label, value }, i) => {
     const ly = boxY + 8 + i * lineH;
-    ctx.font = '10px Montserrat, sans-serif';
+    ctx.font = '10px General Sans, sans-serif';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
     ctx.fillStyle = '#6b7280';
     ctx.fillText(label, x + 8, ly);
     ctx.fillStyle = isGreen ? '#22c55e' : '#ef4444';
-    ctx.font = '10px Montserrat, sans-serif';
+    ctx.font = '10px General Sans, sans-serif';
     ctx.textAlign = 'right';
     ctx.fillText(value, x + boxW - 8, ly);
   });

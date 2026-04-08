@@ -286,7 +286,7 @@ export default function DepositModal({ open, onClose, balance }: DepositModalPro
                 </button>
               ) : <div className="w-7" />}
               <div className="text-center flex-1">
-                <h2 className="text-lg font-bold text-foreground" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                <h2 className="text-lg font-bold text-foreground" style={{ fontFamily: "'General Sans', sans-serif" }}>
                   {view === 'main' ? 'Deposit' : view === 'transfer' ? 'Transfer Crypto' : 'Select an exchange'}
                 </h2>
                 <p className="text-xs text-muted-foreground mt-0.5">

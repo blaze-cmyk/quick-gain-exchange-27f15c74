@@ -34,9 +34,9 @@ export default function TradeNotification({ trade }: TradeNotificationProps) {
           transition={{ duration: 0.3, ease: 'easeOut' }}
           className="absolute top-[90px] left-3 z-30"
         >
-          <div className="bg-success text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-lg shadow-success/20">
+          <div className="glass-strong glow-green px-4 py-2 rounded-lg flex items-center gap-2 text-profit">
             <span className="text-sm font-medium">
-              Trade opened with price: {formatPrice(currentTrade.entryPrice)} {currentTrade.pair.displayName}
+              Trade opened with price: <span className="font-mono">{formatPrice(currentTrade.entryPrice)}</span> {currentTrade.pair.displayName}
             </span>
             <button
               onClick={() => setVisible(false)}

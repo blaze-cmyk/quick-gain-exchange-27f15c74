@@ -37,7 +37,7 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
 
   if (isMobile) {
     return (
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border flex items-center justify-around px-1 py-1 safe-area-bottom backdrop-blur-xl">
+      <div className="fixed bottom-0 left-0 right-0 z-50 glass-strong flex items-center justify-around px-1 py-1 safe-area-bottom">
         {mobileNavItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
@@ -64,7 +64,7 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
   }
 
   return (
-    <div className="w-[52px] bg-card flex flex-col items-center py-3 border-r border-border">
+    <div className="w-[52px] flex flex-col items-center py-3 border-r border-border" style={{ background: '#0d0d14' }}>
       {navItems.map((item, index) => {
         const Icon = item.icon;
         const isActive = activeTab === item.id;

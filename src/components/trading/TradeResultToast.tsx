@@ -39,19 +39,19 @@ export default function TradeResultToast({ trade, onDismiss }: TradeResultToastP
           transition={{ duration: 0.35, ease: 'easeOut' }}
           className="absolute bottom-[60px] left-1/2 -translate-x-1/2 z-30"
         >
-          <div className={`flex items-center gap-3 px-4 py-2.5 rounded-lg shadow-xl backdrop-blur-md border ${
-            isWin ? 'bg-card/95 border-success/30' : 'bg-card/95 border-danger/30'
+          <div className={`flex items-center gap-3 px-4 py-2.5 rounded-lg shadow-xl glass-strong border ${
+            isWin ? 'border-profit/30 glow-green' : 'border-loss/30 glow-red'
           }`}>
             <span className="text-lg">{trade.pair.icon}</span>
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-xs font-medium text-foreground">{trade.pair.displayName}</span>
                 <span className="text-[10px] text-muted-foreground">•</span>
-                <span className="text-[10px] text-muted-foreground font-sans">
+                <span className="text-[10px] text-muted-foreground font-mono">
                   {String(Math.floor(trade.duration / 60)).padStart(2, '0')}:{String(trade.duration % 60).padStart(2, '0')}
                 </span>
               </div>
-              <span className={`text-sm font-bold ${isWin ? 'text-success' : 'text-danger'}`}>
+              <span className={`text-sm font-bold font-mono ${isWin ? 'text-profit' : 'text-loss'}`}>
                 {pnl > 0 ? `+${pnl.toFixed(2)}` : pnl.toFixed(2)} $
               </span>
             </div>
