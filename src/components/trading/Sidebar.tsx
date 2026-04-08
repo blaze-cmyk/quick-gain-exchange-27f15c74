@@ -77,7 +77,7 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
             whileHover={{ scale: 1.06 }}
             whileTap={{ scale: 0.94 }}
             onClick={() => handleNav(item.id)}
-            className={`relative flex flex-col items-center justify-center w-[44px] h-[44px] rounded-xl transition-all duration-200 ${
+            className={`relative flex flex-col items-center justify-center w-[44px] h-[44px] rounded-lg transition-all duration-200 ${
               isActive
                 ? 'bg-primary text-primary-foreground shadow-lg'
                 : 'text-muted-foreground hover:text-foreground hover:bg-accent/60'
