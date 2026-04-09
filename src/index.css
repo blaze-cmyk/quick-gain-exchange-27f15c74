@@ -7,7 +7,7 @@
 
 @layer base {
   :root {
-    --background: 240 6% 7%;
+    --background: 240 10% 8%;
     --foreground: 240 5% 96%;
 
     --card: 240 8% 7%;
@@ -46,7 +46,7 @@
     --sidebar-bg: 240 8% 5%;
     --trade-panel-bg: 240 8% 7%;
 
-    --sidebar-background: 240 8% 5%;
+    --sidebar-background: 240 15% 5%;
     --sidebar-foreground: 240 5% 80%;
     --sidebar-primary: 166 80% 48%;
     --sidebar-primary-foreground: 240 10% 10%;
@@ -64,7 +64,7 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
-    background-color: #111118;
+    background-color: #0d0d14;
   }
 
   h1, h2, h3, h4, h5, h6 {
