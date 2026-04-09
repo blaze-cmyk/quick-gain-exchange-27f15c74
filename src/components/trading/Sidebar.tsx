@@ -77,13 +77,12 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
             onClick={() => handleNav(item.id)}
             className={`relative flex flex-col items-center justify-center w-[44px] h-[44px] rounded-lg transition-all duration-200 ${
               isActive
-                ? 'bg-primary text-primary-foreground shadow-lg'
+                ? 'bg-primary/15 text-primary'
                 : 'text-muted-foreground hover:text-foreground hover:bg-accent/60'
             }`}
-            style={isActive ? { boxShadow: '0 4px 16px rgba(24, 220, 181, 0.35)' } : undefined}
           >
             <Icon size={18} strokeWidth={isActive ? 2.2 : 1.6} />
-            <span className={`text-[8px] mt-1 font-semibold tracking-wide ${isActive ? 'text-primary-foreground' : ''}`}>{item.label}</span>
+            <span className={`text-[8px] mt-1 font-semibold tracking-wide ${isActive ? 'text-primary' : ''}`}>{item.label}</span>
           </motion.button>
         );
       })}
