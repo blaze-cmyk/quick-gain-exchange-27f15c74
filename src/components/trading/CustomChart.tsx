@@ -52,7 +52,7 @@ const COLORS = {
   textLight: '#6b7280',
   crosshairLine: '#252830',
   crosshairLabel: '#18dcb5',
-  crosshairText: '#ffffff',
+  crosshairText: '#1a1a2e',
   tooltipGreen: '#3dbc84',
   tooltipRed: '#c94545',
   tradeGreen: '#3dbc84',
@@ -815,7 +815,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       ctx.fillStyle = COLORS.priceLabel;
       roundRect(ctx, chartWidth + 1, priceY - labelH / 2, PRICE_SCALE_WIDTH - 2, labelH, 4);
       ctx.fill();
-      ctx.fillStyle = '#ffffff';
+      ctx.fillStyle = '#1a1a2e';
       ctx.font = 'bold 11px General Sans, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
