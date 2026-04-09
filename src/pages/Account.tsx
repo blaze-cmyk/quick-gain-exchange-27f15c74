@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Sidebar from '@/components/trading/Sidebar';
+import AnalyticsContent from '@/components/trading/AnalyticsContent';
 
 const COUNTRIES = [
   { code: 'AF', name: 'Afghanistan', flag: '🇦🇫' }, { code: 'AL', name: 'Albania', flag: '🇦🇱' }, { code: 'DZ', name: 'Algeria', flag: '🇩🇿' },
