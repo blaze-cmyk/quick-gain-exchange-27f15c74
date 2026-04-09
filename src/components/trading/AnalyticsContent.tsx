@@ -200,19 +200,29 @@ export default function AnalyticsContent() {
           <div className="px-5 py-5 border-t border-border">
             <h3 className="text-base font-bold text-foreground mb-5">Top 5 most profitable instruments among traders</h3>
             <div className="flex items-center gap-6">
-              <div className="w-[220px] h-[220px] flex-shrink-0">
+              <div className="w-[260px] h-[260px] flex-shrink-0">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
                       data={TOP_INSTRUMENTS}
                       cx="50%"
                       cy="50%"
-                      innerRadius={35}
-                      outerRadius={105}
+                      innerRadius={30}
+                      outerRadius={90}
                       dataKey="pct"
                       strokeWidth={2}
                       stroke="hsl(240, 8%, 7%)"
-                      label={({ pct }) => `${pct}%`}
+                      label={({ cx, cy, midAngle, outerRadius: or, pct }) => {
+                        const RADIAN = Math.PI / 180;
+                        const radius = or + 16;
+                        const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                        const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                        return (
+                          <text x={x} y={y} fill="hsl(240, 5%, 96%)" textAnchor="middle" dominantBaseline="central" fontSize={12} fontWeight={600}>
+                            {pct}%
+                          </text>
+                        );
+                      }}
                       labelLine={false}
                     >
                       {TOP_INSTRUMENTS.map((item, i) => (
