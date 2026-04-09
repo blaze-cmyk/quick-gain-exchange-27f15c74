@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
-import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell, BarChart, Bar } from 'recharts';
+import { ChevronDown, Eye } from 'lucide-react';
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell } from 'recharts';
 
 type TimeFilter = 'today' | 'yesterday' | 'week' | 'month';
 
@@ -7,50 +8,46 @@ function generateDemoData(filter: TimeFilter) {
   const multiplier = filter === 'today' ? 0.3 : filter === 'yesterday' ? 0.4 : filter === 'week' ? 1 : 3;
   const totalTrades = Math.round(48 * multiplier);
   const wins = Math.round(totalTrades * 0.62);
-  const losses = totalTrades - wins;
-  const profitablePercent = ((wins / totalTrades) * 100).toFixed(0);
+  const profitablePercent = totalTrades > 0 ? ((wins / totalTrades) * 100).toFixed(0) : '0';
   const tradesProfit = parseFloat((totalTrades * 3.2 * multiplier).toFixed(2));
-  const avgProfit = parseFloat((tradesProfit / totalTrades).toFixed(2));
+  const avgProfit = totalTrades > 0 ? parseFloat((tradesProfit / totalTrades).toFixed(2)) : 0;
   const netTurnover = parseFloat((totalTrades * 12.5 * multiplier).toFixed(2));
   const hedgedTrades = parseFloat((totalTrades * 1.1).toFixed(2));
-  const minTradeAmount = 1;
+  const minTradeAmount = totalTrades > 0 ? 1 : 0;
   const maxTradeAmount = parseFloat((50 * multiplier).toFixed(2));
   const maxTradeProfit = parseFloat((maxTradeAmount * 0.87).toFixed(2));
 
-  return { totalTrades, wins, losses, profitablePercent, tradesProfit, avgProfit, netTurnover, hedgedTrades, minTradeAmount, maxTradeAmount, maxTradeProfit };
+  return { totalTrades, wins, profitablePercent, tradesProfit, avgProfit, netTurnover, hedgedTrades, minTradeAmount, maxTradeAmount, maxTradeProfit };
 }
 
-function generateProfitableTradesChart(filter: TimeFilter) {
+function generateChart(filter: TimeFilter) {
   const days = filter === 'today' ? 24 : filter === 'yesterday' ? 24 : filter === 'week' ? 7 : 30;
-  const labels = filter === 'today' || filter === 'yesterday'
-    ? Array.from({ length: days }, (_, i) => `${i}:00`)
+  const labels = filter === 'month'
+    ? Array.from({ length: days }, (_, i) => {
+        const d = new Date(); d.setDate(d.getDate() - days + i + 1);
+        return `${d.getDate()}. ${d.toLocaleString('en', { month: 'short' })}`;
+      })
     : filter === 'week'
     ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-    : Array.from({ length: days }, (_, i) => {
-        const d = new Date();
-        d.setDate(d.getDate() - days + i + 1);
-        return `${d.getDate()}. ${d.toLocaleString('en', { month: 'short' })}`;
-      });
+    : Array.from({ length: days }, (_, i) => `${i}:00`);
 
-  let cumulative = 0;
+  let cum = 0;
   return labels.map((label) => {
-    const change = Math.floor(Math.random() * 5) - 1;
-    cumulative += change;
-    return { name: label, value: Math.max(0, cumulative) };
+    cum += Math.floor(Math.random() * 5) - 1;
+    return { name: label, value: Math.max(0, cum) };
   });
 }
 
 function generatePercentChart(filter: TimeFilter) {
   const days = filter === 'today' ? 24 : filter === 'yesterday' ? 24 : filter === 'week' ? 7 : 30;
-  const labels = filter === 'today' || filter === 'yesterday'
-    ? Array.from({ length: days }, (_, i) => `${i}:00`)
+  const labels = filter === 'month'
+    ? Array.from({ length: days }, (_, i) => {
+        const d = new Date(); d.setDate(d.getDate() - days + i + 1);
+        return `${d.getDate()}. ${d.toLocaleString('en', { month: 'short' })}`;
+      })
     : filter === 'week'
     ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-    : Array.from({ length: days }, (_, i) => {
-        const d = new Date();
-        d.setDate(d.getDate() - days + i + 1);
-        return `${d.getDate()}. ${d.toLocaleString('en', { month: 'short' })}`;
-      });
+    : Array.from({ length: days }, (_, i) => `${i}:00`);
 
   return labels.map((label) => ({
     name: label,
@@ -66,129 +63,157 @@ const TOP_INSTRUMENTS = [
   { name: 'AUDNZD_otc', pct: 14, color: 'hsl(45, 90%, 50%)' },
 ];
 
-const DISTRIBUTION_COLORS = ['hsl(0, 72%, 45%)', 'hsl(20, 80%, 50%)', 'hsl(45, 90%, 50%)', 'hsl(80, 60%, 45%)', 'hsl(150, 68%, 45%)'];
+const BAR_COLORS = ['hsl(0, 72%, 45%)', 'hsl(20, 80%, 50%)', 'hsl(45, 90%, 50%)', 'hsl(80, 60%, 45%)', 'hsl(150, 68%, 45%)'];
 
 export default function AnalyticsContent() {
   const [timeFilter, setTimeFilter] = useState<TimeFilter>('month');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const stats = useMemo(() => generateDemoData(timeFilter), [timeFilter]);
-  const profitableChart = useMemo(() => generateProfitableTradesChart(timeFilter), [timeFilter]);
+  const profitableChart = useMemo(() => generateChart(timeFilter), [timeFilter]);
   const percentChart = useMemo(() => generatePercentChart(timeFilter), [timeFilter]);
 
-  const filters: { label: string; value: TimeFilter }[] = [
-    { label: 'Today', value: 'today' },
-    { label: 'Yesterday', value: 'yesterday' },
-    { label: 'Week', value: 'week' },
-    { label: 'Month', value: 'month' },
-  ];
+  const filterLabels: Record<TimeFilter, string> = { today: 'Today', yesterday: 'Yesterday', week: 'Week', month: 'Month' };
 
   return (
-    <div className="w-full px-3 md:px-5 py-4 md:py-5">
-      {/* Time filters - top right */}
-      <div className="flex justify-end mb-4">
-        <div className="flex items-center gap-1">
-          {filters.map(f => (
-            <button
-              key={f.value}
-              onClick={() => setTimeFilter(f.value)}
-              className={`px-3.5 py-1.5 text-xs font-medium rounded transition-all ${
-                timeFilter === f.value
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              {f.label}
-            </button>
-          ))}
+    <div className="w-full">
+      {/* User info bar */}
+      <div className="flex items-center gap-6 px-5 py-3 border-b border-border text-sm">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+            <span className="text-muted-foreground text-xs">👤</span>
+          </div>
+          <div>
+            <div className="text-xs text-muted-foreground">user@example.com</div>
+            <div className="text-xs text-foreground font-medium">ID: 85795063 <span className="text-primary">✈</span></div>
+          </div>
+        </div>
+        <div>
+          <div className="text-[10px] text-muted-foreground">Location</div>
+          <div className="text-xs font-semibold text-foreground">India</div>
+        </div>
+        <div>
+          <div className="text-[10px] text-muted-foreground">In the account</div>
+          <div className="text-xs font-semibold text-foreground">$0.00</div>
+        </div>
+        <div>
+          <div className="text-[10px] text-muted-foreground">In the demo</div>
+          <div className="text-xs font-semibold text-foreground">$10,000.00</div>
+        </div>
+        <button className="text-muted-foreground hover:text-foreground">
+          <Eye size={16} />
+        </button>
+
+        {/* Time filter dropdown - far right */}
+        <div className="ml-auto relative">
+          <button
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+            className="flex items-center gap-2 px-4 py-2 rounded border border-border bg-card text-sm font-medium text-foreground hover:bg-muted/50 transition-colors min-w-[120px] justify-between"
+          >
+            {filterLabels[timeFilter]}
+            <ChevronDown size={14} className={`text-muted-foreground transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
+          </button>
+          {dropdownOpen && (
+            <div className="absolute right-0 top-full mt-1 bg-card border border-border rounded-lg shadow-xl z-50 min-w-[120px] overflow-hidden">
+              {(Object.entries(filterLabels) as [TimeFilter, string][]).map(([value, label]) => (
+                <button
+                  key={value}
+                  onClick={() => { setTimeFilter(value); setDropdownOpen(false); }}
+                  className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
+                    timeFilter === value ? 'text-primary bg-primary/5' : 'text-foreground hover:bg-muted/50'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Main two-column layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] gap-4">
+      {/* Main content */}
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] min-h-0">
 
         {/* === LEFT COLUMN === */}
-        <div className="space-y-4">
+        <div className="border-r border-border">
 
           {/* General Data */}
-          <div className="rounded-lg border border-border bg-card p-4">
-            <h3 className="text-sm font-semibold text-foreground mb-4">General data</h3>
+          <div className="px-5 pt-5 pb-6">
+            <h3 className="text-base font-bold text-foreground mb-6">General data</h3>
 
-            {/* Row 1: Trades count, Trades profit, Profitable trades */}
-            <div className="grid grid-cols-3 gap-4 mb-5">
-              {/* Trades count - circle */}
-              <div className="flex flex-col items-start">
-                <div className="w-12 h-12 rounded-full border-2 border-border flex items-center justify-center mb-1.5">
-                  <span className="text-base font-bold text-foreground">{stats.totalTrades}</span>
+            {/* Row 1 */}
+            <div className="grid grid-cols-3 gap-x-6 gap-y-2 mb-2">
+              <div>
+                <div className="w-14 h-14 rounded-full border-2 border-muted-foreground/30 flex items-center justify-center mb-2">
+                  <span className="text-lg font-bold text-foreground">{stats.totalTrades}</span>
                 </div>
-                <span className="text-[10px] text-muted-foreground">Trades count</span>
+                <span className="text-xs text-muted-foreground">Trades count</span>
               </div>
-
-              {/* Trades profit */}
-              <div className="flex flex-col">
-                <span className="text-base font-bold text-foreground">{stats.tradesProfit} $</span>
-                <div className="flex gap-0.5 my-1">
+              <div>
+                <div className="text-lg font-bold text-foreground mb-1">{stats.tradesProfit} $</div>
+                <div className="flex gap-0.5 mb-2">
                   {Array.from({ length: 5 }).map((_, i) => (
-                    <div key={i} className="w-3 h-1 rounded-full bg-primary/40" />
+                    <div key={i} className="w-4 h-1.5 rounded-sm bg-primary/30" />
                   ))}
                 </div>
-                <span className="text-[10px] text-muted-foreground">Trades profit</span>
+                <span className="text-xs text-muted-foreground">Trades profit</span>
               </div>
-
-              {/* Profitable trades - circle */}
-              <div className="flex flex-col items-start">
-                <div className="w-12 h-12 rounded-full border-2 border-primary/50 flex items-center justify-center mb-1.5 relative">
-                  <span className="text-base font-bold text-foreground">{stats.wins}</span>
-                  <span className="absolute -bottom-0.5 right-0 text-[8px] text-primary font-medium">{stats.profitablePercent}%</span>
+              <div>
+                <div className="w-14 h-14 rounded-full border-2 border-primary/40 flex items-center justify-center mb-2 relative">
+                  <span className="text-lg font-bold text-foreground">{stats.wins}</span>
+                  <span className="absolute -bottom-1 right-0 text-[9px] text-primary font-semibold">{stats.profitablePercent}%</span>
                 </div>
-                <span className="text-[10px] text-primary">Profitable trades</span>
+                <span className="text-xs text-primary">Profitable trades</span>
               </div>
             </div>
 
-            {/* Row 2: Average profit, Net turnover, Hedged trades */}
-            <div className="grid grid-cols-3 gap-4 py-4 border-t border-border">
+            {/* Row 2 */}
+            <div className="grid grid-cols-3 gap-x-6 py-5 border-t border-border mt-4">
               <StatItem label="Average profit" value={`${stats.avgProfit} $`} />
               <StatItem label="Net turnover" value={`${stats.netTurnover} $`} />
               <StatItem label="Hedged trades" value={`${stats.hedgedTrades} $`} />
             </div>
 
-            {/* Row 3: Min trade amount, Max trade amount, Max trade profit */}
-            <div className="grid grid-cols-3 gap-4 py-4 border-t border-border">
+            {/* Row 3 */}
+            <div className="grid grid-cols-3 gap-x-6 py-5 border-t border-border">
               <StatItem label="Min trade amount" value={`${stats.minTradeAmount} $`} />
               <StatItem label="Max trade amount" value={`${stats.maxTradeAmount} $`} />
               <StatItem label="Max trade profit" value={`${stats.maxTradeProfit} $`} />
             </div>
 
-            {/* Color distribution bar */}
-            <div className="mt-3">
-              <div className="flex h-3 rounded overflow-hidden">
-                {DISTRIBUTION_COLORS.map((color, i) => (
+            {/* Color bar */}
+            <div className="mt-4 max-w-[160px]">
+              <div className="flex h-3.5 rounded-sm overflow-hidden">
+                {BAR_COLORS.map((color, i) => (
                   <div key={i} className="flex-1" style={{ background: color }} />
                 ))}
               </div>
-              <div className="flex justify-between mt-1">
-                <span className="text-[9px] text-muted-foreground">-1K-0</span>
-                <span className="text-[9px] text-muted-foreground">0-1K</span>
-                <span className="text-[9px] text-muted-foreground">+1K</span>
+              <div className="flex justify-between mt-1.5 text-[10px] text-muted-foreground">
+                <span>-1K-0</span>
+                <span>0-1K</span>
+                <span>+1K</span>
               </div>
             </div>
           </div>
 
-          {/* Top 5 most profitable instruments */}
-          <div className="rounded-lg border border-border bg-card p-4">
-            <h3 className="text-sm font-semibold text-foreground mb-3">Top 5 most profitable instruments among traders</h3>
-            <div className="flex items-center gap-4">
-              <div className="w-[180px] h-[180px] flex-shrink-0">
+          {/* Top 5 instruments */}
+          <div className="px-5 py-5 border-t border-border">
+            <h3 className="text-base font-bold text-foreground mb-5">Top 5 most profitable instruments among traders</h3>
+            <div className="flex items-center gap-6">
+              <div className="w-[220px] h-[220px] flex-shrink-0">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
                       data={TOP_INSTRUMENTS}
                       cx="50%"
                       cy="50%"
-                      innerRadius={30}
-                      outerRadius={85}
+                      innerRadius={35}
+                      outerRadius={105}
                       dataKey="pct"
-                      strokeWidth={1}
+                      strokeWidth={2}
                       stroke="hsl(240, 8%, 7%)"
+                      label={({ pct }) => `${pct}%`}
+                      labelLine={false}
                     >
                       {TOP_INSTRUMENTS.map((item, i) => (
                         <Cell key={i} fill={item.color} />
@@ -197,11 +222,11 @@ export default function AnalyticsContent() {
                   </PieChart>
                 </ResponsiveContainer>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {TOP_INSTRUMENTS.map((item) => (
-                  <div key={item.name} className="flex items-center gap-2">
-                    <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: item.color }} />
-                    <span className="text-xs text-muted-foreground">{item.name} <span className="text-foreground font-medium">{item.pct}%</span></span>
+                  <div key={item.name} className="flex items-center gap-2.5">
+                    <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ background: item.color }} />
+                    <span className="text-sm text-muted-foreground">{item.name} <span className="text-foreground font-semibold">{item.pct}%</span></span>
                   </div>
                 ))}
               </div>
@@ -210,18 +235,17 @@ export default function AnalyticsContent() {
         </div>
 
         {/* === RIGHT COLUMN === */}
-        <div className="space-y-4">
-
+        <div>
           {/* Statistics of profitable trades */}
-          <div className="rounded-lg border border-border bg-card p-4">
-            <h3 className="text-sm font-semibold text-foreground mb-3">Statistics of profitable trades</h3>
-            <div className="h-[180px]">
+          <div className="px-5 pt-5 pb-4 border-b border-border">
+            <h3 className="text-base font-bold text-foreground mb-4">Statistics of profitable trades</h3>
+            <div className="h-[220px]">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={profitableChart}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(240, 5%, 14%)" />
-                  <XAxis dataKey="name" tick={{ fontSize: 9, fill: 'hsl(240, 4%, 64%)' }} axisLine={false} tickLine={false} interval="preserveStartEnd" />
-                  <YAxis tick={{ fontSize: 9, fill: 'hsl(240, 4%, 64%)' }} axisLine={false} tickLine={false} />
-                  <Tooltip contentStyle={{ background: 'hsl(240, 8%, 10%)', border: '1px solid hsl(240, 5%, 16%)', borderRadius: '6px', fontSize: '11px' }} />
+                  <XAxis dataKey="name" tick={{ fontSize: 10, fill: 'hsl(240, 4%, 64%)' }} axisLine={false} tickLine={false} interval="preserveStartEnd" />
+                  <YAxis tick={{ fontSize: 10, fill: 'hsl(240, 4%, 64%)' }} axisLine={false} tickLine={false} />
+                  <Tooltip contentStyle={{ background: 'hsl(240, 8%, 10%)', border: '1px solid hsl(240, 5%, 16%)', borderRadius: '6px', fontSize: '12px' }} />
                   <Line type="monotone" dataKey="value" stroke="hsl(150, 68%, 45%)" strokeWidth={2} dot={false} />
                 </LineChart>
               </ResponsiveContainer>
@@ -229,33 +253,33 @@ export default function AnalyticsContent() {
           </div>
 
           {/* Percentage % of profitable trades */}
-          <div className="rounded-lg border border-border bg-card p-4">
-            <h3 className="text-sm font-semibold text-foreground mb-3">Percentage % of profitable trades</h3>
-            <div className="h-[180px]">
+          <div className="px-5 pt-5 pb-4 border-b border-border">
+            <h3 className="text-base font-bold text-foreground mb-4">Percentage % of profitable trades</h3>
+            <div className="h-[220px]">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={percentChart}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(240, 5%, 14%)" />
-                  <XAxis dataKey="name" tick={{ fontSize: 9, fill: 'hsl(240, 4%, 64%)' }} axisLine={false} tickLine={false} interval="preserveStartEnd" />
-                  <YAxis tick={{ fontSize: 9, fill: 'hsl(240, 4%, 64%)' }} axisLine={false} tickLine={false} domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} />
-                  <Tooltip contentStyle={{ background: 'hsl(240, 8%, 10%)', border: '1px solid hsl(240, 5%, 16%)', borderRadius: '6px', fontSize: '11px' }} />
+                  <XAxis dataKey="name" tick={{ fontSize: 10, fill: 'hsl(240, 4%, 64%)' }} axisLine={false} tickLine={false} interval="preserveStartEnd" />
+                  <YAxis tick={{ fontSize: 10, fill: 'hsl(240, 4%, 64%)' }} axisLine={false} tickLine={false} domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} />
+                  <Tooltip contentStyle={{ background: 'hsl(240, 8%, 10%)', border: '1px solid hsl(240, 5%, 16%)', borderRadius: '6px', fontSize: '12px' }} />
                   <Line type="monotone" dataKey="value" stroke="hsl(150, 68%, 45%)" strokeWidth={2} dot={false} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
           </div>
 
-          {/* Bottom two panels */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="rounded-lg border border-border bg-card p-4">
-              <h3 className="text-sm font-semibold text-foreground mb-3">Statistics Profit & Loss by instruments</h3>
-              <div className="flex items-center justify-center h-[100px]">
-                <span className="text-2xl text-muted-foreground/40 font-light">No data</span>
+          {/* Bottom panels */}
+          <div className="grid grid-cols-2">
+            <div className="px-5 py-5 border-r border-border">
+              <h3 className="text-base font-bold text-foreground mb-4">Statistics Profit & Loss by instruments</h3>
+              <div className="flex items-center justify-center h-[120px]">
+                <span className="text-3xl text-muted-foreground/30 font-light">No data</span>
               </div>
             </div>
-            <div className="rounded-lg border border-border bg-card p-4">
-              <h3 className="text-sm font-semibold text-foreground mb-3">Distribution of trades by instruments, %</h3>
-              <div className="flex items-center justify-center h-[100px]">
-                <span className="text-2xl text-muted-foreground/40 font-light">No data</span>
+            <div className="px-5 py-5">
+              <h3 className="text-base font-bold text-foreground mb-4">Distribution of trades by instruments, %</h3>
+              <div className="flex items-center justify-center h-[120px]">
+                <span className="text-3xl text-muted-foreground/30 font-light">No data</span>
               </div>
             </div>
           </div>
@@ -267,14 +291,14 @@ export default function AnalyticsContent() {
 
 function StatItem({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex flex-col">
-      <span className="text-sm font-bold text-foreground">{value}</span>
-      <div className="flex gap-0.5 my-1">
+    <div>
+      <div className="text-lg font-bold text-foreground mb-1">{value}</div>
+      <div className="flex gap-0.5 mb-2">
         {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="w-3 h-1 rounded-full bg-muted-foreground/20" />
+          <div key={i} className="w-4 h-1.5 rounded-sm bg-muted-foreground/20" />
         ))}
       </div>
-      <span className="text-[10px] text-muted-foreground">{label}</span>
+      <span className="text-xs text-muted-foreground">{label}</span>
     </div>
   );
 }
