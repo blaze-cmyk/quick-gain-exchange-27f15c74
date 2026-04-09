@@ -41,7 +41,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [showDropdown, setShowDropdown] = useState(false);
-  const [accountType, setAccountType] = useState<AccountType>('demo');
+  const [accountType, setAccountType] = useState<AccountType>('live');
   const [showSwitchModal, setShowSwitchModal] = useState(false);
   const [pendingSwitchTo, setPendingSwitchTo] = useState<AccountType | null>(null);
   const [liveBalance] = useState(0);
