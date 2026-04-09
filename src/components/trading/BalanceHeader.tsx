@@ -336,7 +336,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
         className="flex items-center gap-3 px-4 py-2 border-b border-white/[0.06]"
-        style={{ background: '#111118' }}
+        style={{ background: '#0d0d14' }}
       >
         <div className="flex items-center mr-auto">
           <img src={arcanineLogo} alt="Arcanine" className="w-8 h-8" />
