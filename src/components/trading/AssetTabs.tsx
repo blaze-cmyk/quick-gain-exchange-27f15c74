@@ -34,7 +34,7 @@ export default function AssetTabs({ pairs, activePair, onSelect, onRemove, onOpe
     <div className="absolute top-2 left-3 right-[10px] z-10 flex items-center gap-1.5 overflow-x-auto scrollbar-hide">
       <button
         onClick={onOpenSelector}
-        className="flex-shrink-0 w-8 h-8 rounded-md bg-gradient-to-b from-primary to-primary/80 flex items-center justify-center text-white hover:opacity-90 active:scale-95 transition-all shadow-sm shadow-primary/20"
+        className="flex-shrink-0 w-8 h-8 rounded-md bg-primary/15 flex items-center justify-center text-primary hover:bg-primary/25 active:scale-95 transition-all"
       >
         <Plus size={16} />
       </button>
