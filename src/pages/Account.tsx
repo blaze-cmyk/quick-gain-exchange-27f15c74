@@ -181,7 +181,7 @@ export default function AccountPage() {
               {activeTab === 'Trades' && <PlaceholderSection title="Trades" description="Review your past trades and performance history." />}
               {activeTab === 'Market' && <PlaceholderSection title="Market" description="Explore market insights and asset information." />}
               {activeTab === 'Tournaments' && <PlaceholderSection title="Tournaments" description="Compete in trading tournaments and win prizes." />}
-              {activeTab === 'Analytics' && <PlaceholderSection title="Analytics" description="Analyze your trading performance with detailed statistics." />}
+              {activeTab === 'Analytics' && <AnalyticsContent />}
             </motion.div>
           </AnimatePresence>
         </div>
