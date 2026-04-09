@@ -80,7 +80,7 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
                 ? 'bg-primary text-primary-foreground shadow-lg'
                 : 'text-muted-foreground hover:text-foreground hover:bg-accent/60'
             }`}
-            style={isActive ? { boxShadow: '0 4px 16px rgba(255, 106, 0, 0.35)' } : undefined}
+            style={isActive ? { boxShadow: '0 4px 16px rgba(24, 220, 181, 0.35)' } : undefined}
           >
             <Icon size={18} strokeWidth={isActive ? 2.2 : 1.6} />
             <span className={`text-[8px] mt-1 font-semibold tracking-wide ${isActive ? 'text-primary-foreground' : ''}`}>{item.label}</span>
