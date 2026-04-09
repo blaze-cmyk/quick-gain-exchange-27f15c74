@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Grid3X3, List, ChevronDown, ArrowLeft, Gift, Shield, CircleDollarSign, Ban } from 'lucide-react';
+import { Search, Grid3X3, List, ChevronDown, Gift, Shield, CircleDollarSign, Ban } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useIsMobile } from '@/hooks/use-mobile';
+import Sidebar from '@/components/trading/Sidebar';
 
 import tetherTrc20 from '@/assets/payment/tether-trc20.png';
 import upiLogo from '@/assets/payment/upi.png';
@@ -41,7 +43,7 @@ import voletLogo from '@/assets/payment/volet.png';
 import jetonbankLogo from '@/assets/payment/jetonbank.png';
 import moneygoLogo from '@/assets/payment/moneygo.png';
 
-const TABS = ['DEPOSIT', 'WITHDRAWAL', 'HISTORY', 'CASHBACK', 'PROMO CODES', 'MY SAFE'];
+const TABS = ['Deposit', 'Withdrawal', 'History', 'Cashback', 'Promo codes', 'My safe'];
 
 interface PaymentMethod {
   name: string;
@@ -69,9 +71,7 @@ const BANK_METHODS: PaymentMethod[] = [
 
 const CRYPTO_NETWORKS = [
   {
-    name: 'Tether (USDT)',
-    icon: tetherTrc20,
-    available: 10,
+    name: 'Tether (USDT)', icon: tetherTrc20, available: 10,
     methods: [
       { name: 'Binance Pay', icon: binanceCryptoLogo, min: '$5', time: '~1 min.', category: 'crypto' as const },
       { name: 'ByBit Pay', icon: bybitLogo, min: '$5', time: '~5 min.', category: 'crypto' as const },
@@ -79,9 +79,7 @@ const CRYPTO_NETWORKS = [
     ],
   },
   {
-    name: 'USD Coin (USDC)',
-    icon: usdcLogo,
-    available: 8,
+    name: 'USD Coin (USDC)', icon: usdcLogo, available: 8,
     methods: [
       { name: 'Binance Pay', icon: binanceCryptoLogo, min: '$5', time: '~1 min.', category: 'crypto' as const },
     ],
@@ -135,7 +133,8 @@ function IconDisplay({ icon, size = 50 }: { icon: string; size?: number }) {
 
 export default function DepositPage() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('DEPOSIT');
+  const isMobile = useIsMobile();
+  const [activeTab, setActiveTab] = useState('Deposit');
   const [search, setSearch] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [expandedCrypto, setExpandedCrypto] = useState<string | null>('Tether (USDT)');
@@ -143,152 +142,148 @@ export default function DepositPage() {
   const filterMethods = (methods: PaymentMethod[]) =>
     methods.filter(m => m.name.toLowerCase().includes(search.toLowerCase()));
 
+  const handleSidebarNav = (id: string) => {
+    if (id === 'trade') navigate('/trade');
+    else if (id === 'account') navigate('/account');
+    else if (id === 'support') navigate('/support');
+  };
+
+  const handleTabClick = (tab: string) => {
+    if (tab === 'Withdrawal') navigate('/account?tab=withdrawal');
+    else setActiveTab(tab);
+  };
+
   return (
-    <div className="min-h-screen bg-[#1A1D29] text-[#E0E2E7]">
-      {/* Top tabs bar */}
-      <div className="flex items-center gap-1 px-3 md:px-6 py-3 bg-[#1B1F2D] border-b border-[#2B3040] overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
-        <button
-          onClick={() => navigate('/trade')}
-          className="mr-2 md:mr-4 text-[#6B7280] hover:text-[#E0E2E7] transition-colors flex-shrink-0"
-        >
-          <ArrowLeft size={20} />
-        </button>
-        {TABS.map(tab => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`px-3 md:px-4 py-2 rounded-md text-xs font-semibold tracking-wide transition-colors whitespace-nowrap flex-shrink-0 ${
-              activeTab === tab
-                ? 'bg-[#2B3040] text-[#E0E2E7]'
-                : 'text-[#6B7280] hover:text-[#E0E2E7]'
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
+    <div className="h-screen flex overflow-hidden bg-background">
+      {!isMobile && <Sidebar activeTab="trade" onTabChange={handleSidebarNav} />}
 
-      {/* Main content */}
-      <div className="max-w-[1200px] mx-auto px-3 md:px-6 py-6 md:py-8 flex flex-col md:flex-row gap-6 md:gap-8">
-        {/* Left content */}
-        <div className="flex-1">
-          <h1 className="text-2xl font-bold mb-6">Account top-up</h1>
-
-          {/* Steps */}
-          <div className="flex items-center gap-0 mb-6 md:mb-8 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
-            {['Deposit method', 'Payment details', 'Payment process', 'Payment execution'].map((step, i) => (
-              <div key={step} className="flex items-center flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
-                    i === 0 ? 'bg-[#0EB85B] text-white' : 'bg-[#2B3040] text-[#6B7280]'
-                  }`}>
-                    {i + 1}
-                  </span>
-                  <span className={`text-xs font-medium ${i === 0 ? 'text-[#E0E2E7]' : 'text-[#6B7280]'}`}>
-                    {step}
-                  </span>
-                </div>
-                {i < 3 && <div className="flex-1 h-px bg-[#2B3040] mx-3" />}
-              </div>
-            ))}
-          </div>
-
-          {/* Search bar */}
-          <div className="flex items-center gap-2 mb-6">
-            <div className="flex-1 flex items-center gap-2 bg-[#2B3040] rounded-lg px-4 py-2.5 border border-[#3A4255]">
-              <Search size={16} className="text-[#6B7280]" />
-              <input
-                type="text"
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                placeholder="Search"
-                className="bg-transparent text-sm text-[#E0E2E7] outline-none flex-1 placeholder:text-[#6B7280] font-medium"
-              />
-            </div>
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Top tabs bar */}
+        <div className="flex items-center gap-1 px-3 md:px-6 py-3 bg-card border-b border-border overflow-x-auto scrollbar-hide shrink-0">
+          {TABS.map(tab => (
             <button
-              onClick={() => setViewMode('grid')}
-              className={`p-2.5 rounded-lg border transition-colors ${
-                viewMode === 'grid' ? 'bg-[#3A4255] border-[#4A5268] text-[#E0E2E7]' : 'bg-[#2B3040] border-[#3A4255] text-[#6B7280]'
+              key={tab}
+              onClick={() => handleTabClick(tab)}
+              className={`px-3 md:px-4 py-2 rounded-md text-xs font-semibold tracking-wide transition-colors whitespace-nowrap flex-shrink-0 ${
+                activeTab === tab
+                  ? 'bg-accent text-foreground'
+                  : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              <Grid3X3 size={16} />
+              {tab}
             </button>
-            <button
-              onClick={() => setViewMode('list')}
-              className={`p-2.5 rounded-lg border transition-colors ${
-                viewMode === 'list' ? 'bg-[#3A4255] border-[#4A5268] text-[#E0E2E7]' : 'bg-[#2B3040] border-[#3A4255] text-[#6B7280]'
-              }`}
-            >
-              <List size={16} />
-            </button>
-          </div>
-
-          {/* Popular section */}
-          <SectionHeader icon="⭐" title="Popular" />
-          <MethodGrid methods={filterMethods(POPULAR_METHODS)} viewMode={viewMode} />
-
-          {/* Bank section */}
-          <SectionHeader icon="🏦" title="Bank" />
-          <MethodGrid methods={filterMethods(BANK_METHODS)} viewMode={viewMode} />
-
-          {/* Crypto currency section */}
-          <SectionHeader icon="⚙️" title="Crypto currency" />
-
-          {/* Expandable crypto networks */}
-          {CRYPTO_NETWORKS.map(network => (
-            <div key={network.name} className="mb-3">
-              <button
-                onClick={() => setExpandedCrypto(expandedCrypto === network.name ? null : network.name)}
-                className="w-full flex items-center justify-between px-5 py-4 bg-[#2B3040] rounded-lg border border-[#3A4255] hover:border-[#4A5268] transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <IconDisplay icon={network.icon} size={36} />
-                  <span className="font-semibold text-sm">{network.name}</span>
-                </div>
-                <div className="flex items-center gap-4 text-[#6B7280] text-xs">
-                  <span>Select a network</span>
-                  <span>Available: {network.available}</span>
-                  <ChevronDown size={16} className={`transition-transform ${expandedCrypto === network.name ? 'rotate-180' : ''}`} />
-                </div>
-              </button>
-              {expandedCrypto === network.name && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="mt-2"
-                >
-                  <MethodGrid methods={network.methods} viewMode={viewMode} />
-                </motion.div>
-              )}
-            </div>
           ))}
-
-          {/* Direct crypto methods */}
-          <MethodGrid methods={filterMethods(CRYPTO_DIRECT)} viewMode={viewMode} />
-
-          {/* E-payments section */}
-          <SectionHeader icon="💲" title="E-payments" />
-          <MethodGrid methods={filterMethods(EPAYMENT_METHODS)} viewMode={viewMode} />
         </div>
 
-        {/* Right sidebar info */}
-        <div className="w-full md:w-[280px] shrink-0 md:mt-24">
-          <div className="space-y-4">
-            <InfoItem icon={<CircleDollarSign size={18} className="text-[#0EB85B]" />} text="Minimum deposit amount: $5" />
-            <InfoItem icon={<Gift size={18} className="text-[#3B82F6]" />} text="Gifts for deposit" />
-            <InfoItem icon={<Shield size={18} className="text-[#0EB85B]" />} text="Quick and easy withdrawal" />
-            <InfoItem icon={<CircleDollarSign size={18} className="text-[#3B82F6]" />} text="Minimum withdrawal amount: $10" />
-            <InfoItem icon={<Ban size={18} className="text-[#6B7280]" />} text="No commission" />
-          </div>
+        {/* Main content */}
+        <div className="flex-1 overflow-y-auto">
+          {activeTab === 'Deposit' ? (
+            <div className="max-w-[1200px] mx-auto px-3 md:px-6 py-6 md:py-8 flex flex-col md:flex-row gap-6 md:gap-8">
+              <div className="flex-1">
+                <h1 className="text-2xl font-bold text-foreground mb-6">Account top-up</h1>
 
-          <div className="mt-8 text-sm text-[#6B7280] space-y-3">
-            <p>Do you have questions or need help with account top-up?</p>
-            <a href="#" className="block text-[#0EB85B] hover:underline font-medium">View our User Guide</a>
-            <a href="#" className="block text-[#0EB85B] hover:underline font-medium">Contact Support Service</a>
-          </div>
+                {/* Steps */}
+                <div className="flex items-center gap-0 mb-6 md:mb-8 overflow-x-auto scrollbar-hide">
+                  {['Deposit method', 'Payment details', 'Payment process', 'Payment execution'].map((step, i) => (
+                    <div key={step} className="flex items-center flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
+                          i === 0 ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
+                        }`}>{i + 1}</span>
+                        <span className={`text-xs font-medium ${i === 0 ? 'text-foreground' : 'text-muted-foreground'}`}>{step}</span>
+                      </div>
+                      {i < 3 && <div className="flex-1 h-px bg-border mx-3" />}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Search bar */}
+                <div className="flex items-center gap-2 mb-6">
+                  <div className="flex-1 flex items-center gap-2 bg-muted rounded-lg px-4 py-2.5 border border-border">
+                    <Search size={16} className="text-muted-foreground" />
+                    <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search"
+                      className="bg-transparent text-sm text-foreground outline-none flex-1 placeholder:text-muted-foreground font-medium" />
+                  </div>
+                  <button onClick={() => setViewMode('grid')}
+                    className={`p-2.5 rounded-lg border transition-colors ${viewMode === 'grid' ? 'bg-accent border-border text-foreground' : 'bg-muted border-border text-muted-foreground'}`}>
+                    <Grid3X3 size={16} />
+                  </button>
+                  <button onClick={() => setViewMode('list')}
+                    className={`p-2.5 rounded-lg border transition-colors ${viewMode === 'list' ? 'bg-accent border-border text-foreground' : 'bg-muted border-border text-muted-foreground'}`}>
+                    <List size={16} />
+                  </button>
+                </div>
+
+                <SectionHeader icon="⭐" title="Popular" />
+                <MethodGrid methods={filterMethods(POPULAR_METHODS)} viewMode={viewMode} />
+
+                <SectionHeader icon="🏦" title="Bank" />
+                <MethodGrid methods={filterMethods(BANK_METHODS)} viewMode={viewMode} />
+
+                <SectionHeader icon="⚙️" title="Crypto currency" />
+                {CRYPTO_NETWORKS.map(network => (
+                  <div key={network.name} className="mb-3">
+                    <button onClick={() => setExpandedCrypto(expandedCrypto === network.name ? null : network.name)}
+                      className="w-full flex items-center justify-between px-5 py-4 bg-muted rounded-lg border border-border hover:border-primary/30 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <IconDisplay icon={network.icon} size={36} />
+                        <span className="font-semibold text-sm text-foreground">{network.name}</span>
+                      </div>
+                      <div className="flex items-center gap-4 text-muted-foreground text-xs">
+                        <span>Select a network</span>
+                        <span>Available: {network.available}</span>
+                        <ChevronDown size={16} className={`transition-transform ${expandedCrypto === network.name ? 'rotate-180' : ''}`} />
+                      </div>
+                    </button>
+                    {expandedCrypto === network.name && (
+                      <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-2">
+                        <MethodGrid methods={network.methods} viewMode={viewMode} />
+                      </motion.div>
+                    )}
+                  </div>
+                ))}
+                <MethodGrid methods={filterMethods(CRYPTO_DIRECT)} viewMode={viewMode} />
+
+                <SectionHeader icon="💲" title="E-payments" />
+                <MethodGrid methods={filterMethods(EPAYMENT_METHODS)} viewMode={viewMode} />
+              </div>
+
+              {/* Right sidebar info */}
+              <div className="w-full md:w-[280px] shrink-0 md:mt-24">
+                <div className="space-y-4">
+                  <InfoItem icon={<CircleDollarSign size={18} className="text-success" />} text="Minimum deposit amount: $5" />
+                  <InfoItem icon={<Gift size={18} className="text-primary" />} text="Gifts for deposit" />
+                  <InfoItem icon={<Shield size={18} className="text-success" />} text="Quick and easy withdrawal" />
+                  <InfoItem icon={<CircleDollarSign size={18} className="text-primary" />} text="Minimum withdrawal amount: $10" />
+                  <InfoItem icon={<Ban size={18} className="text-muted-foreground" />} text="No commission" />
+                </div>
+                <div className="mt-8 text-sm text-muted-foreground space-y-3">
+                  <p>Do you have questions or need help with account top-up?</p>
+                  <a href="#" className="block text-primary hover:underline font-medium">View our User Guide</a>
+                  <a href="#" className="block text-primary hover:underline font-medium">Contact Support Service</a>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <PlaceholderTab title={activeTab} />
+          )}
         </div>
       </div>
+
+      {isMobile && <Sidebar activeTab="trade" onTabChange={handleSidebarNav} />}
+    </div>
+  );
+}
+
+function PlaceholderTab({ title }: { title: string }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-20">
+      <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
+        <span className="text-primary text-2xl font-bold">{title[0]}</span>
+      </div>
+      <h2 className="text-xl font-bold text-foreground mb-2">{title}</h2>
+      <p className="text-muted-foreground text-sm">Content coming soon.</p>
+      <div className="mt-6 px-4 py-2 rounded-lg border border-border bg-muted/50 text-xs text-muted-foreground">Coming soon</div>
     </div>
   );
 }
@@ -297,8 +292,8 @@ function SectionHeader({ icon, title }: { icon: string; title: string }) {
   return (
     <div className="flex items-center gap-3 my-5">
       <span className="text-base">{icon}</span>
-      <span className="font-bold text-sm text-[#E0E2E7]">{title}</span>
-      <div className="flex-1 border-t border-dashed border-[#3A4255]" />
+      <span className="font-bold text-sm text-foreground">{title}</span>
+      <div className="flex-1 border-t border-dashed border-border" />
     </div>
   );
 }
@@ -308,14 +303,11 @@ function MethodGrid({ methods, viewMode }: { methods: PaymentMethod[]; viewMode:
     return (
       <div className="space-y-2 mb-4">
         {methods.map((method, i) => (
-          <button
-            key={i}
-            className="w-full flex items-center gap-4 px-5 py-3.5 bg-[#2B3040] rounded-lg border border-[#3A4255] hover:border-[#4A5268] hover:bg-[#323848] transition-colors"
-          >
+          <button key={i} className="w-full flex items-center gap-4 px-5 py-3.5 bg-muted rounded-lg border border-border hover:border-primary/30 hover:bg-accent transition-colors">
             <IconDisplay icon={method.icon} size={32} />
-            <span className="font-semibold text-sm flex-1 text-left">{method.name}</span>
-            <span className="text-xs text-[#6B7280]">Min: {method.min}</span>
-            <span className="text-xs text-[#6B7280]">{method.time}</span>
+            <span className="font-semibold text-sm text-foreground flex-1 text-left">{method.name}</span>
+            <span className="text-xs text-muted-foreground">Min: {method.min}</span>
+            <span className="text-xs text-muted-foreground">{method.time}</span>
           </button>
         ))}
       </div>
@@ -325,17 +317,14 @@ function MethodGrid({ methods, viewMode }: { methods: PaymentMethod[]; viewMode:
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3 mb-4">
       {methods.map((method, i) => (
-        <button
-          key={i}
-          className="flex flex-col items-center bg-[#2B3040] rounded-lg border border-[#3A4255] hover:border-[#4A5268] hover:bg-[#323848] transition-colors overflow-hidden"
-        >
+        <button key={i} className="flex flex-col items-center bg-muted rounded-lg border border-border hover:border-primary/30 hover:bg-accent transition-colors overflow-hidden">
           <div className="flex items-center gap-3 px-4 py-4 w-full">
             <IconDisplay icon={method.icon} size={32} />
-            <span className="font-semibold text-xs text-left leading-tight">{method.name}</span>
+            <span className="font-semibold text-xs text-foreground text-left leading-tight">{method.name}</span>
           </div>
-          <div className="flex w-full border-t border-[#3A4255]">
-            <span className="flex-1 text-center text-[10px] text-[#6B7280] py-1.5 border-r border-[#3A4255]">Min: {method.min}</span>
-            <span className="flex-1 text-center text-[10px] text-[#6B7280] py-1.5">{method.time}</span>
+          <div className="flex w-full border-t border-border">
+            <span className="flex-1 text-center text-[10px] text-muted-foreground py-1.5 border-r border-border">Min: {method.min}</span>
+            <span className="flex-1 text-center text-[10px] text-muted-foreground py-1.5">{method.time}</span>
           </div>
         </button>
       ))}
@@ -347,7 +336,7 @@ function InfoItem({ icon, text }: { icon: React.ReactNode; text: string }) {
   return (
     <div className="flex items-center gap-3">
       {icon}
-      <span className="text-sm text-[#E0E2E7]">{text}</span>
+      <span className="text-sm text-foreground">{text}</span>
     </div>
   );
 }
