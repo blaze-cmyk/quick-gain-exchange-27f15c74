@@ -113,7 +113,7 @@ export default function TradePage() {
   };
 
   return (
-    <div className="h-screen flex overflow-hidden" style={{ background: '#0d0d14' }}>
+    <div className="h-screen flex overflow-hidden" style={{ background: '#111118' }}>
       {!isMobile && <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />}
 
       <div className="flex-1 flex flex-col min-w-0">
