@@ -868,7 +868,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
       roundRect(ctx, chartWidth + 1, ch.y - crossLabelH / 2, PRICE_SCALE_WIDTH - 2, crossLabelH, 3);
       ctx.fill();
       ctx.fillStyle = COLORS.crosshairText;
-      ctx.font = '10px General Sans, sans-serif';
+      ctx.font = 'bold 10px General Sans, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(crossLabel, chartWidth + PRICE_SCALE_WIDTH / 2, ch.y);
@@ -883,7 +883,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
         roundRect(ctx, ch.x - timeLabelW / 2, height - TIME_SCALE_HEIGHT + 1, timeLabelW, timeLabelH, 3);
         ctx.fill();
         ctx.fillStyle = COLORS.crosshairText;
-        ctx.font = '10px General Sans, sans-serif';
+        ctx.font = 'bold 10px General Sans, sans-serif';
         ctx.fillText(timeLabel, ch.x, height - TIME_SCALE_HEIGHT + 1 + timeLabelH / 2);
       }
 
