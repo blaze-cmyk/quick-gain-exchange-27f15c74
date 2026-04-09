@@ -1128,13 +1128,13 @@ function drawOHLCTooltip(ctx: CanvasRenderingContext2D, c: CandleData, x: number
 
   labels.forEach(({ label, value }, i) => {
     const ly = boxY + 10 + i * lineH;
-    ctx.font = '300 12px General Sans, sans-serif';
+    ctx.font = '300 11px General Sans, sans-serif';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
-    ctx.fillStyle = '#ffffff';
+    ctx.fillStyle = 'rgba(255,255,255,0.45)';
     ctx.fillText(label, x + 10, ly);
-    ctx.fillStyle = '#ffffff';
-    ctx.font = '400 12px General Sans, sans-serif';
+    ctx.fillStyle = isGreen ? '#22c55e' : '#ef4444';
+    ctx.font = '400 11px General Sans, sans-serif';
     ctx.textAlign = 'right';
     ctx.fillText(value, x + boxW - 10, ly);
   });
