@@ -948,7 +948,7 @@ export default function CustomChart({ candles, currentPrice, payout = 90, connec
     if (st.isDraggingTimeScale) {
       const dx = e.clientX - st.dragStartX;
       const sensitivity = 0.005;
-      st.targetScaleX = Math.max(0.3, Math.min(5, st.dragStartScaleX + dx * sensitivity));
+      st.targetScaleX = Math.max(0.3, Math.min(5, st.dragStartScaleX - dx * sensitivity));
       st.crosshair = null;
       canvas.style.cursor = 'ew-resize';
       return;
