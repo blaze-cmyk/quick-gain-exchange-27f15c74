@@ -133,7 +133,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
           <div className="text-left flex-1">
             <div className="text-xs font-semibold text-foreground">Live Account</div>
             <div className="text-sm font-bold text-foreground tabular-nums">
-              {currSymbol}{(liveBalance * currencyInfo.rate).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+              {currSymbol}{(liveBalance * currencyInfo.rate).toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </div>
             <div className="text-xs text-secondary-foreground mt-0.5">The daily limit is not set</div>
             <button className="text-xs text-primary font-bold mt-0.5 hover:underline">SET LIMIT</button>
@@ -158,7 +158,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
             </div>
             <div className="flex items-center gap-1.5">
               <span className="text-sm font-bold text-foreground tabular-nums">
-                {currSymbol}{displayBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                {currSymbol}{displayBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
               </span>
               <RefreshCw size={10} className="text-muted-foreground" />
             </div>
@@ -235,7 +235,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
                   DEMO ACCOUNT
                 </span>
                 <span className="text-sm font-bold text-foreground tabular-nums">
-                  ${(accountType === 'demo' ? balance : liveBalance).toLocaleString(undefined, { minimumFractionDigits: 0 })}
+                  ${(accountType === 'demo' ? balance : liveBalance).toLocaleString('en-US', { minimumFractionDigits: 0 })}
                 </span>
               </div>
 
@@ -253,7 +253,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
                   {pendingSwitchTo === 'live' ? 'LIVE ACCOUNT' : 'DEMO ACCOUNT'}
                 </span>
                 <span className="text-sm font-bold text-foreground tabular-nums">
-                  ${(pendingSwitchTo === 'live' ? liveBalance : balance).toLocaleString(undefined, { minimumFractionDigits: 0 })}
+                  ${(pendingSwitchTo === 'live' ? liveBalance : balance).toLocaleString('en-US', { minimumFractionDigits: 0 })}
                 </span>
               </div>
             </div>
@@ -296,7 +296,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
                   {isDemo ? 'DEMO' : 'LIVE'}
                 </div>
                 <div className="text-xs font-bold tabular-nums text-foreground">
-                  {currSymbol}{displayBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  {currSymbol}{displayBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                 </div>
               </div>
               <ChevronDown size={12} className="text-muted-foreground" />
@@ -367,7 +367,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
                 {isDemo ? 'DEMO ACCOUNT' : 'LIVE ACCOUNT'}
               </div>
               <div className="text-sm font-bold text-foreground tabular-nums">
-                {currSymbol}{displayBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                {currSymbol}{displayBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
               </div>
             </div>
             <ChevronDown size={14} className="text-muted-foreground" />
