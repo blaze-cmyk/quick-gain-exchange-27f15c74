@@ -44,7 +44,7 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
   const [accountType, setAccountType] = useState<AccountType>('live');
   const [showSwitchModal, setShowSwitchModal] = useState(false);
   const [pendingSwitchTo, setPendingSwitchTo] = useState<AccountType | null>(null);
-  const [liveBalance] = useState(0);
+  const [liveBalance] = useState(8562.45);
   const [currency, setCurrency] = useState('USD');
   const [showExchangeModal, setShowExchangeModal] = useState(false);
   const [showDepositModal, setShowDepositModal] = useState(false);
