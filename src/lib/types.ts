@@ -115,15 +115,66 @@ export const TRADING_PAIRS: TradingPair[] = [
   { symbol: 'BTCUSDT_OTC', displayName: 'BTC/USDT OTC', binanceSymbol: '', otcSymbol: 'BTCUSDT_OTC', icon: '₿', payout: 92, price: 0, change24h: 0, category: 'otc_crypto' },
   { symbol: 'ETHUSDT_OTC', displayName: 'ETH/USDT OTC', binanceSymbol: '', otcSymbol: 'ETHUSDT_OTC', icon: 'Ξ', payout: 92, price: 0, change24h: 0, category: 'otc_crypto' },
   { symbol: 'SOLUSDT_OTC', displayName: 'SOL/USDT OTC', binanceSymbol: '', otcSymbol: 'SOLUSDT_OTC', icon: '◎', payout: 91, price: 0, change24h: 0, category: 'otc_crypto' },
+  { symbol: 'BNBUSDT_OTC', displayName: 'BNB/USDT OTC', binanceSymbol: '', otcSymbol: 'BNBUSDT_OTC', icon: '◆', payout: 91, price: 0, change24h: 0, category: 'otc_crypto' },
+  { symbol: 'XRPUSDT_OTC', displayName: 'XRP/USDT OTC', binanceSymbol: '', otcSymbol: 'XRPUSDT_OTC', icon: '✕', payout: 91, price: 0, change24h: 0, category: 'otc_crypto' },
+  { symbol: 'DOGEUSDT_OTC', displayName: 'DOGE/USDT OTC', binanceSymbol: '', otcSymbol: 'DOGEUSDT_OTC', icon: '🐕', payout: 90, price: 0, change24h: 0, category: 'otc_crypto' },
+  { symbol: 'ADAUSDT_OTC', displayName: 'ADA/USDT OTC', binanceSymbol: '', otcSymbol: 'ADAUSDT_OTC', icon: '₳', payout: 90, price: 0, change24h: 0, category: 'otc_crypto' },
+  { symbol: 'AVAXUSDT_OTC', displayName: 'AVAX/USDT OTC', binanceSymbol: '', otcSymbol: 'AVAXUSDT_OTC', icon: '🔺', payout: 90, price: 0, change24h: 0, category: 'otc_crypto' },
+  { symbol: 'LTCUSDT_OTC', displayName: 'LTC/USDT OTC', binanceSymbol: '', otcSymbol: 'LTCUSDT_OTC', icon: 'Ł', payout: 90, price: 0, change24h: 0, category: 'otc_crypto' },
+  { symbol: 'LINKUSDT_OTC', displayName: 'LINK/USDT OTC', binanceSymbol: '', otcSymbol: 'LINKUSDT_OTC', icon: '⬡', payout: 90, price: 0, change24h: 0, category: 'otc_crypto' },
+
+  // ── Forex OTC (Majors) ──
+  { symbol: 'EURUSD_OTC', displayName: 'EUR/USD OTC', binanceSymbol: '', otcSymbol: 'EURUSD_OTC', icon: '🇪🇺', payout: 92, price: 0, change24h: 0, category: 'forex' },
+  { symbol: 'GBPUSD_OTC', displayName: 'GBP/USD OTC', binanceSymbol: '', otcSymbol: 'GBPUSD_OTC', icon: '🇬🇧', payout: 92, price: 0, change24h: 0, category: 'forex' },
+  { symbol: 'USDJPY_OTC', displayName: 'USD/JPY OTC', binanceSymbol: '', otcSymbol: 'USDJPY_OTC', icon: '🇯🇵', payout: 92, price: 0, change24h: 0, category: 'forex' },
+  { symbol: 'USDCHF_OTC', displayName: 'USD/CHF OTC', binanceSymbol: '', otcSymbol: 'USDCHF_OTC', icon: '🇨🇭', payout: 91, price: 0, change24h: 0, category: 'forex' },
+  { symbol: 'AUDUSD_OTC', displayName: 'AUD/USD OTC', binanceSymbol: '', otcSymbol: 'AUDUSD_OTC', icon: '🇦🇺', payout: 91, price: 0, change24h: 0, category: 'forex' },
+  { symbol: 'USDCAD_OTC', displayName: 'USD/CAD OTC', binanceSymbol: '', otcSymbol: 'USDCAD_OTC', icon: '🇨🇦', payout: 91, price: 0, change24h: 0, category: 'forex' },
+  { symbol: 'NZDUSD_OTC', displayName: 'NZD/USD OTC', binanceSymbol: '', otcSymbol: 'NZDUSD_OTC', icon: '🇳🇿', payout: 90, price: 0, change24h: 0, category: 'forex' },
+  // ── Forex OTC (Crosses) ──
+  { symbol: 'EURGBP_OTC', displayName: 'EUR/GBP OTC', binanceSymbol: '', otcSymbol: 'EURGBP_OTC', icon: '🇪🇺', payout: 90, price: 0, change24h: 0, category: 'forex' },
+  { symbol: 'EURJPY_OTC', displayName: 'EUR/JPY OTC', binanceSymbol: '', otcSymbol: 'EURJPY_OTC', icon: '🇪🇺', payout: 90, price: 0, change24h: 0, category: 'forex' },
+  { symbol: 'GBPJPY_OTC', displayName: 'GBP/JPY OTC', binanceSymbol: '', otcSymbol: 'GBPJPY_OTC', icon: '🇬🇧', payout: 90, price: 0, change24h: 0, category: 'forex' },
+  { symbol: 'AUDJPY_OTC', displayName: 'AUD/JPY OTC', binanceSymbol: '', otcSymbol: 'AUDJPY_OTC', icon: '🇦🇺', payout: 89, price: 0, change24h: 0, category: 'forex' },
+  { symbol: 'EURAUD_OTC', displayName: 'EUR/AUD OTC', binanceSymbol: '', otcSymbol: 'EURAUD_OTC', icon: '🇪🇺', payout: 89, price: 0, change24h: 0, category: 'forex' },
+  { symbol: 'CHFJPY_OTC', displayName: 'CHF/JPY OTC', binanceSymbol: '', otcSymbol: 'CHFJPY_OTC', icon: '🇨🇭', payout: 89, price: 0, change24h: 0, category: 'forex' },
+  { symbol: 'CADJPY_OTC', displayName: 'CAD/JPY OTC', binanceSymbol: '', otcSymbol: 'CADJPY_OTC', icon: '🇨🇦', payout: 89, price: 0, change24h: 0, category: 'forex' },
+  // ── Forex OTC (Exotics) ──
+  { symbol: 'USDTRY_OTC', displayName: 'USD/TRY OTC', binanceSymbol: '', otcSymbol: 'USDTRY_OTC', icon: '🇹🇷', payout: 87, price: 0, change24h: 0, category: 'forex' },
+  { symbol: 'USDZAR_OTC', displayName: 'USD/ZAR OTC', binanceSymbol: '', otcSymbol: 'USDZAR_OTC', icon: '🇿🇦', payout: 87, price: 0, change24h: 0, category: 'forex' },
+  { symbol: 'USDMXN_OTC', displayName: 'USD/MXN OTC', binanceSymbol: '', otcSymbol: 'USDMXN_OTC', icon: '🇲🇽', payout: 87, price: 0, change24h: 0, category: 'forex' },
+  { symbol: 'USDINR_OTC', displayName: 'USD/INR OTC', binanceSymbol: '', otcSymbol: 'USDINR_OTC', icon: '🇮🇳', payout: 87, price: 0, change24h: 0, category: 'forex' },
+  { symbol: 'USDSGD_OTC', displayName: 'USD/SGD OTC', binanceSymbol: '', otcSymbol: 'USDSGD_OTC', icon: '🇸🇬', payout: 88, price: 0, change24h: 0, category: 'forex' },
+  { symbol: 'USDHKD_OTC', displayName: 'USD/HKD OTC', binanceSymbol: '', otcSymbol: 'USDHKD_OTC', icon: '🇭🇰', payout: 88, price: 0, change24h: 0, category: 'forex' },
 
   // ── Commodities OTC ──
-  { symbol: 'XAUUSD_OTC', displayName: 'XAU/USD OTC', binanceSymbol: '', otcSymbol: 'XAUUSD_OTC', icon: '🥇', payout: 88, price: 0, change24h: 0, category: 'commodity' },
-  { symbol: 'USOIL_OTC', displayName: 'USOIL OTC', binanceSymbol: '', otcSymbol: 'USOIL_OTC', icon: '🛢️', payout: 87, price: 0, change24h: 0, category: 'commodity' },
+  { symbol: 'XAUUSD_OTC', displayName: 'XAU/USD OTC', binanceSymbol: '', otcSymbol: 'XAUUSD_OTC', icon: '🥇', payout: 90, price: 0, change24h: 0, category: 'commodity' },
+  { symbol: 'XAGUSD_OTC', displayName: 'XAG/USD OTC', binanceSymbol: '', otcSymbol: 'XAGUSD_OTC', icon: '🥈', payout: 89, price: 0, change24h: 0, category: 'commodity' },
+  { symbol: 'USOIL_OTC', displayName: 'USOIL OTC', binanceSymbol: '', otcSymbol: 'USOIL_OTC', icon: '🛢️', payout: 88, price: 0, change24h: 0, category: 'commodity' },
+  { symbol: 'UKOIL_OTC', displayName: 'UKOIL OTC', binanceSymbol: '', otcSymbol: 'UKOIL_OTC', icon: '🛢️', payout: 88, price: 0, change24h: 0, category: 'commodity' },
+  { symbol: 'NATGAS_OTC', displayName: 'NATGAS OTC', binanceSymbol: '', otcSymbol: 'NATGAS_OTC', icon: '🔥', payout: 86, price: 0, change24h: 0, category: 'commodity' },
 
   // ── US Stocks OTC ──
-  { symbol: 'AAPL_OTC', displayName: 'AAPL OTC', binanceSymbol: '', otcSymbol: 'AAPL_OTC', icon: '🍎', payout: 86, price: 0, change24h: 0, category: 'stock' },
-  { symbol: 'TSLA_OTC', displayName: 'TSLA OTC', binanceSymbol: '', otcSymbol: 'TSLA_OTC', icon: '⚡', payout: 85, price: 0, change24h: 0, category: 'stock' },
-  { symbol: 'NVDA_OTC', displayName: 'NVDA OTC', binanceSymbol: '', otcSymbol: 'NVDA_OTC', icon: '💚', payout: 85, price: 0, change24h: 0, category: 'stock' },
+  { symbol: 'AAPL_OTC', displayName: 'AAPL OTC', binanceSymbol: '', otcSymbol: 'AAPL_OTC', icon: '🍎', payout: 89, price: 0, change24h: 0, category: 'stock' },
+  { symbol: 'TSLA_OTC', displayName: 'TSLA OTC', binanceSymbol: '', otcSymbol: 'TSLA_OTC', icon: '⚡', payout: 88, price: 0, change24h: 0, category: 'stock' },
+  { symbol: 'NVDA_OTC', displayName: 'NVDA OTC', binanceSymbol: '', otcSymbol: 'NVDA_OTC', icon: '💚', payout: 88, price: 0, change24h: 0, category: 'stock' },
+  { symbol: 'MSFT_OTC', displayName: 'MSFT OTC', binanceSymbol: '', otcSymbol: 'MSFT_OTC', icon: '🪟', payout: 89, price: 0, change24h: 0, category: 'stock' },
+  { symbol: 'GOOGL_OTC', displayName: 'GOOGL OTC', binanceSymbol: '', otcSymbol: 'GOOGL_OTC', icon: '🔍', payout: 89, price: 0, change24h: 0, category: 'stock' },
+  { symbol: 'AMZN_OTC', displayName: 'AMZN OTC', binanceSymbol: '', otcSymbol: 'AMZN_OTC', icon: '📦', payout: 89, price: 0, change24h: 0, category: 'stock' },
+  { symbol: 'META_OTC', displayName: 'META OTC', binanceSymbol: '', otcSymbol: 'META_OTC', icon: 'ⓜ', payout: 88, price: 0, change24h: 0, category: 'stock' },
+  { symbol: 'NFLX_OTC', displayName: 'NFLX OTC', binanceSymbol: '', otcSymbol: 'NFLX_OTC', icon: '🎬', payout: 88, price: 0, change24h: 0, category: 'stock' },
+  { symbol: 'AMD_OTC', displayName: 'AMD OTC', binanceSymbol: '', otcSymbol: 'AMD_OTC', icon: '🔴', payout: 88, price: 0, change24h: 0, category: 'stock' },
+  { symbol: 'INTC_OTC', displayName: 'INTC OTC', binanceSymbol: '', otcSymbol: 'INTC_OTC', icon: '🔷', payout: 87, price: 0, change24h: 0, category: 'stock' },
+  { symbol: 'COIN_OTC', displayName: 'COIN OTC', binanceSymbol: '', otcSymbol: 'COIN_OTC', icon: '🪙', payout: 87, price: 0, change24h: 0, category: 'stock' },
+  { symbol: 'BABA_OTC', displayName: 'BABA OTC', binanceSymbol: '', otcSymbol: 'BABA_OTC', icon: '🛒', payout: 87, price: 0, change24h: 0, category: 'stock' },
+
+  // ── Indices OTC ──
+  { symbol: 'SPX500_OTC', displayName: 'SPX500 OTC', binanceSymbol: '', otcSymbol: 'SPX500_OTC', icon: '📈', payout: 90, price: 0, change24h: 0, category: 'commodity' },
+  { symbol: 'NAS100_OTC', displayName: 'NAS100 OTC', binanceSymbol: '', otcSymbol: 'NAS100_OTC', icon: '💹', payout: 90, price: 0, change24h: 0, category: 'commodity' },
+  { symbol: 'US30_OTC', displayName: 'US30 OTC', binanceSymbol: '', otcSymbol: 'US30_OTC', icon: '🏛️', payout: 90, price: 0, change24h: 0, category: 'commodity' },
+  { symbol: 'GER40_OTC', displayName: 'GER40 OTC', binanceSymbol: '', otcSymbol: 'GER40_OTC', icon: '🇩🇪', payout: 89, price: 0, change24h: 0, category: 'commodity' },
+  { symbol: 'UK100_OTC', displayName: 'UK100 OTC', binanceSymbol: '', otcSymbol: 'UK100_OTC', icon: '🇬🇧', payout: 89, price: 0, change24h: 0, category: 'commodity' },
+  { symbol: 'JPN225_OTC', displayName: 'JPN225 OTC', binanceSymbol: '', otcSymbol: 'JPN225_OTC', icon: '🇯🇵', payout: 89, price: 0, change24h: 0, category: 'commodity' },
 ];
 
 export const TIMEFRAMES = [
