@@ -237,15 +237,8 @@ export function tick(
   const newRawPrice = st.price * Math.exp(st.velocity);
 
   // EMA smoothing for premium, non-jagged candles
-  st.smoothedPrice = cfg.smoothing * newRawPrice + (1 - cfg.smoothing) * st.smoothedPrice;
-  st.price = newRawPrice;
-
   // Update volume EMA each tick
   getVolume(symbol, st.velocity);
-
-  // EMA smoothing
-  st.smoothedPrice = cfg.smoothing * newRawPrice + (1 - cfg.smoothing) * st.smoothedPrice;
-  st.price = newRawPrice;
 
   const finalPrice = round(st.smoothedPrice, cfg.decimals);
 
@@ -254,8 +247,10 @@ export function tick(
   const bucket = Math.floor(now / intervalSecs) * intervalSecs;
 
   if (st.candleBucket !== bucket) {
-    // Close previous candle & start new one
+    // Close previous candle & start new one — new open = previous close for continuity
+    let openPrice = finalPrice;
     if (st.currentCandle) {
+      openPrice = st.currentCandle.close;
       st.candles.push({ ...st.currentCandle });
       if (st.candles.length > CANDLE_HISTORY_LIMIT) {
         st.candles = st.candles.slice(-CANDLE_HISTORY_LIMIT);
@@ -263,9 +258,9 @@ export function tick(
     }
     st.currentCandle = {
       time: bucket * 1000,
-      open: finalPrice,
-      high: finalPrice,
-      low: finalPrice,
+      open: openPrice,
+      high: Math.max(openPrice, finalPrice),
+      low: Math.min(openPrice, finalPrice),
       close: finalPrice,
     };
     st.candleBucket = bucket;
