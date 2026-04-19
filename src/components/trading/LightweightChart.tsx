@@ -200,9 +200,11 @@ export default function LightweightChart({
 
   /* ─────────── show/hide series by chartType ─────────── */
   useEffect(() => {
-    candleSeriesRef.current?.applyOptions({ visible: chartType === 'candles' });
-    lineSeriesRef.current?.applyOptions({ visible: chartType === 'line' });
-    areaSeriesRef.current?.applyOptions({ visible: chartType === 'area' });
+    const isArea = chartType === 'area';
+    const isCandles = chartType === 'candles' || chartType === 'bars' || chartType === 'heiken';
+    candleSeriesRef.current?.applyOptions({ visible: isCandles });
+    lineSeriesRef.current?.applyOptions({ visible: false });
+    areaSeriesRef.current?.applyOptions({ visible: isArea });
   }, [chartType]);
 
   /* ─────────── secondsVisible toggle ─────────── */
