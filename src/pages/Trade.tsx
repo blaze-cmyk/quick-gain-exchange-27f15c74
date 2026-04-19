@@ -7,7 +7,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { motion, AnimatePresence } from 'framer-motion';
 import Sidebar from '@/components/trading/Sidebar';
 import AssetTabs from '@/components/trading/AssetTabs';
-import LightweightChart from '@/components/trading/LightweightChart';
+import CustomChart from '@/components/trading/CustomChart';
 import TradePanel from '@/components/trading/TradePanel';
 import MobileTradePanel from '@/components/trading/MobileTradePanel';
 import AssetSelector from '@/components/trading/AssetSelector';
@@ -162,7 +162,7 @@ export default function TradePage() {
               currentPrice={currentPrice}
             />
 
-            <LightweightChart
+            <CustomChart
               candles={candles}
               currentPrice={currentPrice}
               payout={activePair.payout}
