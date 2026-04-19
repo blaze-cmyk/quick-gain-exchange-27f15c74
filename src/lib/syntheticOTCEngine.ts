@@ -344,14 +344,19 @@ export function bootstrapHistory(
 
   const now = Math.floor(Date.now() / 1000);
   const startBucket = (Math.floor(now / intervalSecs) - count) * intervalSecs;
-  let lastClose = round(st.smoothedPrice, cfg.decimals);
+
+  // Track running close so each candle opens where the last one closed
+  let runningClose = round(st.smoothedPrice, cfg.decimals);
 
   for (let i = 0; i < count; i++) {
     const bucket = startBucket + i * intervalSecs;
-    // Simulate multiple ticks per candle for realism
-    const ticksPerCandle = Math.min(intervalSecs, 30);
-    let open = st.smoothedPrice;
-    let high = open, low = open, close = open;
+    // Simulate ~30 sub-ticks per candle to get realistic wicks
+    const ticksPerCandle = 30;
+
+    const open = runningClose;
+    let high = open;
+    let low = open;
+    let close = open;
 
     for (let t = 0; t < ticksPerCandle; t++) {
       let z = gaussRandom();
@@ -362,14 +367,22 @@ export function bootstrapHistory(
       st.velocity = cfg.momentum * st.velocity + (1 - cfg.momentum) * (noise + meanRev + st.regimeBias);
       st.price *= Math.exp(st.velocity);
       st.smoothedPrice = cfg.smoothing * st.price + (1 - cfg.smoothing) * st.smoothedPrice;
-      st.smoothedPrice = cfg.smoothing * st.price + (1 - cfg.smoothing) * st.smoothedPrice;
       const p = round(st.smoothedPrice, cfg.decimals);
-      if (t === 0) open = p;
-      high = Math.max(high, p);
-      low = Math.min(low, p);
+      if (p > high) high = p;
+      if (p < low) low = p;
       close = p;
-      lastClose = p;
     }
+
+    // Add small wick extensions so highs/lows always extend beyond the body (premium look)
+    const bodyTop = Math.max(open, close);
+    const bodyBot = Math.min(open, close);
+    const wickPad = cfg.basePrice * cfg.volatility * (0.6 + Math.random() * 1.4);
+    high = Math.max(high, bodyTop + wickPad * (0.3 + Math.random() * 0.7));
+    low = Math.min(low, bodyBot - wickPad * (0.3 + Math.random() * 0.7));
+    high = round(high, cfg.decimals);
+    low = round(low, cfg.decimals);
+
+    runningClose = close;
 
     // Regime transition check
     st.regimeTicksLeft -= ticksPerCandle;
@@ -383,13 +396,16 @@ export function bootstrapHistory(
     st.candles.push({ time: bucket * 1000, open, high, low, close });
   }
 
-  // Set current bucket
+  // Set current bucket — opens at the last historical close for seamless continuity
   st.candleBucket = Math.floor(now / intervalSecs) * intervalSecs;
   st.currentCandle = {
     time: st.candleBucket * 1000,
-    open: lastClose,
-    high: lastClose,
-    low: lastClose,
-    close: lastClose,
+    open: runningClose,
+    high: runningClose,
+    low: runningClose,
+    close: runningClose,
   };
+  // Align live price to runningClose so the live candle starts smoothly
+  st.price = runningClose;
+  st.smoothedPrice = runningClose;
 }
