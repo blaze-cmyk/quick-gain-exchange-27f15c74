@@ -64,13 +64,13 @@ export function useSyntheticOTC(
       setCurrentPrice(result.price);
       setCandles(result.candles);
 
-      // Compute 24h-ish change from oldest candle
+      // Compute change from oldest visible candle
       if (result.candles.length >= 2) {
         const oldest = result.candles[0].open;
         const pct = ((result.price - oldest) / oldest) * 100;
         setPriceChange(Math.round(pct * 100) / 100);
       }
-    }, 1000);
+    }, 400);
 
     // Run one tick immediately
     const bias = computeHouseBias(activeTradesRef.current);
