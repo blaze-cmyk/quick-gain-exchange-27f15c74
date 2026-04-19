@@ -359,10 +359,14 @@ export function bootstrapHistory(
     let high = open, low = open, close = open;
 
     for (let t = 0; t < ticksPerCandle; t++) {
-      const noise = gaussRandom() * cfg.volatility;
+      let z = gaussRandom();
+      if (z > 2.8) z = 2.8;
+      if (z < -2.8) z = -2.8;
+      const noise = z * cfg.volatility;
       const meanRev = (cfg.basePrice - st.price) / cfg.basePrice * cfg.meanReversion;
       st.velocity = cfg.momentum * st.velocity + (1 - cfg.momentum) * (noise + meanRev + st.regimeBias);
-      st.price *= (1 + st.velocity);
+      st.price *= Math.exp(st.velocity);
+      st.smoothedPrice = cfg.smoothing * st.price + (1 - cfg.smoothing) * st.smoothedPrice;
       st.smoothedPrice = cfg.smoothing * st.price + (1 - cfg.smoothing) * st.smoothedPrice;
       const p = round(st.smoothedPrice, cfg.decimals);
       if (t === 0) open = p;
