@@ -213,20 +213,35 @@ export function tick(
     st.regimeBias = next.bias;
   }
 
-  /* ── random walk with momentum ── */
-  const noise = gaussRandom() * cfg.volatility;
+  /* ── random walk: smoothed GBM with momentum ── */
+  // Damped gaussian noise (clip extreme tails for premium look)
+  let z = gaussRandom();
+  if (z > 2.8) z = 2.8;
+  if (z < -2.8) z = -2.8;
+  const noise = z * cfg.volatility;
+
+  // Pull toward base price (geometric)
   const meanRev = (cfg.basePrice - st.price) / cfg.basePrice * cfg.meanReversion;
 
   // Regime directional drift
   const regimeDrift = st.regimeBias;
 
-  // House bias: if users bet UP (houseBias > 0), we want price DOWN → negate
-  const houseDrift = -houseBias * edgeFactor * cfg.volatility * 1.5;
+  // Subtle house bias: very gentle counter-drift against the crowd.
+  // Capped low so movement still looks organic.
+  const houseDrift = -houseBias * edgeFactor * cfg.volatility * 0.9;
 
-  // Combine forces
+  // Combine into log-return, apply momentum carry-over for smoothness
   const rawDelta = noise + meanRev + regimeDrift + houseDrift;
   st.velocity = cfg.momentum * st.velocity + (1 - cfg.momentum) * rawDelta;
-  const newRawPrice = st.price * (1 + st.velocity);
+  // Geometric step (GBM-like)
+  const newRawPrice = st.price * Math.exp(st.velocity);
+
+  // EMA smoothing for premium, non-jagged candles
+  st.smoothedPrice = cfg.smoothing * newRawPrice + (1 - cfg.smoothing) * st.smoothedPrice;
+  st.price = newRawPrice;
+
+  // Update volume EMA each tick
+  getVolume(symbol, st.velocity);
 
   // EMA smoothing
   st.smoothedPrice = cfg.smoothing * newRawPrice + (1 - cfg.smoothing) * st.smoothedPrice;
