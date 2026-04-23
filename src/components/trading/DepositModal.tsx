@@ -358,11 +358,13 @@ function MainView({
   setTab,
   onTransfer,
   onExchange,
+  onBuyCard,
 }: {
   tab: 'crypto' | 'cash';
   setTab: (t: 'crypto' | 'cash') => void;
   onTransfer: () => void;
   onExchange: () => void;
+  onBuyCard: () => void;
 }) {
   // Crypto network icons preview
   const previewTokens = TOKENS.slice(0, 10);
