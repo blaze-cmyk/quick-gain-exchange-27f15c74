@@ -317,6 +317,7 @@ export default function DepositModal({ open, onClose, balance }: DepositModalPro
                       setTab={setTab}
                       onTransfer={() => setView('transfer')}
                       onExchange={() => setView('exchange')}
+                      onBuyCard={() => setView('onramper')}
                     />
                   </motion.div>
                 )}
@@ -335,6 +336,11 @@ export default function DepositModal({ open, onClose, balance }: DepositModalPro
                 {view === 'exchange' && (
                   <motion.div key="exchange" variants={slideIn} initial="hidden" animate="visible" exit="exit">
                     <ExchangeView />
+                  </motion.div>
+                )}
+                {view === 'onramper' && (
+                  <motion.div key="onramper" variants={slideIn} initial="hidden" animate="visible" exit="exit">
+                    <OnramperView />
                   </motion.div>
                 )}
               </AnimatePresence>
