@@ -678,29 +678,42 @@ function WidgetStep({ deposit }: { deposit: DepositRecord }) {
   // Build widget URL with prefill params and the deposit id in partnerContext
   // so the webhook can resolve the row. See:
   // https://docs.onramper.com/docs/widget-customization
-  // Onramper widget URL. Docs: https://docs.onramper.com/docs/widget-customization
-  // Notes:
-  //  - apiKey is required and must be a valid pk_test_/pk_live_ key
-  //  - colors are hex without '#' (URL-encoding '#' breaks the parser → "Invalid Link")
-  //  - borderRadius is a number in px, NOT a CSS unit string
-  //  - defaultCrypto for stablecoins must include the network suffix (e.g. usdc_polygon).
-  //    Passing a bare 'usdc' is allowed in newer widgets but older builds reject it.
-  //  - partnerContext must be valid JSON string
+  // Onramper widget URL — built strictly per the official supported parameters.
+  // Docs:
+  //  - https://docs.onramper.com/docs/supported-widget-parameters
+  //  - https://docs.onramper.com/docs/theme-the-widget
+  //
+  // Important rules learned the hard way:
+  //  - apiKey is required (pk_test_ / pk_prod_).
+  //  - defaultFiat must be UPPERCASE ISO code (e.g. USD, EUR).
+  //  - defaultCrypto must be the Onramper Asset ID, UPPERCASE (e.g. USDC, BTC, ETH).
+  //  - defaultAmount is a plain number; only used when defaultFiat is also set.
+  //  - borderRadius / wgBorderRadius are UNITLESS rem numbers (e.g. "0.75"), never CSS strings.
+  //  - Color params are 6-digit hex without the leading '#'.
+  //  - partnerContext is a free-form string; we put a JSON blob with our deposit id
+  //    so the webhook can map the event back to our row.
+  //  - redirectAtCheckout=false → keeps the provider in a NEW tab, which is what we
+  //    want for a desktop iframe (default flips to true after Jun-2025 which would
+  //    break our iframe flow).
   const params = new URLSearchParams({
     apiKey: ONRAMPER_API_KEY,
     mode: 'buy',
+    defaultFiat: deposit.fiat_currency.toUpperCase(),
+    defaultAmount: String(deposit.fiat_amount),
+    defaultCrypto: (deposit.crypto_currency ?? 'USDC').toUpperCase(),
+    redirectAtCheckout: 'false',
+    partnerContext: JSON.stringify({ depositId: deposit.id }),
+    // Theming (all optional but harmless when valid)
     themeName: 'dark',
-    borderRadius: '12',
     containerColor: '0b0d12',
+    cardColor: '141821',
     primaryColor: '22c55e',
     secondaryColor: '141821',
     primaryTextColor: 'ffffff',
     secondaryTextColor: '9ca3af',
-    cardColor: '141821',
-    defaultFiat: deposit.fiat_currency.toLowerCase(),
-    defaultAmount: String(deposit.fiat_amount),
-    defaultCrypto: (deposit.crypto_currency ?? 'usdc').toLowerCase(),
-    partnerContext: JSON.stringify({ depositId: deposit.id }),
+    primaryBtnTextColor: 'ffffff',
+    borderRadius: '0.75',
+    wgBorderRadius: '1',
   });
   const src = `https://buy.onramper.com/?${params.toString()}`;
 
