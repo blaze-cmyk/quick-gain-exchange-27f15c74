@@ -2,7 +2,10 @@ import { useState, useRef, useEffect } from 'react';
 import { Bell, ChevronDown, GraduationCap, Plus, Send, Eye, Pencil, RefreshCw, X, LogOut, ArrowUpRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useAuth } from '@/hooks/useAuth';
+import { useBalance } from '@/hooks/useBalance';
 import arcanineLogo from '@/assets/arcanine-logo.png';
 import CurrencyExchangeModal from './CurrencyExchangeModal';
 import DepositModal from './DepositModal';
@@ -40,15 +43,22 @@ const CURRENCY_INFO: Record<string, { symbol: string; rate: number }> = {
 export default function BalanceHeader({ balance }: BalanceHeaderProps) {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const { user, signOut } = useAuth();
+  const { balance: liveBalance } = useBalance();
   const [showDropdown, setShowDropdown] = useState(false);
   const [accountType, setAccountType] = useState<AccountType>('live');
   const [showSwitchModal, setShowSwitchModal] = useState(false);
   const [pendingSwitchTo, setPendingSwitchTo] = useState<AccountType | null>(null);
-  const [liveBalance] = useState(8562.45);
   const [currency, setCurrency] = useState('USD');
   const [showExchangeModal, setShowExchangeModal] = useState(false);
   const [showDepositModal, setShowDepositModal] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const handleSignOut = async () => {
+    await signOut();
+    toast.success('Signed out');
+    navigate('/auth', { replace: true });
+  };
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -103,9 +113,9 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
           </button>
         </div>
         <div className="text-sm text-secondary-foreground mt-2 truncate font-medium">
-          trader@arcanine.com
+          {user?.email ?? 'guest'}
         </div>
-        <div className="text-xs text-secondary-foreground mt-0.5">ID: 85396662</div>
+        <div className="text-xs text-secondary-foreground mt-0.5">ID: {user?.id?.slice(0, 8) ?? '—'}</div>
         <div className="flex items-center gap-2 mt-1.5">
           <span className="text-xs text-secondary-foreground font-medium">Currency:</span>
           <span className="text-xs font-bold text-foreground">{currency}</span>
@@ -182,7 +192,10 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
             {item.label}
           </button>
         ))}
-        <button className="w-full text-left px-3 py-2 text-sm text-primary font-semibold hover:bg-accent rounded-md transition-colors flex items-center gap-2 mt-1">
+        <button
+          onClick={handleSignOut}
+          className="w-full text-left px-3 py-2 text-sm text-primary font-semibold hover:bg-accent rounded-md transition-colors flex items-center gap-2 mt-1"
+        >
           <LogOut size={15} strokeWidth={2.5} />
           Logout
         </button>
