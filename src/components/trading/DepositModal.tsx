@@ -1,9 +1,12 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ChevronLeft, ChevronDown, Copy, Check, Info, QrCode } from 'lucide-react';
+import { X, ChevronLeft, ChevronDown, Copy, Check, Info, QrCode, CreditCard } from 'lucide-react';
 
 // ─── Types ───
-type DepositView = 'main' | 'transfer' | 'exchange';
+type DepositView = 'main' | 'transfer' | 'exchange' | 'onramper';
+
+// Onramper publishable test API key (safe to ship in frontend)
+const ONRAMPER_API_KEY = 'pk_test_01KPD2B41QXJJG0PBK2QQTPVW4';
 
 interface Token {
   symbol: string;
@@ -287,7 +290,13 @@ export default function DepositModal({ open, onClose, balance }: DepositModalPro
               ) : <div className="w-7" />}
               <div className="text-center flex-1">
                 <h2 className="text-lg font-bold text-foreground" style={{ fontFamily: "'General Sans', sans-serif" }}>
-                  {view === 'main' ? 'Deposit' : view === 'transfer' ? 'Transfer Crypto' : 'Select an exchange'}
+                  {view === 'main'
+                    ? 'Deposit'
+                    : view === 'transfer'
+                    ? 'Transfer Crypto'
+                    : view === 'exchange'
+                    ? 'Select an exchange'
+                    : 'Buy with Card'}
                 </h2>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   Arcanine Balance: ${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
@@ -308,6 +317,7 @@ export default function DepositModal({ open, onClose, balance }: DepositModalPro
                       setTab={setTab}
                       onTransfer={() => setView('transfer')}
                       onExchange={() => setView('exchange')}
+                      onBuyCard={() => setView('onramper')}
                     />
                   </motion.div>
                 )}
@@ -328,6 +338,11 @@ export default function DepositModal({ open, onClose, balance }: DepositModalPro
                     <ExchangeView />
                   </motion.div>
                 )}
+                {view === 'onramper' && (
+                  <motion.div key="onramper" variants={slideIn} initial="hidden" animate="visible" exit="exit">
+                    <OnramperView />
+                  </motion.div>
+                )}
               </AnimatePresence>
             </div>
           </motion.div>
@@ -343,11 +358,13 @@ function MainView({
   setTab,
   onTransfer,
   onExchange,
+  onBuyCard,
 }: {
   tab: 'crypto' | 'cash';
   setTab: (t: 'crypto' | 'cash') => void;
   onTransfer: () => void;
   onExchange: () => void;
+  onBuyCard: () => void;
 }) {
   // Crypto network icons preview
   const previewTokens = TOKENS.slice(0, 10);
@@ -412,6 +429,43 @@ function MainView({
           ))}
         </div>
       </button>
+
+      {/* Buy with Card (Onramper) */}
+      <button
+        onClick={onBuyCard}
+        className="w-full flex items-center gap-4 p-4 rounded-xl border border-border hover:border-primary/40 hover:bg-secondary/50 transition-all group"
+      >
+        <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center">
+          <CreditCard size={20} className="text-primary" />
+        </div>
+        <div className="text-left flex-1">
+          <div className="font-bold text-sm text-foreground">Buy with Card</div>
+          <div className="text-xs text-muted-foreground">Visa, Mastercard, Apple Pay • Instant</div>
+        </div>
+        <span className="text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded-md bg-primary/10 text-primary">
+          Onramper
+        </span>
+      </button>
+    </div>
+  );
+}
+
+// ─── Onramper Buy with Card View ───
+function OnramperView() {
+  const src = `https://buy.onramper.com/?apiKey=${ONRAMPER_API_KEY}&mode=buy&themeName=dark&borderRadius=0.75rem&containerColor=0b0d12&primaryColor=22c55e&secondaryColor=141821&primaryTextColor=ffffff&secondaryTextColor=9ca3af&cardColor=141821`;
+  return (
+    <div className="rounded-xl overflow-hidden border border-border bg-secondary/30">
+      <iframe
+        title="Onramper Widget"
+        src={src}
+        height="640"
+        width="100%"
+        allow="accelerometer; autoplay; camera; gyroscope; payment; microphone"
+        style={{ border: 'none', display: 'block' }}
+      />
+      <p className="text-[10px] text-muted-foreground text-center py-2 px-3 border-t border-border">
+        Powered by Onramper • Test mode — no real charges
+      </p>
     </div>
   );
 }
