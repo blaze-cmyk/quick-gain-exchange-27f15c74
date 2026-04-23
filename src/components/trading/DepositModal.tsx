@@ -466,11 +466,11 @@ type OnramperStep = 'prefill' | 'widget' | 'result';
 
 const FIAT_CURRENCIES = ['USD', 'EUR', 'GBP', 'CAD', 'AUD'] as const;
 const TARGET_CRYPTOS = [
-  { code: 'usdc', label: 'USDC', sub: 'USD Coin' },
-  { code: 'usdt', label: 'USDT', sub: 'Tether' },
-  { code: 'btc',  label: 'BTC',  sub: 'Bitcoin' },
-  { code: 'eth',  label: 'ETH',  sub: 'Ethereum' },
-  { code: 'sol',  label: 'SOL',  sub: 'Solana' },
+  { code: 'USDC', label: 'USDC', sub: 'USD Coin' },
+  { code: 'USDT', label: 'USDT', sub: 'Tether' },
+  { code: 'BTC', label: 'BTC', sub: 'Bitcoin' },
+  { code: 'ETH', label: 'ETH', sub: 'Ethereum' },
+  { code: 'SOL', label: 'SOL', sub: 'Solana' },
 ] as const;
 
 const QUICK_AMOUNTS = [50, 100, 250, 500];
