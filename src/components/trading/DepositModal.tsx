@@ -678,11 +678,19 @@ function WidgetStep({ deposit }: { deposit: DepositRecord }) {
   // Build widget URL with prefill params and the deposit id in partnerContext
   // so the webhook can resolve the row. See:
   // https://docs.onramper.com/docs/widget-customization
+  // Onramper widget URL. Docs: https://docs.onramper.com/docs/widget-customization
+  // Notes:
+  //  - apiKey is required and must be a valid pk_test_/pk_live_ key
+  //  - colors are hex without '#' (URL-encoding '#' breaks the parser → "Invalid Link")
+  //  - borderRadius is a number in px, NOT a CSS unit string
+  //  - defaultCrypto for stablecoins must include the network suffix (e.g. usdc_polygon).
+  //    Passing a bare 'usdc' is allowed in newer widgets but older builds reject it.
+  //  - partnerContext must be valid JSON string
   const params = new URLSearchParams({
     apiKey: ONRAMPER_API_KEY,
     mode: 'buy',
     themeName: 'dark',
-    borderRadius: '0.75rem',
+    borderRadius: '12',
     containerColor: '0b0d12',
     primaryColor: '22c55e',
     secondaryColor: '141821',
