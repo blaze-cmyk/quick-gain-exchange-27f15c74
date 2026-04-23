@@ -113,9 +113,9 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
           </button>
         </div>
         <div className="text-sm text-secondary-foreground mt-2 truncate font-medium">
-          trader@arcanine.com
+          {user?.email ?? 'guest'}
         </div>
-        <div className="text-xs text-secondary-foreground mt-0.5">ID: 85396662</div>
+        <div className="text-xs text-secondary-foreground mt-0.5">ID: {user?.id?.slice(0, 8) ?? '—'}</div>
         <div className="flex items-center gap-2 mt-1.5">
           <span className="text-xs text-secondary-foreground font-medium">Currency:</span>
           <span className="text-xs font-bold text-foreground">{currency}</span>
@@ -192,7 +192,10 @@ export default function BalanceHeader({ balance }: BalanceHeaderProps) {
             {item.label}
           </button>
         ))}
-        <button className="w-full text-left px-3 py-2 text-sm text-primary font-semibold hover:bg-accent rounded-md transition-colors flex items-center gap-2 mt-1">
+        <button
+          onClick={handleSignOut}
+          className="w-full text-left px-3 py-2 text-sm text-primary font-semibold hover:bg-accent rounded-md transition-colors flex items-center gap-2 mt-1"
+        >
           <LogOut size={15} strokeWidth={2.5} />
           Logout
         </button>
