@@ -103,8 +103,12 @@ Deno.serve(async (req) => {
       event.transactionId ?? event.txId ?? event.id ?? event.data?.transactionId;
     const status: string =
       event.status ?? event.eventType ?? event.data?.status ?? 'pending';
-    const partnerContext = event.partnerContext ?? event.metadata ?? event.data?.partnerContext ?? {};
-    const depositId: string | undefined = partnerContext.depositId ?? event.partnerOrderId;
+    const partnerContextRaw =
+      event.partnerContext ?? event.metadata ?? event.data?.partnerContext ?? null;
+    const depositId: string | undefined =
+      typeof partnerContextRaw === 'string'
+        ? partnerContextRaw
+        : partnerContextRaw?.depositId ?? event.partnerOrderId;
     const fiatAmount: number | undefined = Number(
       event.fiatAmount ?? event.inAmount ?? event.data?.fiatAmount,
     ) || undefined;
