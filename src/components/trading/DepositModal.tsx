@@ -290,7 +290,13 @@ export default function DepositModal({ open, onClose, balance }: DepositModalPro
               ) : <div className="w-7" />}
               <div className="text-center flex-1">
                 <h2 className="text-lg font-bold text-foreground" style={{ fontFamily: "'General Sans', sans-serif" }}>
-                  {view === 'main' ? 'Deposit' : view === 'transfer' ? 'Transfer Crypto' : 'Select an exchange'}
+                  {view === 'main'
+                    ? 'Deposit'
+                    : view === 'transfer'
+                    ? 'Transfer Crypto'
+                    : view === 'exchange'
+                    ? 'Select an exchange'
+                    : 'Buy with Card'}
                 </h2>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   Arcanine Balance: ${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
