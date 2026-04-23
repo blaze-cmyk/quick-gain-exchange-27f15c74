@@ -14,16 +14,176 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      balances: {
+        Row: {
+          created_at: string
+          id: string
+          updated_at: string
+          usd_balance: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          updated_at?: string
+          usd_balance?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          updated_at?: string
+          usd_balance?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      deposits: {
+        Row: {
+          created_at: string
+          credited_amount_usd: number | null
+          credited_at: string | null
+          crypto_amount: number | null
+          crypto_currency: string | null
+          failure_category:
+            | Database["public"]["Enums"]["deposit_failure_category"]
+            | null
+          failure_reason: string | null
+          fiat_amount: number
+          fiat_currency: string
+          id: string
+          onramper_transaction_id: string | null
+          provider: string | null
+          raw_event: Json | null
+          status: Database["public"]["Enums"]["deposit_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          credited_amount_usd?: number | null
+          credited_at?: string | null
+          crypto_amount?: number | null
+          crypto_currency?: string | null
+          failure_category?:
+            | Database["public"]["Enums"]["deposit_failure_category"]
+            | null
+          failure_reason?: string | null
+          fiat_amount: number
+          fiat_currency?: string
+          id?: string
+          onramper_transaction_id?: string | null
+          provider?: string | null
+          raw_event?: Json | null
+          status?: Database["public"]["Enums"]["deposit_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          credited_amount_usd?: number | null
+          credited_at?: string | null
+          crypto_amount?: number | null
+          crypto_currency?: string | null
+          failure_category?:
+            | Database["public"]["Enums"]["deposit_failure_category"]
+            | null
+          failure_reason?: string | null
+          fiat_amount?: number
+          fiat_currency?: string
+          id?: string
+          onramper_transaction_id?: string | null
+          provider?: string | null
+          raw_event?: Json | null
+          status?: Database["public"]["Enums"]["deposit_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          email: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      credit_balance: {
+        Args: {
+          _amount_usd: number
+          _crypto_amount: number
+          _crypto_currency: string
+          _deposit_id: string
+          _onramper_transaction_id: string
+          _raw_event: Json
+          _user_id: string
+        }
+        Returns: {
+          created_at: string
+          credited_amount_usd: number | null
+          credited_at: string | null
+          crypto_amount: number | null
+          crypto_currency: string | null
+          failure_category:
+            | Database["public"]["Enums"]["deposit_failure_category"]
+            | null
+          failure_reason: string | null
+          fiat_amount: number
+          fiat_currency: string
+          id: string
+          onramper_transaction_id: string | null
+          provider: string | null
+          raw_event: Json | null
+          status: Database["public"]["Enums"]["deposit_status"]
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "deposits"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
     }
     Enums: {
-      [_ in never]: never
+      deposit_failure_category:
+        | "kyc"
+        | "region"
+        | "payment_method"
+        | "limit"
+        | "other"
+      deposit_status:
+        | "pending"
+        | "processing"
+        | "completed"
+        | "failed"
+        | "expired"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +310,21 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      deposit_failure_category: [
+        "kyc",
+        "region",
+        "payment_method",
+        "limit",
+        "other",
+      ],
+      deposit_status: [
+        "pending",
+        "processing",
+        "completed",
+        "failed",
+        "expired",
+      ],
+    },
   },
 } as const
