@@ -1,9 +1,12 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ChevronLeft, ChevronDown, Copy, Check, Info, QrCode } from 'lucide-react';
+import { X, ChevronLeft, ChevronDown, Copy, Check, Info, QrCode, CreditCard } from 'lucide-react';
 
 // ─── Types ───
-type DepositView = 'main' | 'transfer' | 'exchange';
+type DepositView = 'main' | 'transfer' | 'exchange' | 'onramper';
+
+// Onramper publishable test API key (safe to ship in frontend)
+const ONRAMPER_API_KEY = 'pk_test_01KPD2B41QXJJG0PBK2QQTPVW4';
 
 interface Token {
   symbol: string;
