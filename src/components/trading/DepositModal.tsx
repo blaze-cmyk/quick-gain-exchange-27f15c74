@@ -841,8 +841,8 @@ const FAILURE_GUIDANCE: Record<DepositFailureCategory, {
       'Make sure your name and address match your card details.',
     ],
     Icon: ShieldAlert,
-    iconBg: 'bg-warning/15',
-    iconColor: 'text-warning',
+    iconBg: 'bg-primary/15',
+    iconColor: 'text-primary',
   },
   region: {
     title: 'Not available in your region',
@@ -877,8 +877,8 @@ const FAILURE_GUIDANCE: Record<DepositFailureCategory, {
       'Use a different provider with higher limits.',
     ],
     Icon: AlertTriangle,
-    iconBg: 'bg-warning/15',
-    iconColor: 'text-warning',
+    iconBg: 'bg-primary/15',
+    iconColor: 'text-primary',
   },
   other: {
     title: 'Deposit could not be completed',
