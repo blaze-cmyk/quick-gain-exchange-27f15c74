@@ -1,1 +1,4 @@
 project_id = "evlqyjqcamqxupamklgy"
+
+[functions.onramper-webhook]
+verify_jwt = false
