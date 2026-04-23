@@ -429,6 +429,43 @@ function MainView({
           ))}
         </div>
       </button>
+
+      {/* Buy with Card (Onramper) */}
+      <button
+        onClick={onBuyCard}
+        className="w-full flex items-center gap-4 p-4 rounded-xl border border-border hover:border-primary/40 hover:bg-secondary/50 transition-all group"
+      >
+        <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center">
+          <CreditCard size={20} className="text-primary" />
+        </div>
+        <div className="text-left flex-1">
+          <div className="font-bold text-sm text-foreground">Buy with Card</div>
+          <div className="text-xs text-muted-foreground">Visa, Mastercard, Apple Pay • Instant</div>
+        </div>
+        <span className="text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded-md bg-primary/10 text-primary">
+          Onramper
+        </span>
+      </button>
+    </div>
+  );
+}
+
+// ─── Onramper Buy with Card View ───
+function OnramperView() {
+  const src = `https://buy.onramper.com/?apiKey=${ONRAMPER_API_KEY}&mode=buy&themeName=dark&borderRadius=0.75rem&containerColor=0b0d12&primaryColor=22c55e&secondaryColor=141821&primaryTextColor=ffffff&secondaryTextColor=9ca3af&cardColor=141821`;
+  return (
+    <div className="rounded-xl overflow-hidden border border-border bg-secondary/30">
+      <iframe
+        title="Onramper Widget"
+        src={src}
+        height="640"
+        width="100%"
+        allow="accelerometer; autoplay; camera; gyroscope; payment; microphone"
+        style={{ border: 'none', display: 'block' }}
+      />
+      <p className="text-[10px] text-muted-foreground text-center py-2 px-3 border-t border-border">
+        Powered by Onramper • Test mode — no real charges
+      </p>
     </div>
   );
 }
