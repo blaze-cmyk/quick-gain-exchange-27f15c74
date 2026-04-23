@@ -456,24 +456,444 @@ function MainView({
 }
 
 // ─── Onramper Buy with Card View ───
+//
+// Three-step flow:
+//   1. prefill  – user picks fiat amount + crypto + fiat currency
+//   2. widget   – iframe is shown; status pill at top reflects DB state
+//   3. result   – success / failure / KYC / region / payment-method screen
+
+type OnramperStep = 'prefill' | 'widget' | 'result';
+
+const FIAT_CURRENCIES = ['USD', 'EUR', 'GBP', 'CAD', 'AUD'] as const;
+const TARGET_CRYPTOS = [
+  { code: 'usdc', label: 'USDC', sub: 'USD Coin' },
+  { code: 'usdt', label: 'USDT', sub: 'Tether' },
+  { code: 'btc',  label: 'BTC',  sub: 'Bitcoin' },
+  { code: 'eth',  label: 'ETH',  sub: 'Ethereum' },
+  { code: 'sol',  label: 'SOL',  sub: 'Solana' },
+] as const;
+
+const QUICK_AMOUNTS = [50, 100, 250, 500];
+
 function OnramperView() {
-  const src = `https://buy.onramper.com/?apiKey=${ONRAMPER_API_KEY}&mode=buy&themeName=dark&borderRadius=0.75rem&containerColor=0b0d12&primaryColor=22c55e&secondaryColor=141821&primaryTextColor=ffffff&secondaryTextColor=9ca3af&cardColor=141821`;
-  return (
-    <div className="rounded-xl overflow-hidden border border-border bg-secondary/30">
-      <iframe
-        title="Onramper Widget"
-        src={src}
-        height="640"
-        width="100%"
-        allow="accelerometer; autoplay; camera; gyroscope; payment; microphone"
-        style={{ border: 'none', display: 'block' }}
+  const { activeDeposit, createPendingDeposit, reset } = useDeposit();
+  const [step, setStep] = useState<OnramperStep>('prefill');
+
+  // Prefill form state
+  const [fiatAmount, setFiatAmount] = useState<number>(50);
+  const [fiatCurrency, setFiatCurrency] = useState<string>('USD');
+  const [crypto, setCrypto] = useState<typeof TARGET_CRYPTOS[number]>(TARGET_CRYPTOS[0]);
+  const [creating, setCreating] = useState(false);
+
+  // Drive step changes from realtime deposit status
+  useEffect(() => {
+    if (!activeDeposit) return;
+    if (
+      activeDeposit.status === 'completed' ||
+      activeDeposit.status === 'failed' ||
+      activeDeposit.status === 'expired'
+    ) {
+      setStep('result');
+    } else if (step === 'prefill') {
+      setStep('widget');
+    }
+  }, [activeDeposit, step]);
+
+  // Listen for postMessage from the Onramper iframe so the UI feels alive
+  // even before the webhook fires. Onramper emits string events like
+  // 'transactionCompleted', 'transactionFailed', etc.
+  useEffect(() => {
+    if (step !== 'widget') return;
+    const onMsg = (e: MessageEvent) => {
+      const data = e.data;
+      if (!data) return;
+      const type =
+        typeof data === 'string'
+          ? data
+          : data.type ?? data.event ?? data.eventType;
+      if (typeof type !== 'string') return;
+      const t = type.toLowerCase();
+      if (t.includes('completed') || t.includes('success')) {
+        toast.success('Payment submitted — waiting for confirmation');
+      } else if (t.includes('failed') || t.includes('declined')) {
+        toast.error('Payment was declined');
+      }
+    };
+    window.addEventListener('message', onMsg);
+    return () => window.removeEventListener('message', onMsg);
+  }, [step]);
+
+  const handleStart = async () => {
+    if (fiatAmount < 5) {
+      toast.error('Minimum deposit is 5');
+      return;
+    }
+    setCreating(true);
+    try {
+      await createPendingDeposit({
+        fiat_amount: fiatAmount,
+        fiat_currency: fiatCurrency,
+        crypto_currency: crypto.code,
+      });
+      setStep('widget');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to start deposit');
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  const handleRetry = () => {
+    reset();
+    setStep('prefill');
+  };
+
+  if (step === 'prefill') {
+    return (
+      <PrefillStep
+        fiatAmount={fiatAmount}
+        setFiatAmount={setFiatAmount}
+        fiatCurrency={fiatCurrency}
+        setFiatCurrency={setFiatCurrency}
+        crypto={crypto}
+        setCrypto={setCrypto}
+        onContinue={handleStart}
+        creating={creating}
       />
-      <p className="text-[10px] text-muted-foreground text-center py-2 px-3 border-t border-border">
-        Powered by Onramper • Test mode — no real charges
-      </p>
+    );
+  }
+
+  if (step === 'widget' && activeDeposit) {
+    return <WidgetStep deposit={activeDeposit} />;
+  }
+
+  if (step === 'result' && activeDeposit) {
+    return <ResultStep deposit={activeDeposit} onRetry={handleRetry} />;
+  }
+
+  return null;
+}
+
+// ─── Step 1: Prefill ───
+function PrefillStep({
+  fiatAmount, setFiatAmount, fiatCurrency, setFiatCurrency,
+  crypto, setCrypto, onContinue, creating,
+}: {
+  fiatAmount: number;
+  setFiatAmount: (n: number) => void;
+  fiatCurrency: string;
+  setFiatCurrency: (c: string) => void;
+  crypto: typeof TARGET_CRYPTOS[number];
+  setCrypto: (c: typeof TARGET_CRYPTOS[number]) => void;
+  onContinue: () => void;
+  creating: boolean;
+}) {
+  const symbol = fiatCurrency === 'EUR' ? '€' : fiatCurrency === 'GBP' ? '£' : '$';
+  return (
+    <div className="space-y-4">
+      {/* Amount */}
+      <div>
+        <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+          Amount
+        </label>
+        <div className="mt-1 flex items-center gap-2 px-4 py-3 rounded-xl border border-border bg-secondary/40 focus-within:border-primary/50">
+          <span className="text-lg font-bold text-muted-foreground">{symbol}</span>
+          <input
+            type="number"
+            min={5}
+            step="any"
+            value={fiatAmount}
+            onChange={(e) => setFiatAmount(Number(e.target.value))}
+            className="bg-transparent flex-1 text-2xl font-bold text-foreground outline-none tabular-nums"
+          />
+          <select
+            value={fiatCurrency}
+            onChange={(e) => setFiatCurrency(e.target.value)}
+            className="bg-secondary text-xs font-bold text-foreground rounded-md px-2 py-1 border border-border outline-none"
+          >
+            {FIAT_CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
+          </select>
+        </div>
+        <div className="flex gap-2 mt-2">
+          {QUICK_AMOUNTS.map((a) => (
+            <button
+              key={a}
+              type="button"
+              onClick={() => setFiatAmount(a)}
+              className={`flex-1 py-1.5 rounded-lg text-xs font-bold border transition-colors ${
+                fiatAmount === a
+                  ? 'bg-primary/15 border-primary/40 text-primary'
+                  : 'bg-secondary/40 border-border text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              {symbol}{a}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Crypto */}
+      <div>
+        <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+          You receive
+        </label>
+        <div className="mt-1 grid grid-cols-5 gap-2">
+          {TARGET_CRYPTOS.map((c) => (
+            <button
+              key={c.code}
+              type="button"
+              onClick={() => setCrypto(c)}
+              className={`px-2 py-2.5 rounded-xl border text-center transition-colors ${
+                crypto.code === c.code
+                  ? 'bg-primary/15 border-primary/40 text-primary'
+                  : 'bg-secondary/40 border-border text-foreground hover:border-primary/30'
+              }`}
+            >
+              <div className="text-xs font-bold">{c.label}</div>
+              <div className="text-[10px] text-muted-foreground mt-0.5 truncate">{c.sub}</div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="text-[11px] text-muted-foreground bg-secondary/40 rounded-lg px-3 py-2 flex gap-2">
+        <Info size={14} className="text-primary mt-0.5 shrink-0" />
+        <span>You'll be guided through KYC and payment in the next step. Funds are credited to your USD balance once the purchase is confirmed.</span>
+      </div>
+
+      <button
+        onClick={onContinue}
+        disabled={creating || fiatAmount < 5}
+        className="w-full py-3 rounded-xl bg-gradient-accent text-primary-foreground font-bold text-sm transition-opacity disabled:opacity-60 flex items-center justify-center gap-2"
+      >
+        {creating ? <Loader2 size={16} className="animate-spin" /> : <CreditCard size={16} />}
+        {creating ? 'Preparing…' : `Continue with ${symbol}${fiatAmount.toLocaleString()}`}
+      </button>
     </div>
   );
 }
+
+// ─── Step 2: Widget + status pill ───
+function WidgetStep({ deposit }: { deposit: DepositRecord }) {
+  // Build widget URL with prefill params and the deposit id in partnerContext
+  // so the webhook can resolve the row. See:
+  // https://docs.onramper.com/docs/widget-customization
+  const params = new URLSearchParams({
+    apiKey: ONRAMPER_API_KEY,
+    mode: 'buy',
+    themeName: 'dark',
+    borderRadius: '0.75rem',
+    containerColor: '0b0d12',
+    primaryColor: '22c55e',
+    secondaryColor: '141821',
+    primaryTextColor: 'ffffff',
+    secondaryTextColor: '9ca3af',
+    cardColor: '141821',
+    defaultFiat: deposit.fiat_currency.toLowerCase(),
+    defaultAmount: String(deposit.fiat_amount),
+    defaultCrypto: (deposit.crypto_currency ?? 'usdc').toLowerCase(),
+    partnerContext: JSON.stringify({ depositId: deposit.id }),
+  });
+  const src = `https://buy.onramper.com/?${params.toString()}`;
+
+  const statusUi = STATUS_UI[deposit.status] ?? STATUS_UI.pending;
+
+  return (
+    <div className="space-y-3">
+      <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border ${statusUi.cls}`}>
+        <statusUi.icon size={14} className={statusUi.iconCls} />
+        <span className="text-xs font-bold">{statusUi.label}</span>
+        <span className="ml-auto text-[10px] text-muted-foreground tabular-nums">
+          #{deposit.id.slice(0, 8)}
+        </span>
+      </div>
+      <div className="rounded-xl overflow-hidden border border-border bg-secondary/30">
+        <iframe
+          title="Onramper Widget"
+          src={src}
+          height="640"
+          width="100%"
+          allow="accelerometer; autoplay; camera; gyroscope; payment; microphone"
+          style={{ border: 'none', display: 'block' }}
+        />
+        <p className="text-[10px] text-muted-foreground text-center py-2 px-3 border-t border-border">
+          Powered by Onramper • Test mode — no real charges
+        </p>
+      </div>
+    </div>
+  );
+}
+
+const STATUS_UI = {
+  pending: {
+    label: 'Awaiting payment',
+    icon: Loader2,
+    iconCls: 'text-primary animate-spin',
+    cls: 'border-primary/30 bg-primary/5 text-foreground',
+  },
+  processing: {
+    label: 'Processing payment',
+    icon: Loader2,
+    iconCls: 'text-primary animate-spin',
+    cls: 'border-primary/30 bg-primary/5 text-foreground',
+  },
+  completed: {
+    label: 'Completed',
+    icon: Check,
+    iconCls: 'text-success',
+    cls: 'border-success/30 bg-success/5 text-foreground',
+  },
+  failed: {
+    label: 'Failed',
+    icon: AlertTriangle,
+    iconCls: 'text-destructive',
+    cls: 'border-destructive/30 bg-destructive/5 text-foreground',
+  },
+  expired: {
+    label: 'Expired',
+    icon: AlertTriangle,
+    iconCls: 'text-muted-foreground',
+    cls: 'border-border bg-secondary/40 text-foreground',
+  },
+} as const;
+
+// ─── Step 3: Result screens ───
+function ResultStep({ deposit, onRetry }: { deposit: DepositRecord; onRetry: () => void }) {
+  if (deposit.status === 'completed') {
+    return (
+      <div className="text-center py-6 space-y-4">
+        <div className="mx-auto w-14 h-14 rounded-full bg-success/15 flex items-center justify-center">
+          <Check size={28} className="text-success" strokeWidth={2.8} />
+        </div>
+        <div>
+          <h3 className="text-lg font-bold text-foreground">Deposit successful</h3>
+          <p className="text-sm text-muted-foreground mt-1">
+            ${Number(deposit.credited_amount_usd ?? deposit.fiat_amount).toFixed(2)} has been added to your balance.
+          </p>
+        </div>
+        <button
+          onClick={onRetry}
+          className="w-full py-3 rounded-xl bg-secondary hover:bg-accent border border-border text-foreground font-bold text-sm transition-colors"
+        >
+          Make another deposit
+        </button>
+      </div>
+    );
+  }
+
+  // Failed / expired — pick guidance based on category
+  const cat: DepositFailureCategory = deposit.failure_category ?? 'other';
+  const guidance = FAILURE_GUIDANCE[cat];
+
+  return (
+    <div className="text-center py-4 space-y-4">
+      <div className={`mx-auto w-14 h-14 rounded-full ${guidance.iconBg} flex items-center justify-center`}>
+        <guidance.Icon size={26} className={guidance.iconColor} strokeWidth={2.4} />
+      </div>
+      <div>
+        <h3 className="text-lg font-bold text-foreground">{guidance.title}</h3>
+        <p className="text-sm text-muted-foreground mt-1.5 px-2">
+          {deposit.failure_reason ?? guidance.description}
+        </p>
+      </div>
+
+      <ul className="text-left text-xs text-muted-foreground space-y-1.5 px-2">
+        {guidance.steps.map((s, i) => (
+          <li key={i} className="flex gap-2">
+            <span className="text-primary font-bold">{i + 1}.</span>
+            <span>{s}</span>
+          </li>
+        ))}
+      </ul>
+
+      <div className="flex gap-2">
+        <button
+          onClick={onRetry}
+          className="flex-1 py-3 rounded-xl bg-gradient-accent text-primary-foreground font-bold text-sm flex items-center justify-center gap-2"
+        >
+          <RefreshCw size={14} /> Try again
+        </button>
+        <a
+          href="mailto:support@onramper.com"
+          className="flex-1 py-3 rounded-xl bg-secondary hover:bg-accent border border-border text-foreground font-bold text-sm flex items-center justify-center"
+        >
+          Contact support
+        </a>
+      </div>
+    </div>
+  );
+}
+
+const FAILURE_GUIDANCE: Record<DepositFailureCategory, {
+  title: string;
+  description: string;
+  steps: string[];
+  Icon: typeof ShieldAlert;
+  iconBg: string;
+  iconColor: string;
+}> = {
+  kyc: {
+    title: 'Identity verification needed',
+    description: 'The provider needs to verify your identity before completing the purchase.',
+    steps: [
+      'Open the widget again and complete the KYC step.',
+      'Have a government-issued photo ID ready (passport, driver\'s license).',
+      'Make sure your name and address match your card details.',
+    ],
+    Icon: ShieldAlert,
+    iconBg: 'bg-warning/15',
+    iconColor: 'text-warning',
+  },
+  region: {
+    title: 'Not available in your region',
+    description: 'This payment method is not currently supported in your country.',
+    steps: [
+      'Try a different payment provider (we route through 30+ providers).',
+      'Use the Transfer Crypto option to deposit from an exchange or wallet.',
+      'Contact support for help with alternative on-ramps.',
+    ],
+    Icon: Globe,
+    iconBg: 'bg-secondary',
+    iconColor: 'text-muted-foreground',
+  },
+  payment_method: {
+    title: 'Card payment declined',
+    description: 'Your card issuer declined the transaction.',
+    steps: [
+      'Check your card details and available balance.',
+      'Some banks block crypto purchases — try a different card or contact your bank.',
+      'You can also try Apple Pay, Google Pay, or a bank transfer.',
+    ],
+    Icon: CreditCard,
+    iconBg: 'bg-destructive/15',
+    iconColor: 'text-destructive',
+  },
+  limit: {
+    title: 'Limit exceeded',
+    description: 'The amount is outside the provider\'s limits for your account.',
+    steps: [
+      'Try a smaller amount that fits within your daily/monthly limit.',
+      'Complete additional verification to raise your limits.',
+      'Use a different provider with higher limits.',
+    ],
+    Icon: AlertTriangle,
+    iconBg: 'bg-warning/15',
+    iconColor: 'text-warning',
+  },
+  other: {
+    title: 'Deposit could not be completed',
+    description: 'Something went wrong with the purchase. No funds were charged.',
+    steps: [
+      'Try the deposit again — most issues are temporary.',
+      'If it keeps failing, switch to a different payment method.',
+      'Contact support and include the reference shown above.',
+    ],
+    Icon: AlertTriangle,
+    iconBg: 'bg-destructive/15',
+    iconColor: 'text-destructive',
+  },
+};
+
 
 // ─── Transfer View ───
 function TransferView({
