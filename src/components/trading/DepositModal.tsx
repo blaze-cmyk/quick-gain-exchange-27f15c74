@@ -1,6 +1,11 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ChevronLeft, ChevronDown, Copy, Check, Info, QrCode, CreditCard } from 'lucide-react';
+import {
+  X, ChevronLeft, ChevronDown, Copy, Check, Info, QrCode, CreditCard,
+  Loader2, AlertTriangle, ShieldAlert, Globe, RefreshCw, MapPin,
+} from 'lucide-react';
+import { toast } from 'sonner';
+import { useDeposit, type DepositRecord, type DepositFailureCategory } from '@/hooks/useDeposit';
 
 // ─── Types ───
 type DepositView = 'main' | 'transfer' | 'exchange' | 'onramper';
