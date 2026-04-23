@@ -43,15 +43,22 @@ const CURRENCY_INFO: Record<string, { symbol: string; rate: number }> = {
 export default function BalanceHeader({ balance }: BalanceHeaderProps) {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const { user, signOut } = useAuth();
+  const { balance: liveBalance } = useBalance();
   const [showDropdown, setShowDropdown] = useState(false);
   const [accountType, setAccountType] = useState<AccountType>('live');
   const [showSwitchModal, setShowSwitchModal] = useState(false);
   const [pendingSwitchTo, setPendingSwitchTo] = useState<AccountType | null>(null);
-  const [liveBalance] = useState(8562.45);
   const [currency, setCurrency] = useState('USD');
   const [showExchangeModal, setShowExchangeModal] = useState(false);
   const [showDepositModal, setShowDepositModal] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const handleSignOut = async () => {
+    await signOut();
+    toast.success('Signed out');
+    navigate('/auth', { replace: true });
+  };
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
