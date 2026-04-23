@@ -675,26 +675,9 @@ function PrefillStep({
 
 // ─── Step 2: Widget + status pill ───
 function WidgetStep({ deposit }: { deposit: DepositRecord }) {
-  // Build widget URL with prefill params and the deposit id in partnerContext
-  // so the webhook can resolve the row. See:
-  // https://docs.onramper.com/docs/widget-customization
-  // Onramper widget URL — built strictly per the official supported parameters.
-  // Docs:
-  //  - https://docs.onramper.com/docs/supported-widget-parameters
-  //  - https://docs.onramper.com/docs/theme-the-widget
-  //
-  // Important rules learned the hard way:
-  //  - apiKey is required (pk_test_ / pk_prod_).
-  //  - defaultFiat must be UPPERCASE ISO code (e.g. USD, EUR).
-  //  - defaultCrypto must be the Onramper Asset ID, UPPERCASE (e.g. USDC, BTC, ETH).
-  //  - defaultAmount is a plain number; only used when defaultFiat is also set.
-  //  - borderRadius / wgBorderRadius are UNITLESS rem numbers (e.g. "0.75"), never CSS strings.
-  //  - Color params are 6-digit hex without the leading '#'.
-  //  - partnerContext is a free-form string; we put a JSON blob with our deposit id
-  //    so the webhook can map the event back to our row.
-  //  - redirectAtCheckout=false → keeps the provider in a NEW tab, which is what we
-  //    want for a desktop iframe (default flips to true after Jun-2025 which would
-  //    break our iframe flow).
+  // Keep the widget URL intentionally minimal.
+  // Onramper's validator is strict, and unsupported/odd params can trigger the
+  // generic "Invalid Link" screen. Start from the documented safe core params only.
   const params = new URLSearchParams({
     apiKey: ONRAMPER_API_KEY,
     mode: 'buy',
@@ -702,18 +685,10 @@ function WidgetStep({ deposit }: { deposit: DepositRecord }) {
     defaultAmount: String(deposit.fiat_amount),
     defaultCrypto: (deposit.crypto_currency ?? 'USDC').toUpperCase(),
     redirectAtCheckout: 'false',
-    partnerContext: JSON.stringify({ depositId: deposit.id }),
-    // Theming (all optional but harmless when valid)
+    // Docs say partnerContext should be a unique string. Use the raw deposit id,
+    // not JSON, to avoid tripping any format validation on their side.
+    partnerContext: deposit.id,
     themeName: 'dark',
-    containerColor: '0b0d12',
-    cardColor: '141821',
-    primaryColor: '22c55e',
-    secondaryColor: '141821',
-    primaryTextColor: 'ffffff',
-    secondaryTextColor: '9ca3af',
-    primaryBtnTextColor: 'ffffff',
-    borderRadius: '0.75',
-    wgBorderRadius: '1',
   });
   const src = `https://buy.onramper.com/?${params.toString()}`;
 
