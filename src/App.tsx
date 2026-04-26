@@ -5,7 +5,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/useAuth";
-import RequireAuth from "@/components/RequireAuth";
 import Trade from "./pages/Trade.tsx";
 import Deposit from "./pages/Deposit.tsx";
 import Withdrawal from "./pages/Withdrawal.tsx";
@@ -28,11 +27,11 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Navigate to="/trade" replace />} />
               <Route path="/auth" element={<Auth />} />
-              <Route path="/trade" element={<RequireAuth><Trade /></RequireAuth>} />
-              <Route path="/deposit" element={<RequireAuth><Deposit /></RequireAuth>} />
-              <Route path="/withdrawal" element={<RequireAuth><Withdrawal /></RequireAuth>} />
-              <Route path="/support" element={<RequireAuth><Support /></RequireAuth>} />
-              <Route path="/account" element={<RequireAuth><Account /></RequireAuth>} />
+              <Route path="/trade" element={<Trade />} />
+              <Route path="/deposit" element={<Deposit />} />
+              <Route path="/withdrawal" element={<Withdrawal />} />
+              <Route path="/support" element={<Support />} />
+              <Route path="/account" element={<Account />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AuthProvider>
